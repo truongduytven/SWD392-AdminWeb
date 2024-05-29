@@ -6,7 +6,7 @@ import { Nav } from '../atoms/ui/nav'
 
 type Props = {}
 
-import { ChevronRight, LayoutDashboard, Settings, ShoppingCart, UsersRound } from 'lucide-react'
+import { ChevronRight, LayoutDashboard, Settings, ShoppingCart, UsersRound, LogIn } from 'lucide-react'
 import { Button } from '../atoms/ui/button'
 
 import { useWindowWidth } from '@react-hook/window-size'
@@ -22,7 +22,7 @@ export default function SideNavbar({}: Props) {
   }
 
   return (
-    <div className='fixed top-0 left-0 h-full z-10 min-w-[80px] transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-5 '>
+    <div className='relative min-w-[80px] transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-5 '>
       {!mobileWidth && (
         <div className='absolute right-[-20px] top-7 '>
           <Button onClick={toggleSidebar} variant='secondary' className=' rounded-full p-2 transition-transform duration-300'
@@ -58,6 +58,12 @@ export default function SideNavbar({}: Props) {
             title: 'Settings',
             href: '/settings',
             icon: Settings,
+            variant: 'ghost'
+          },
+          {
+            title: 'Đăng xuất',
+            href: '/login',
+            icon: LogIn,
             variant: 'ghost'
           }
         ]}

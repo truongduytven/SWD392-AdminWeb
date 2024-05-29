@@ -29,7 +29,7 @@ function RouteLayout() {
       </div>
       <div className="">
         <img
-          className="h-14 w-14"
+          className="h-12 w-12"
           src="https://api.dicebear.com/8.x/adventurer/svg?seed=Oliver"
           alt="avatar"
         />
@@ -37,7 +37,7 @@ function RouteLayout() {
     </div>
     <div className="pt-24 min-h-screen w-full bg-white text-black flex">
       <SideNavbar />
-      <div className="ml-[80px] p-8 w-full">
+      <div className=" p-8 w-full h-screen overflow-y-auto no-scrollbar">
         <Outlet />
       </div>
     </div>
