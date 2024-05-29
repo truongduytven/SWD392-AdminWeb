@@ -22,14 +22,14 @@ export default function SideNavbar({}: Props) {
   }
 
   return (
-    <div className='relative min-w-[80px]  transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-5 '>
+    <div className='fixed top-0 left-0 h-full z-10 min-w-[80px] transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-5 '>
       {!mobileWidth && (
         <div className='absolute right-[-20px] top-7 '>
           <Button onClick={toggleSidebar} variant='secondary' className=' rounded-full p-2 transition-transform duration-300'
            style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
           >
 
-            <ChevronRight />
+            <ChevronRight className='text-primary'/>
           </Button>
         </div>
       )}

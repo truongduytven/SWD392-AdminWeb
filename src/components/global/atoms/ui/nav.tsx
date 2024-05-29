@@ -51,6 +51,7 @@ const pathName = location.pathname;
                         size: "icon"
                       }),
                       "h-10 w-10",
+                      link.href === pathName && "text-white bg-primary",
                       link.variant === "default" &&
                         "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                     )}
@@ -80,9 +81,11 @@ const pathName = location.pathname;
                     variant: link.href === pathName ? "default" : "ghost",
                     size: "lg"
                   }),
+                  link.href === pathName && "text-white bg-primary",
+
                   link.variant === "default" &&
                     "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
-                  "justify-start mr-2"
+                  "justify-start mr-2  "
                 )}
               >
                 <link.icon className="mr-3 h-5 w-5" />
