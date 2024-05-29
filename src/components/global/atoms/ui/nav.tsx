@@ -36,9 +36,9 @@ const pathName = location.pathname;
     <TooltipProvider>
       <div
         data-collapsed={isCollapsed}
-        className="group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2"
+        className="group transition-all duration-300 ease-in-out flex flex-col gap-4 py-2 data-[collapsed=true]:py-2 "
       >
-        <nav className="grid pr-8 gap-2 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
+        <nav className="grid transition-all duration-300 ease-in-out pr-8 gap-2 px-3 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2">
           {links.map((link, index) =>
             isCollapsed ? (
               <Tooltip key={index} delayDuration={0}>
@@ -82,10 +82,10 @@ const pathName = location.pathname;
                   }),
                   link.variant === "default" &&
                     "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
-                  "justify-start"
+                  "justify-start mr-2"
                 )}
               >
-                <link.icon className="mr-2 h-5 w-5" />
+                <link.icon className="mr-3 h-5 w-5" />
                 {link.title}
                 {link.label && (
                   <span
