@@ -38,7 +38,7 @@ function RouteLayout() {
         </div>
           <DropdownMenu >
             <DropdownMenuTrigger asChild>
-              <img className='h-12 w-12' src='https://api.dicebear.com/8.x/adventurer/svg?seed=Oliver' alt='avatar' />
+              <img className='h-12 w-12 cursor-pointer' src='https://api.dicebear.com/8.x/adventurer/svg?seed=Oliver' alt='avatar' />
             </DropdownMenuTrigger>
             <DropdownMenuContent className='w-fit'>
               <DropdownMenuLabel className='py-0'>ThuongMinhlsr</DropdownMenuLabel>
@@ -46,11 +46,11 @@ function RouteLayout() {
                 thuongminhlsr@gmail.com
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className='flex justify-start items-center gap-1'>
+              <DropdownMenuItem className='flex justify-start items-center gap-1 cursor-pointer'>
                 <BookUser className='w-4' />
                 Hồ sơ người dùng
               </DropdownMenuItem>
-              <DropdownMenuItem className='flex justify-start items-center gap-1'>
+              <DropdownMenuItem className='flex justify-start items-center gap-1 cursor-pointer'>
                 <LogOut className='w-4' />
                 Log out
               </DropdownMenuItem>
