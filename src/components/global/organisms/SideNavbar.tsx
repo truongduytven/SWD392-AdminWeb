@@ -6,7 +6,7 @@ import { Nav } from '../atoms/ui/nav'
 
 type Props = {}
 
-import { ChevronRight, LayoutDashboard, Settings, ShoppingCart, UsersRound, LogIn } from 'lucide-react'
+import { ChevronRight, LayoutDashboard, Settings, ShoppingCart, UsersRound, LogOut } from 'lucide-react'
 import { Button } from '../atoms/ui/button'
 
 import { useWindowWidth } from '@react-hook/window-size'
@@ -63,7 +63,7 @@ export default function SideNavbar({}: Props) {
           {
             title: 'Đăng xuất',
             href: '/login',
-            icon: LogIn,
+            icon: LogOut,
             variant: 'ghost'
           }
         ]}
