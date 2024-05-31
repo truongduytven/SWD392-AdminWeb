@@ -52,7 +52,7 @@ function RouteLayout() {
               </DropdownMenuItem>
               <DropdownMenuItem className='flex justify-start items-center gap-1 cursor-pointer'>
                 <LogOut className='w-4' />
-                Log out
+                Đăng xuất
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
