@@ -3,6 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 // import RouteLayout from './components/RouteLayout'
 import Loader from './components/global/molecules/Loader'
+import Loading from './components/global/molecules/Loading'
 // import UsersPage from './components/global/templates/Users'
 // import OrdersPage from './components/global/templates/Orders';
 // import SettingsPage from './components/global/templates/Settings';
@@ -18,7 +19,7 @@ function App() {
   useEffect(() => {
 		setTimeout(() => setLoading(false), 1000)
 	}, [])
-  return loading?(<Loader/>): (
+  return loading?(<Loading/>): (
 
     // <>
     //   <div className=''>
