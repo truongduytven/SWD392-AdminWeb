@@ -53,7 +53,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                         size: "icon"
                       }),
                       "h-10 w-10",
-                      link.href === pathName && "text-white bg-primary",
+                      link.href === pathName && "text-white bg-[#F9802D]",
                       link.variant === "default" &&
                         "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                     )}
@@ -83,7 +83,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                     variant: link.href === pathName ? "default" : "ghost",
                     size: "lg"
                   }),
-                  link.href === pathName && "text-white bg-primary",
+                  link.href === pathName && "text-white bg-[#F9802D]",
 
                   link.variant === "default" &&
                     "dark:bg-muted dark:text-white dark:hover:bg-muted dark:hover:text-white",
@@ -109,7 +109,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
         </nav>
 
         {logoutLink && (
-          <div className="px-3 mt-72">
+          <div className="px-3 mt-56">
             {isCollapsed ? (
               <Tooltip key="logout" delayDuration={0}>
                 <TooltipTrigger asChild>
@@ -121,7 +121,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                         size: "icon"
                       }),
                       "h-10 w-10",
-                      logoutLink.href === pathName && "text-white bg-primary",
+                      logoutLink.href === pathName && "text-white bg-[#F9802D]",
                       logoutLink.variant === "default" &&
                         "dark:bg-muted dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-white"
                     )}

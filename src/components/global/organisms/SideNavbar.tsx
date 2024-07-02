@@ -3,15 +3,18 @@
 
 import { useState } from 'react'
 import { Nav } from '../atoms/ui/nav'
+import addressIcon from '@/assets/address.svg'
 
-type Props = {}
+interface SideNavbarProps {
+  isAdmin: boolean;
+}
 
-import { ChevronRight, LayoutDashboard, Settings, ShoppingCart, UsersRound, LogOut } from 'lucide-react'
+import { ChevronRight, LayoutDashboard, Settings, ShoppingCart,Bus,Route ,LandPlot ,HandPlatter  , Users ,UsersRound, LogOut } from 'lucide-react'
 import { Button } from '../atoms/ui/button'
-
+import { Handshake } from 'lucide-react';
 import { useWindowWidth } from '@react-hook/window-size'
 
-export default function SideNavbar({}: Props) {
+export default function SideNavbar({ isAdmin }: SideNavbarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const onlyWidth = useWindowWidth()
@@ -20,7 +23,83 @@ export default function SideNavbar({}: Props) {
   function toggleSidebar() {
     setIsCollapsed(!isCollapsed)
   }
+  const adminLinks = [
+    {
+      title: 'Dashboard',
+      href: '/home',
+      icon: LayoutDashboard,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Người dùng',
+      href: '/users',
+      icon: UsersRound,
+      variant: 'ghost' as 'default' | 'ghost'
+    },
+    {
+      title: 'Công ty',
+      href: '/companies',
+      icon: Handshake,
+      variant: 'ghost' as 'default' | 'ghost'
+    },
+    {
+      title: 'Cài đặt',
+      href: '/settings',
+      icon: Settings,
+      variant: 'ghost' as 'default' | 'ghost'
+    },
+    {
+      title: 'Đăng xuất',
+      href: '/login',
+      icon: LogOut,
+      variant: 'ghost' as 'default' | 'ghost'
+    }
+  ];
 
+  const managerLinks = [
+    {
+      title: 'Dashboard',
+      href: '/home',
+      icon: LayoutDashboard,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Nhân viên',
+      href: '/staffs',
+      icon: Users,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Chuyến đi',
+      href: '/trips',
+      icon: Bus,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Tuyến đường',
+      href: '/routes',
+      icon: Route ,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Trạm dừng',
+      href: '/stations',
+      icon: LandPlot ,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Dịch vụ',
+      href: '/services',
+      icon: HandPlatter,
+      variant: 'default' as 'default' | 'ghost'
+    },
+    {
+      title: 'Đăng xuất',
+      href: '/login',
+      icon: LogOut,
+      variant: 'ghost' as 'default' | 'ghost'
+    }
+  ];
   return (
     <div className='relative min-w-[80px] transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-5 '>
       {!mobileWidth && (
@@ -29,44 +108,14 @@ export default function SideNavbar({}: Props) {
            style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
           >
 
-            <ChevronRight className='text-primary'/>
+            <ChevronRight className='text-[#F9802D]'/>
           </Button>
         </div>
       )}
+
       <Nav
         isCollapsed={mobileWidth ? true : isCollapsed}
-        links={[
-          {
-            title: 'Dashboard',
-            href: '/',
-            icon: LayoutDashboard,
-            variant: 'default'
-          },
-          {
-            title: 'Users',
-            href: '/users',
-            icon: UsersRound,
-            variant: 'ghost'
-          },
-          {
-            title: 'Orders',
-            href: '/orders',
-            icon: ShoppingCart,
-            variant: 'ghost'
-          },
-          {
-            title: 'Settings',
-            href: '/settings',
-            icon: Settings,
-            variant: 'ghost'
-          },
-          {
-            title: 'Đăng xuất',
-            href: '/login',
-            icon: LogOut,
-            variant: 'ghost'
-          }
-        ]}
+        links={isAdmin ? adminLinks : managerLinks}
       />
     </div>
   )

@@ -9,9 +9,25 @@ import {
 import SideNavbar from '@/components/global/organisms/SideNavbar'
 import { BookUser, LogOut } from 'lucide-react'
 import { Outlet } from 'react-router-dom'
-import LogoFull2 from '../assets/LogoFull2.png'
+import LogoFull2 from '../../../assets/LogoFull2.png'
+import { useEffect, useState } from 'react'
+import { useAuth } from '@/auth/AuthProvider'
 
 function RouteLayout() {
+  // const user = useAuth()
+  // console.log("user ở layout", user)
+  // const [isAdmin, setIsAdmin] = useState<boolean>(true);
+  const {userDetail} = useAuth();
+  console.log("user ở layout", userDetail);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (userDetail?.RoleName === 'Admin') {
+      setIsAdmin(true);
+    } else if (userDetail?.RoleName === 'Manager') {
+      setIsAdmin(false);
+    }
+  }, [userDetail]);
   return (
     // <div>
     //   <div className='flex justify-between items-center px-10 py-2'>
@@ -58,7 +74,7 @@ function RouteLayout() {
           </DropdownMenu>
       </div>
       <div className='pt-24 min-h-screen w-full bg-white text-black flex'>
-        <SideNavbar />
+        <SideNavbar isAdmin={isAdmin}/>
         <div className=' p-8 w-full h-screen overflow-y-auto no-scrollbar'>
           <Outlet />
         </div>

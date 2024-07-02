@@ -1,64 +1,40 @@
-// import AdminLayout from "@/components/AdminLayout"
 import React, { Suspense, useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
-// import RouteLayout from './components/RouteLayout'
 import Loader from './components/global/molecules/Loader'
 import Loading from './components/global/molecules/Loading'
-// import UsersPage from './components/global/templates/Users'
-// import OrdersPage from './components/global/templates/Orders';
-// import SettingsPage from './components/global/templates/Settings';
-// import Home from './components/global/templates/Dashboard';
-const RouteLayout = React.lazy(() => import('./components/RouteLayout'))
+import SignInForm from './components/global/organisms/SignInForm'
+const RouteLayout = React.lazy(() => import('./components/global/Layout/RouteLayout'))
 const UsersPage = React.lazy(() => import('./components/global/templates/Users'))
-const OrdersPage = React.lazy(() => import('./components/global/templates/Orders'))
+const CompaniesPage = React.lazy(() => import('./components/global/templates/Companies'))
 const SettingsPage = React.lazy(() => import('./components/global/templates/Settings'))
 const Home = React.lazy(() => import('./components/global/templates/Dashboard'))
-
+const StaffPage = React.lazy(() => import('./components/global/templates/Staffs'))
+const TripPage = React.lazy(() => import('./components/global/templates/Trips'))
+const RoutePage = React.lazy(() => import('./components/global/templates/Routes'))
+const StationPage = React.lazy(() => import('./components/global/templates/Stations'))
+const ServicePage = React.lazy(() => import('./components/global/templates/Services'))
 function App() {
-	const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
-		setTimeout(() => setLoading(false), 1000)
-	}, [])
-  return loading?(<Loading/>): (
-
-    // <>
-    //   <div className=''>
-    //     {/* <AdminLayout/> */}
-    //     <RouteLayout children={<UsersPage />} />
-    //     fgfrgrg
-    //   </div>
-    // </>
-    //   <Routes>
-    //   <Route element={<RouteLayout />}>
-    //     <Route path="/" element={<Home />} />
-    //     <Route path="users" element={<UsersPage />} />
-    //     <Route path="orders" element={<OrdersPage />} />
-    //     <Route path="settings" element={<SettingsPage />} />
-    //   </Route>
-    // </Routes>
-
-    //   <Suspense fallback={<div>Loading...</div>}>
-    //   <Routes>
-    //     <Route element={<RouteLayout />}>
-    //       <Route path="/" element={<Home />} />
-    //       <Route path="users" element={<UsersPage />} />
-    //       <Route path="orders" element={<OrdersPage />} />
-    //       <Route path="settings" element={<SettingsPage />} />
-    //     </Route>
-    //   </Routes>
-    // </Suspense>
+    setTimeout(() => setLoading(false), 1000)
+  }, [])
+  return loading ? (
+    <Loading />
+  ) : (
+   
     <Routes>
       <Route element={<RouteLayout />}>
-        <Route
-          path='/'
+        <Route 
+          path='/home'
           element={
             <Suspense fallback={<Loader />}>
               <Home />
             </Suspense>
           }
         />
+
         <Route
-          path='users'
+          path='/users'
           element={
             <Suspense fallback={<Loader />}>
               <UsersPage />
@@ -66,22 +42,64 @@ function App() {
           }
         />
         <Route
-          path='orders'
+          path='/companies'
           element={
             <Suspense fallback={<Loader />}>
-              <OrdersPage />
+              <CompaniesPage />
             </Suspense>
           }
         />
         <Route
-          path='settings'
+          path='/settings'
           element={
             <Suspense fallback={<Loader />}>
               <SettingsPage />
             </Suspense>
           }
         />
+        <Route
+          path='/staffs'
+          element={
+            <Suspense fallback={<Loader />}>
+              <StaffPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path='/trips'
+          element={
+            <Suspense fallback={<Loader />}>
+              <TripPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path='/routes'
+          element={
+            <Suspense fallback={<Loader />}>
+              <RoutePage />
+            </Suspense>
+          }
+        />
+        <Route
+          path='/stations'
+          element={
+            <Suspense fallback={<Loader />}>
+              <StationPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path='/services'
+          element={
+            <Suspense fallback={<Loader />}>
+              <ServicePage />
+            </Suspense>
+          }
+        />
       </Route>
+      <Route path='/' element={<SignInForm />} />
+
     </Routes>
   )
 }

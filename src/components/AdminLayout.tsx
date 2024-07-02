@@ -340,7 +340,8 @@ export default function AdminLayout() {
                           </TableCell>
                           <TableCell className='hidden sm:table-cell'>Sale</TableCell>
                           <TableCell className='hidden sm:table-cell'>
-                            <Badge className='text-xs' variant='secondary'>
+                            <Badge className='text-xs'>
+                            {/* <Badge className='text-xs' variant='secondary'> */}
                               Fulfilled
                             </Badge>
                           </TableCell>
@@ -388,7 +389,8 @@ export default function AdminLayout() {
                           </TableCell>
                           <TableCell className='hidden sm:table-cell'>Subscription</TableCell>
                           <TableCell className='hidden sm:table-cell'>
-                            <Badge className='text-xs' variant='secondary'>
+                            <Badge className='text-xs' >
+                            {/* <Badge className='text-xs' variant='secondary'> */}
                               Fulfilled
                             </Badge>
                           </TableCell>
@@ -402,7 +404,8 @@ export default function AdminLayout() {
                           </TableCell>
                           <TableCell className='hidden sm:table-cell'>Sale</TableCell>
                           <TableCell className='hidden sm:table-cell'>
-                            <Badge className='text-xs' variant='secondary'>
+                            <Badge className='text-xs'>
+                            {/* <Badge className='text-xs' variant='secondary'> */}
                               Fulfilled
                             </Badge>
                           </TableCell>
@@ -416,7 +419,8 @@ export default function AdminLayout() {
                           </TableCell>
                           <TableCell className='hidden sm:table-cell'>Sale</TableCell>
                           <TableCell className='hidden sm:table-cell'>
-                            <Badge className='text-xs' variant='secondary'>
+                            <Badge className='text-xs' >
+                            {/* <Badge className='text-xs' variant='secondary'> */}
                               Fulfilled
                             </Badge>
                           </TableCell>
@@ -444,7 +448,8 @@ export default function AdminLayout() {
                           </TableCell>
                           <TableCell className='hidden sm:table-cell'>Sale</TableCell>
                           <TableCell className='hidden sm:table-cell'>
-                            <Badge className='text-xs' variant='secondary'>
+                            <Badge className='text-xs'>
+                            {/* <Badge className='text-xs' variant='secondary'> */}
                               Fulfilled
                             </Badge>
                           </TableCell>
