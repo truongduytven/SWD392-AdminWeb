@@ -1,8 +1,13 @@
 import React, { Suspense, useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import Loader from './components/global/molecules/Loader'
 import Loading from './components/global/molecules/Loading'
 import SignInForm from './components/global/organisms/SignInForm'
+import ProtectedRoute from './auth/ProtectedRoute'
+import NotAuthorized from './components/global/templates/NotAuthorized'
+import AdminProtectedRoute from './auth/AdminProtectedRoute'
+import ManagerProtectedRoute from './auth/ManagerProtectedRoute'
+import { useAuth } from './auth/AuthProvider'
 const RouteLayout = React.lazy(() => import('./components/global/Layout/RouteLayout'))
 const UsersPage = React.lazy(() => import('./components/global/templates/Users'))
 const CompaniesPage = React.lazy(() => import('./components/global/templates/Companies'))
@@ -15,91 +20,138 @@ const StationPage = React.lazy(() => import('./components/global/templates/Stati
 const ServicePage = React.lazy(() => import('./components/global/templates/Services'))
 function App() {
   const [loading, setLoading] = useState<boolean>(true)
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000)
   }, [])
+  // useEffect(() => {
+  //   if (!loading && user) {
+  //     if (user.RoleName === 'Admin') {
+  //       navigate('/home/admin')
+  //     } else if (user.RoleName === 'Manager') {
+  //       navigate('/home/manager')
+  //     }
+  //   }
+  // }, [loading, user, navigate])
   return loading ? (
     <Loading />
   ) : (
-   
     <Routes>
       <Route element={<RouteLayout />}>
-        <Route 
-          path='/home'
+      <Route
+          path='/home/admin'
           element={
-            <Suspense fallback={<Loader />}>
-              <Home />
-            </Suspense>
+            <AdminProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <Home />
+              </Suspense>
+            </AdminProtectedRoute>
+          }
+        />
+        <Route
+          path='/home/manager'
+          element={
+            <ManagerProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <Home />
+              </Suspense>
+            </ManagerProtectedRoute>
           }
         />
 
         <Route
           path='/users'
           element={
-            <Suspense fallback={<Loader />}>
-              <UsersPage />
-            </Suspense>
+            <AdminProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <UsersPage />
+              </Suspense>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path='/companies'
           element={
-            <Suspense fallback={<Loader />}>
-              <CompaniesPage />
-            </Suspense>
+            <AdminProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <CompaniesPage />
+              </Suspense>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path='/settings'
           element={
-            <Suspense fallback={<Loader />}>
-              <SettingsPage />
-            </Suspense>
+            <AdminProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <SettingsPage />
+              </Suspense>
+            </AdminProtectedRoute>
           }
         />
         <Route
           path='/staffs'
           element={
-            <Suspense fallback={<Loader />}>
-              <StaffPage />
-            </Suspense>
+            <ManagerProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <StaffPage />
+              </Suspense>
+            </ManagerProtectedRoute>
           }
         />
         <Route
           path='/trips'
           element={
-            <Suspense fallback={<Loader />}>
-              <TripPage />
-            </Suspense>
+            <ManagerProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <TripPage />
+              </Suspense>
+            </ManagerProtectedRoute>
           }
         />
         <Route
           path='/routes'
           element={
-            <Suspense fallback={<Loader />}>
-              <RoutePage />
-            </Suspense>
+            <ManagerProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <RoutePage />
+              </Suspense>
+            </ManagerProtectedRoute>
           }
         />
         <Route
           path='/stations'
           element={
-            <Suspense fallback={<Loader />}>
-              <StationPage />
-            </Suspense>
+            <ManagerProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <StationPage />
+              </Suspense>
+            </ManagerProtectedRoute>
           }
         />
         <Route
           path='/services'
           element={
-            <Suspense fallback={<Loader />}>
-              <ServicePage />
-            </Suspense>
+            <ManagerProtectedRoute>
+              <Suspense fallback={<Loader />}>
+                <ServicePage />
+              </Suspense>
+            </ManagerProtectedRoute>
           }
         />
       </Route>
-      <Route path='/' element={<SignInForm />} />
 
+      <Route
+        path='/'
+        element={
+          <ProtectedRoute>
+            <SignInForm />
+          </ProtectedRoute>
+        }
+      />
+      <Route path='/not-authorized' element={<NotAuthorized />} />
     </Routes>
   )
 }

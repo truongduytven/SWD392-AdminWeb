@@ -7,27 +7,33 @@ import {
   DropdownMenuTrigger
 } from '@/components/global/atoms/ui/dropdown-menu'
 import SideNavbar from '@/components/global/organisms/SideNavbar'
-import { BookUser, LogOut } from 'lucide-react'
+import { BookUser, Loader, LogOut } from 'lucide-react'
 import { Outlet } from 'react-router-dom'
 import LogoFull2 from '../../../assets/LogoFull2.png'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/auth/AuthProvider'
 
 function RouteLayout() {
-  // const user = useAuth()
-  // console.log("user ở layout", user)
-  // const [isAdmin, setIsAdmin] = useState<boolean>(true);
-  const {userDetail} = useAuth();
-  console.log("user ở layout", userDetail);
+  const {user,loading} = useAuth()
+  console.log("user ở layout", user)
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  // const {userDetail} = useAuth();
+  // console.log("user ở layout", userDetail);
 
   useEffect(() => {
-    if (userDetail?.RoleName === 'Admin') {
-      setIsAdmin(true);
-    } else if (userDetail?.RoleName === 'Manager') {
-      setIsAdmin(false);
+    if (user) {
+      setIsAdmin(user.RoleName === 'Admin')
     }
-  }, [userDetail]);
+  }, [user])
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
+          <span className="visually-hidden"><Loader className='w-4 h-4 animate-spin' />Đang tải</span>
+        </div>
+      </div>
+    )
+  }
   return (
     // <div>
     //   <div className='flex justify-between items-center px-10 py-2'>
@@ -52,14 +58,15 @@ function RouteLayout() {
         <div className='h-14'>
           <img src={LogoFull2} className='h-full' alt='Logo' />
         </div>
-          <DropdownMenu >
+          {user &&
+           <DropdownMenu >
             <DropdownMenuTrigger asChild>
-              <img className='h-12 w-12 cursor-pointer' src='https://api.dicebear.com/8.x/adventurer/svg?seed=Oliver' alt='avatar' />
+              <img className='h-12 w-12 cursor-pointer' src={user?.Avatar ||'https://api.dicebear.com/8.x/adventurer/svg?seed=Oliver'} alt='avatar' />
             </DropdownMenuTrigger>
             <DropdownMenuContent className='w-fit'>
-              <DropdownMenuLabel className='py-0'>ThuongMinhlsr</DropdownMenuLabel>
+              <DropdownMenuLabel className='py-0'>{user?.UserName}</DropdownMenuLabel>
               <DropdownMenuItem className='py-0 text-xs' disabled>
-                thuongminhlsr@gmail.com
+                {user?.Email}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className='flex justify-start items-center gap-1 cursor-pointer'>
@@ -72,9 +79,10 @@ function RouteLayout() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          }
       </div>
       <div className='pt-24 min-h-screen w-full bg-white text-black flex'>
-        <SideNavbar isAdmin={isAdmin}/>
+      {user ? <SideNavbar isAdmin={isAdmin} /> : <div className="flex justify-center items-center w-full"><Loader className='w-4 h-4 animate-spin' /></div>}
         <div className=' p-8 w-full h-screen overflow-y-auto no-scrollbar'>
           <Outlet />
         </div>

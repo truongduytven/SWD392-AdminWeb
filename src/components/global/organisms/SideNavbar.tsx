@@ -14,7 +14,8 @@ import { Button } from '../atoms/ui/button'
 import { Handshake } from 'lucide-react';
 import { useWindowWidth } from '@react-hook/window-size'
 
-export default function SideNavbar({ isAdmin }: SideNavbarProps) {
+export default function SideNavbar({isAdmin}:SideNavbarProps) {
+  console.log("admin ơ nav", isAdmin)
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const onlyWidth = useWindowWidth()
@@ -26,7 +27,7 @@ export default function SideNavbar({ isAdmin }: SideNavbarProps) {
   const adminLinks = [
     {
       title: 'Dashboard',
-      href: '/home',
+      href: '/home/admin',
       icon: LayoutDashboard,
       variant: 'default' as 'default' | 'ghost'
     },
@@ -59,7 +60,7 @@ export default function SideNavbar({ isAdmin }: SideNavbarProps) {
   const managerLinks = [
     {
       title: 'Dashboard',
-      href: '/home',
+      href: '/home/manager',
       icon: LayoutDashboard,
       variant: 'default' as 'default' | 'ghost'
     },
@@ -116,6 +117,7 @@ export default function SideNavbar({ isAdmin }: SideNavbarProps) {
       <Nav
         isCollapsed={mobileWidth ? true : isCollapsed}
         links={isAdmin ? adminLinks : managerLinks}
+        // links={adminLinks }
       />
     </div>
   )

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { DataTable } from '@/components/global/organisms/DataTable'
 import PageTitle from '@/components/global/organisms/PageTitle'
@@ -144,6 +144,7 @@ const data: Payment[] = [
   }
 ]
 type Role = 'customer' | 'staff' | 'manager' | 'admin' | 'guest'
+
 function Staff() {
   const [searchParams] = useSearchParams()
   const pageNumber = Number(searchParams.get('pageNumber') || 1)
@@ -165,6 +166,21 @@ function Staff() {
   //     setIsLoadingAccounts(true)
   //     try {
   //       const { data } = await birdFarmApi.get(addSearchParams('/api/users/pagination', { pageNumber, pageSize }))
+  //       setAccounts(data?.users || null)
+  //       setIsLoadingAccounts(false)
+  //       setTotalPages(data?.totalPages || null)
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+
+  //   fetchAccounts()
+  // }, [pageNumber])
+  // useEffect(() => {
+  //   const fetchStaffs = async () => {
+  //     setIsLoadingAccounts(true)
+  //     try {
+  //       const { data } = await busAPI.get("")
   //       setAccounts(data?.users || null)
   //       setIsLoadingAccounts(false)
   //       setTotalPages(data?.totalPages || null)

@@ -13,9 +13,9 @@ import background from '@/assets/background.jpg'
 import Icon from '@/assets/LogoIcon.png'
 import Logo from '@/assets/LogoFull2.png'
 import { useAuth } from '@/auth/AuthProvider'
-
+import { Loader } from 'lucide-react';
  function SignInForm() {
-  const {login} = useAuth()
+  const {login,loading} = useAuth()
   const navigate = useNavigate()
   const { toast } = useToast()
   const form = useForm<TSignInSchema>({
@@ -106,8 +106,8 @@ import { useAuth } from '@/auth/AuthProvider'
               </FormItem>
             )}
           />
-          <Button disabled={isSubmitting} type='submit' className='w-full text-white'>
-            Đăng nhập {isSubmitting && <Shell className='w-4 h-4 animate-spin' />}
+          <Button disabled={loading} type='submit' className='w-full text-white'>
+          {loading && <Loader className='w-4 h-4 animate-spin' />} Đăng nhập 
           </Button>
         </form>
       </Form>
