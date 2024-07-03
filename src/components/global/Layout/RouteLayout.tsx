@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '@/auth/AuthProvider'
 
 function RouteLayout() {
-  const {user,loading} = useAuth()
+  const {user,loading, logout} = useAuth()
   console.log("user ở layout", user)
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   // const {userDetail} = useAuth();
@@ -29,7 +29,7 @@ function RouteLayout() {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full" role="status">
-          <span className="visually-hidden"><Loader className='w-4 h-4 animate-spin' />Đang tải</span>
+          <span className="visually-hidden"><Loader className='w-4 h-4 animate-spin' /></span>
         </div>
       </div>
     )
@@ -73,7 +73,7 @@ function RouteLayout() {
                 <BookUser className='w-4' />
                 Hồ sơ người dùng
               </DropdownMenuItem>
-              <DropdownMenuItem className='flex justify-start items-center gap-1 cursor-pointer'>
+              <DropdownMenuItem className='flex justify-start items-center gap-1 cursor-pointer' onClick={()=>logout()}>
                 <LogOut className='w-4' />
                 Đăng xuất
               </DropdownMenuItem>

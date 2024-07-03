@@ -8,6 +8,7 @@ import NotAuthorized from './components/global/templates/NotAuthorized'
 import AdminProtectedRoute from './auth/AdminProtectedRoute'
 import ManagerProtectedRoute from './auth/ManagerProtectedRoute'
 import { useAuth } from './auth/AuthProvider'
+import NotFoundPage from './components/global/templates/NotFoundPage'
 const RouteLayout = React.lazy(() => import('./components/global/Layout/RouteLayout'))
 const UsersPage = React.lazy(() => import('./components/global/templates/Users'))
 const CompaniesPage = React.lazy(() => import('./components/global/templates/Companies'))
@@ -152,6 +153,8 @@ function App() {
         }
       />
       <Route path='/not-authorized' element={<NotAuthorized />} />
+      <Route path='*' element={<NotFoundPage />} />
+
     </Routes>
   )
 }
