@@ -19,6 +19,7 @@ const TripPage = React.lazy(() => import('./components/global/templates/Trips'))
 const RoutePage = React.lazy(() => import('./components/global/templates/Routes'))
 const StationPage = React.lazy(() => import('./components/global/templates/Stations'))
 const ServicePage = React.lazy(() => import('./components/global/templates/Services'))
+const DashboardManager = React.lazy(() => import('./components/global/templates/DashboardManager'))
 function App() {
   const [loading, setLoading] = useState<boolean>(true)
   const { user } = useAuth()
@@ -56,7 +57,7 @@ function App() {
           element={
             <ManagerProtectedRoute>
               <Suspense fallback={<Loader />}>
-                <Home />
+                <DashboardManager />
               </Suspense>
             </ManagerProtectedRoute>
           }
