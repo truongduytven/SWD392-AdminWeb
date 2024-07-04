@@ -68,11 +68,13 @@ function Routes() {
         )
         setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: newStatus })
         setIsModalOpen(false)
+        console.log("truoc toaasst")
         toast({
           variant: 'success',
           title: 'Cập nhật thành công',
           description: 'Đã đổi trạng thái tuyến đường này thành ' + newStatus
         })
+        console.log("sau toast")
         setIsLoadingUpdate(false)
       } catch (error) {
         console.log(error)
