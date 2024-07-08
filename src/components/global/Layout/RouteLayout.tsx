@@ -81,9 +81,9 @@ function RouteLayout() {
           </DropdownMenu>
           }
       </div>
-      <div className='pt-24 min-h-screen w-full bg-white text-black flex'>
+      <div className='min-h-screen h-fit w-full bg-white text-black flex'>
       {user ? <SideNavbar isAdmin={isAdmin} /> : <div className="flex justify-center items-center w-full"><Loader className='w-4 h-4 animate-spin' /></div>}
-        <div className=' p-8 w-full h-screen overflow-y-auto no-scrollbar'>
+        <div className='p-8 pt-24 w-full max-h-screen overflow-y-auto no-scrollbar'>
           <Outlet />
         </div>
       </div>
