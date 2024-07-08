@@ -9,7 +9,7 @@ import {
 import SideNavbar from '@/components/global/organisms/SideNavbar'
 import { BookUser, Loader, LogOut } from 'lucide-react'
 import { Outlet } from 'react-router-dom'
-import LogoFull2 from '../../../assets/LogoFull2.png'
+import LogoFull2 from '../../../assets/LogoFull.png'
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/auth/AuthProvider'
 

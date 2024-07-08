@@ -5,33 +5,33 @@ import PageTitle from '@/components/global/organisms/PageTitle'
 import BarChart from '@/components/global/organisms/BarChart'
 import Card, { CardContent, CardProps } from '@/components/global/organisms/Card'
 import SalesCard, { SalesProps } from '@/components/global/organisms/SalesCard'
-import { Activity, CreditCard, DollarSign, Users } from 'lucide-react'
+import { Activity, DollarSign, Users, Bus } from 'lucide-react'
 
 const cardData: CardProps[] = [
   {
-    label: 'Total Revenue',
-    amount: '$45,231.89',
+    label: 'Tổng doanh thu trong tháng',
+    amount: '45,231,000 vnđ',
     discription: '+20.1% from last month',
     icon: DollarSign
   },
   {
-    label: 'Subscriptions',
-    amount: '+2350',
+    label: 'Tổng số vé được đặt trong tháng',
+    amount: '53',
+    discription: '+201 since last hour',
+    icon: Activity
+  },
+  {
+    label: 'Tổng số người dùng',
+    amount: '235',
     discription: '+180.1% from last month',
     icon: Users
   },
   {
-    label: 'Sales',
-    amount: '+12,234',
+    label: 'Tổng số nhà xe',
+    amount: '12',
     discription: '+19% from last month',
-    icon: CreditCard
+    icon: Bus
   },
-  {
-    label: 'Active Now',
-    amount: '+573',
-    discription: '+201 since last hour',
-    icon: Activity
-  }
 ]
 
 const uesrSalesData: SalesProps[] = [
@@ -73,13 +73,13 @@ export default function Home() {
       </section>
       <section className='grid grid-cols-1  gap-4 transition-all lg:grid-cols-2'>
         <CardContent>
-          <p className='p-4 font-semibold'>Overview</p>
+          <p className='p-4 font-semibold'>Tổng doanh thu trong năm</p>
 
           <BarChart />
         </CardContent>
         <CardContent className='flex justify-between gap-4'>
           <section>
-            <p>Recent Sales</p>
+            <p className='text-lg font-semibold'>Những nhà xe hàng đầu</p>
             <p className='text-sm text-gray-400'>You made 265 sales this month.</p>
           </section>
           {uesrSalesData.map((d, i) => (

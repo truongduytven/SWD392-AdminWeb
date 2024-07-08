@@ -49,12 +49,12 @@ export default function SideNavbar({isAdmin}:SideNavbarProps) {
       icon: Settings,
       variant: 'ghost' as 'default' | 'ghost'
     },
-    {
-      title: 'Đăng xuất',
-      href: '/login',
-      icon: LogOut,
-      variant: 'ghost' as 'default' | 'ghost'
-    }
+    // {
+    //   title: 'Đăng xuất',
+    //   href: '/login',
+    //   icon: LogOut,
+    //   variant: 'ghost' as 'default' | 'ghost'
+    // }
   ];
 
   const managerLinks = [

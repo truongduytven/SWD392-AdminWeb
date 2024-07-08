@@ -10,8 +10,8 @@ import { Shell } from 'lucide-react'
 import { useState } from 'react'
 import { useToast } from '../atoms/ui/use-toast'
 import background from '@/assets/background.jpg'
-import Icon from '@/assets/LogoIcon.png'
-import Logo from '@/assets/LogoFull2.png'
+import Icon from '@/assets/LogoMini.png'
+import Logo from '@/assets/LogoFull.png'
 import { useAuth } from '@/auth/AuthProvider'
 import { Loader } from 'lucide-react';
  function SignInForm() {
