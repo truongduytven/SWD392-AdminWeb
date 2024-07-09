@@ -49,12 +49,12 @@ export default function SideNavbar({isAdmin}:SideNavbarProps) {
       icon: Settings,
       variant: 'ghost' as 'default' | 'ghost'
     },
-    {
-      title: 'Đăng xuất',
-      href: '/login',
-      icon: LogOut,
-      variant: 'ghost' as 'default' | 'ghost'
-    }
+    // {
+    //   title: 'Đăng xuất',
+    //   href: '/login',
+    //   icon: LogOut,
+    //   variant: 'ghost' as 'default' | 'ghost'
+    // }
   ];
 
   const managerLinks = [
@@ -102,9 +102,9 @@ export default function SideNavbar({isAdmin}:SideNavbarProps) {
     }
   ];
   return (
-    <div className='relative min-w-[80px] transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-5 '>
+    <div className='relative min-w-[80px] min-h-screen h-fit transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-24'>
       {!mobileWidth && (
-        <div className='absolute right-[-20px] top-7 '>
+        <div className='absolute right-[-20px] top-24 '>
           <Button onClick={toggleSidebar} variant='secondary' className=' rounded-full p-2 transition-transform duration-300'
            style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
           >
