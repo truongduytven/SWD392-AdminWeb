@@ -6,16 +6,28 @@ import { Nav } from '../atoms/ui/nav'
 import addressIcon from '@/assets/address.svg'
 
 interface SideNavbarProps {
-  isAdmin: boolean;
+  isAdmin: boolean
 }
 
-import { ChevronRight, LayoutDashboard, Settings, ShoppingCart,Bus,Route ,LandPlot ,HandPlatter  , Users ,UsersRound, LogOut } from 'lucide-react'
+import {
+  ChevronRight,
+  LayoutDashboard,
+  Settings,
+  ShoppingCart,
+  Bus,
+  Route,
+  LandPlot,
+  HandPlatter,
+  Users,
+  UsersRound,
+  LogOut
+} from 'lucide-react'
 import { Button } from '../atoms/ui/button'
-import { Handshake } from 'lucide-react';
+import { Handshake } from 'lucide-react'
 import { useWindowWidth } from '@react-hook/window-size'
 
-export default function SideNavbar({isAdmin}:SideNavbarProps) {
-  console.log("admin ơ nav", isAdmin)
+export default function SideNavbar({ isAdmin }: SideNavbarProps) {
+  console.log('admin ơ nav', isAdmin)
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const onlyWidth = useWindowWidth()
@@ -48,14 +60,14 @@ export default function SideNavbar({isAdmin}:SideNavbarProps) {
       href: '/settings',
       icon: Settings,
       variant: 'ghost' as 'default' | 'ghost'
-    },
+    }
     // {
     //   title: 'Đăng xuất',
     //   href: '/login',
     //   icon: LogOut,
     //   variant: 'ghost' as 'default' | 'ghost'
     // }
-  ];
+  ]
 
   const managerLinks = [
     {
@@ -79,13 +91,13 @@ export default function SideNavbar({isAdmin}:SideNavbarProps) {
     {
       title: 'Tuyến đường',
       href: '/routes',
-      icon: Route ,
+      icon: Route,
       variant: 'default' as 'default' | 'ghost'
     },
     {
       title: 'Trạm dừng',
       href: '/stations',
-      icon: LandPlot ,
+      icon: LandPlot,
       variant: 'default' as 'default' | 'ghost'
     },
     {
@@ -94,22 +106,24 @@ export default function SideNavbar({isAdmin}:SideNavbarProps) {
       icon: HandPlatter,
       variant: 'default' as 'default' | 'ghost'
     },
-    {
-      title: 'Đăng xuất',
-      href: '/login',
-      icon: LogOut,
-      variant: 'ghost' as 'default' | 'ghost'
-    }
-  ];
+    // {
+    //   title: 'Đăng xuất',
+    //   href: '/login',
+    //   icon: LogOut,
+    //   variant: 'ghost' as 'default' | 'ghost'
+    // }
+  ]
   return (
     <div className='relative min-w-[80px] min-h-screen h-fit transition-all duration-300 ease-in-out border-r px-3 pb-10 pt-24'>
       {!mobileWidth && (
         <div className='absolute right-[-20px] top-24 '>
-          <Button onClick={toggleSidebar} variant='secondary' className=' rounded-full p-2 transition-transform duration-300'
-           style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
+          <Button
+            onClick={toggleSidebar}
+            variant='secondary'
+            className=' rounded-full p-2 transition-transform duration-300'
+            style={{ transform: isCollapsed ? 'rotate(180deg)' : 'rotate(0deg)' }}
           >
-
-            <ChevronRight className='text-[#F9802D]'/>
+            <ChevronRight className='text-[#F9802D]' />
           </Button>
         </div>
       )}

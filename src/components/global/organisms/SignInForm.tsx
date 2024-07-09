@@ -67,14 +67,7 @@ function SignInForm() {
         </div> */}
         </div>
         <div className='py-4 lg:p-8'>
-          <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
-            <div className='flex flex-col space-y-2 text-center'>
-              <h1 className='text-2xl font-semibold tracking-tight'>Đăng nhập</h1>
-              <p className='text-sm text-muted-foreground'>
-                để tiếp tục với <img className='inline w-5 h-5 mb-1' alt='icon' src={Icon} /> The Bus Journey
-              </p>
-            </div>
-          </div>
+          
           <div className='py-4 lg:p-8'>
             <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
               <div className='flex flex-col space-y-2 text-center'>
