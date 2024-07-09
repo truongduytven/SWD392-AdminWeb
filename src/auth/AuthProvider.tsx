@@ -30,7 +30,8 @@ interface User {
   Status: string
   RoleName: string
   RoleID: string
-  Result: any
+  Result: any,
+  CompanyID:string
 }
 
 interface IUserDetail {
