@@ -9,7 +9,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Shell } from 'lucide-react'
 import { useState } from 'react'
 import { useToast } from '../atoms/ui/use-toast'
-import background from '@/assets/background.jpg'
+import background from '@/assets/background1.jpg'
 import Icon from '@/assets/LogoMini.png'
 import Logo from '@/assets/LogoFull.png'
 import { useAuth } from '@/auth/AuthProvider'
@@ -64,9 +64,9 @@ import { Loader } from 'lucide-react';
           }}
           className='absolute inset-0 bg-left-top bg-cover'
         />
-        <div className='relative z-20 flex items-center text-lg font-medium'>
+        {/* <div className='relative z-20 flex items-center text-lg font-medium'>
           <img alt='logo' className='h-16' src={Logo} />
-        </div>
+        </div> */}
       </div>
       <div className='py-4 lg:p-8'>
         <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
