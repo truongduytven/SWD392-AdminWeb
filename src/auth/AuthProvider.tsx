@@ -134,6 +134,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             localStorage.removeItem('token')
           }
         } catch (error) {
+          toast.error("Lỗi đăng nhập. Vui lòng thử lại sau!")
           console.error('Fetching user information failed:', error)
         } finally {
           setLoading(false)

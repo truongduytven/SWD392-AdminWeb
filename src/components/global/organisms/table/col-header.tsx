@@ -43,11 +43,11 @@ export function DataTableColumnHeader<TData, TValue>({
 				<DropdownMenuContent align="start">
 					<DropdownMenuItem onClick={() => column.toggleSorting(false)}>
 						<ArrowUpIcon className="mr-2 size-3.5 text-muted-foreground/70" />
-						Asc
+						Tăng dần
 					</DropdownMenuItem>
 					<DropdownMenuItem onClick={() => column.toggleSorting(true)}>
 						<ArrowDownIcon className="mr-2 size-3.5 text-muted-foreground/70" />
-						Desc
+						Giảm dần
 					</DropdownMenuItem>
 					{/* <DropdownMenuSeparator /> */}
 					{/* <DropdownMenuItem onClick={() => column.toggleVisibility(false)}>

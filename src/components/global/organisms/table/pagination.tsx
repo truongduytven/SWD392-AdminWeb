@@ -26,7 +26,7 @@ export function DataTablePagination<TData>({ table, rowString }: DataTablePagina
 		<div className="mx-1 flex justify-between space-x-6 px-1 py-2 lg:space-x-8">
 			<div className="flex items-center space-x-2">
 				<p className="text-sm font-medium opacity-60">
-					{rowString.charAt(0).toUpperCase() + pluralize(rowString).slice(1)} / page
+					{rowString } / trang
 				</p>
 				<Select
 					value={`${table.getState().pagination.pageSize}`}
@@ -54,7 +54,7 @@ export function DataTablePagination<TData>({ table, rowString }: DataTablePagina
 			</div>
 			<div className="flex items-center space-x-2">
 				<div className="flex w-[100px] items-center justify-center text-sm font-medium opacity-60">
-					Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+					Trang {table.getState().pagination.pageIndex + 1} của {table.getPageCount()}
 				</div>
 				<Button
 					variant="outline"
@@ -62,7 +62,7 @@ export function DataTablePagination<TData>({ table, rowString }: DataTablePagina
 					onClick={() => table.setPageIndex(0)}
 					disabled={!table.getCanPreviousPage()}
 				>
-					<span className="sr-only">Go to first page</span>
+					<span className="sr-only">Đi đến trang đầu tiên</span>
 					<DoubleArrowLeftIcon className="size-4 transition-all duration-200 group-hover:scale-125" />
 				</Button>
 				<Button
@@ -71,7 +71,7 @@ export function DataTablePagination<TData>({ table, rowString }: DataTablePagina
 					onClick={() => table.previousPage()}
 					disabled={!table.getCanPreviousPage()}
 				>
-					<span className="sr-only">Go to previous page</span>
+					<span className="sr-only">Đi đến trang trước</span>
 					<ChevronLeftIcon className="size-4 transition-all duration-200 group-hover:scale-125" />
 				</Button>
 				<Button
@@ -80,7 +80,7 @@ export function DataTablePagination<TData>({ table, rowString }: DataTablePagina
 					onClick={() => table.nextPage()}
 					disabled={!table.getCanNextPage()}
 				>
-					<span className="sr-only">Go to next page</span>
+					<span className="sr-only">Đi đến trang tiếp</span>
 					<ChevronRightIcon className="size-4 transition-all duration-200 group-hover:scale-125" />
 				</Button>
 				<Button
@@ -89,7 +89,7 @@ export function DataTablePagination<TData>({ table, rowString }: DataTablePagina
 					onClick={() => table.setPageIndex(table.getPageCount() - 1)}
 					disabled={!table.getCanNextPage()}
 				>
-					<span className="sr-only">Go to last page</span>
+					<span className="sr-only">Đi đến trang cuối</span>
 					<DoubleArrowRightIcon className="size-4 transition-all duration-200 group-hover:scale-125" />
 				</Button>
 			</div>

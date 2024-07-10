@@ -60,7 +60,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 							<div className="hidden space-x-1 lg:flex">
 								{selectedValues.size > 3 ? (
 									<Badge variant="primary" className="rounded-sm px-1 font-normal">
-										{selectedValues.size} selected
+										{selectedValues.size} đã chọn
 									</Badge>
 								) : (
 									options
@@ -73,7 +73,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 											<Badge
 												variant="primary"
 												key={typeof option === 'string' ? option : String(option.value)}
-												className="rounded-sm px-1 font-normal"
+												className="rounded-sm  text-primary font-medium px-1 "
 											>
 												{typeof option === 'string' ? option : option.label}
 											</Badge>
@@ -84,11 +84,11 @@ export function DataTableFacetedFilter<TData, TValue>({
 					)}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[200px] p-0" align="start">
+			<PopoverContent className="w-[200px] p-0" align="start" >
 				<Command>
 					<CommandInput placeholder={title} />
 					<CommandList>
-						<CommandEmpty>No results found.</CommandEmpty>
+						<CommandEmpty>Không tìm thấy kết quả</CommandEmpty>
 						<CommandGroup>
 							{(options as (string | { value: TValue; label: string })[]).map((option) => {
 								const isSelected =
@@ -136,7 +136,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 										onSelect={() => column?.setFilterValue(undefined)}
 										className="justify-center text-center"
 									>
-										Clear filters
+										Xóa lọc
 									</CommandItem>
 								</CommandGroup>
 							</>

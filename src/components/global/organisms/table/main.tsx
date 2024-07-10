@@ -70,7 +70,7 @@ export function DataTable<TData, TValue>({
 	return (
 		<>
 			<Toolbar table={table} />
-			<DataTablePagination table={table} rowString={rowString} />
+			{/* <DataTablePagination table={table} rowString={rowString} /> */}
 			<Table>
 				<TableHeader>
 					{table.getHeaderGroups().map((headerGroup) => (

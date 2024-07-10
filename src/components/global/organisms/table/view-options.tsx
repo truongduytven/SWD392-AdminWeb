@@ -23,11 +23,11 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
 			<DropdownMenuTrigger asChild>
 				<Button size="sm" className="h-8" variant="outline">
 					<EyeNoneIcon className="mr-2 size-4" />
-					View
+					Hiển thị
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-[150px]">
-				<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+				<DropdownMenuLabel>Chuyển đổi cột</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{table
 					.getAllColumns()
