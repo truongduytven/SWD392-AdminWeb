@@ -47,9 +47,9 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: 'Status',
-    header: ({ column }) => <DataTableColumnHeader column={column} title='Type' />,
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Trạng thái' />,
     cell: ({ row }) => {
-      return <Badge className='bg-green-500'>{row.getValue('Status')}</Badge>
+      return <Badge className='bg-green-500 hover:bg-green-600'>{row.getValue('Status')}</Badge>
     }
   }
   // {

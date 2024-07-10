@@ -1,3 +1,4 @@
+import AddManager from "@/components/global/organisms/AddManagerForm"
 import { Table } from "@tanstack/react-table"
 import { Search } from "lucide-react"
 
@@ -81,6 +82,9 @@ export function DataTableToolbar<TData>({
             </Button>
           )} */}
         </div>
+      </div>
+      <div className="flex items-center">
+        <AddManager />
       </div>
     </div>
   )
