@@ -33,9 +33,7 @@ function Routes() {
     const fetchRoutes = async () => {
       setIsLoadingRoutes(true)
       try {
-        const { data } = await busAPI.get<Route[]>(
-          `route-management/managed-routes/company-routes/${user?.CompanyID}`
-        )
+        const { data } = await busAPI.get<Route[]>(`route-management/managed-routes/company-routes/${user?.CompanyID}`)
         console.log('data', data)
         setRoutes(data || [])
         // Initialize tempStatus with current statuses
@@ -69,9 +67,9 @@ function Routes() {
     setIsLoadingUpdate(true)
     if (selectedRoute) {
       try {
-        const response = await busAPI.put(`route-management/managed-routes/${selectedRoute.Route_CompanyID}/status`, {
-          status: newStatus
-        })
+        const response = await busAPI.put(
+          `status-management?entity=ROUTE_COMPANY&id=${selectedRoute.Route_CompanyID}`
+        )
         setRoutes(
           routes.map((route) =>
             route.Route_CompanyID === selectedRoute.Route_CompanyID ? { ...route, Status: newStatus } : route
@@ -100,6 +98,7 @@ function Routes() {
         }
       } finally {
         setIsLoadingUpdate(false)
+        setIsModalOpen(false)
       }
     }
   }
