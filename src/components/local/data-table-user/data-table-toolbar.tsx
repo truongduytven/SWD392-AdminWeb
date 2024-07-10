@@ -1,5 +1,7 @@
 import { Table } from "@tanstack/react-table"
 import { Search } from "lucide-react"
+import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { Button } from "@/components/global/atoms/ui/button"
 
 // import { IUserGender, IUserRole } from "@/types/user.interface"
 // import { DataTableFacetedFilter } from "@/components/local/data-table/data-table-faceted-filter"
@@ -9,31 +11,31 @@ import { Search } from "lucide-react"
 interface DataTableToolbarProps<TData> {
   table: Table<TData>
 }
-// const roles = [
-//   {
-//     label: "Super Admin",
-//     value: IUserRole.SuperAdmin
-//   },
-//   {
-//     label: "Admin",
-//     value: IUserRole.ClassAdmin
-//   },
-//   { label: "Trainer", value: IUserRole.Trainer }
-// ]
+const roles = [
+  {
+    label: "Super Admin",
+    value: "SUPPER ADMIN"
+  },
+  {
+    label: "Admin",
+    value: "ADMIN"
+  },
+  { label: "Trainer", value: "TRAINER" }
+]
 
-// const genders = [
-//   {
-//     label: "Male",
-//     value: IUserGender.Male
-//   },
-//   { label: "Female", value: IUserGender.Female },
-//   { label: "Other", value: IUserGender.Other }
-// ]
+const genders = [
+  {
+    label: "Male",
+    value: "MALE"
+  },
+  { label: "Female", value: "FEMALE" },
+  { label: "Other", value: "OTHER" }
+]
 
 export function DataTableToolbar<TData>({
   table
 }: DataTableToolbarProps<TData>) {
-  // const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0
 
   return (
     <div className="flex items-center justify-between">
@@ -57,7 +59,7 @@ export function DataTableToolbar<TData>({
             />
           </div>
               
-          {/* {table.getColumn("permissionId") && (
+          {table.getColumn("permissionId") && (
             <DataTableFacetedFilter
               column={table.getColumn("permissionId")}
               title="Role"
@@ -70,8 +72,8 @@ export function DataTableToolbar<TData>({
               title="Gender"
               options={genders}
             />
-          )} */}
-          {/* {isFiltered && (
+          )}
+          {isFiltered && (
             <Button
               variant="ghost"
               onClick={() => table.resetColumnFilters()}
@@ -79,7 +81,7 @@ export function DataTableToolbar<TData>({
             >
               Reset
             </Button>
-          )} */}
+          )}
         </div>
       </div>
     </div>

@@ -1,8 +1,11 @@
 import React from 'react'
-
+import ListUser from '../organisms/UserList/index'
 function DashboardManager() {
   return (
-    <div>DashboardManager</div>
+    <div>DashboardManager
+
+    <ListUser/>
+    </div>
   )
 }
 
