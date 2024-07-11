@@ -10,6 +10,7 @@ import { useAuth } from '@/auth/AuthProvider'
 import busAPI from '@/lib/busAPI'
 import { Loader } from 'lucide-react'
 import ListRoute from '../organisms/RouteList'
+import TableSkeleton from '../organisms/TableSkeleton'
 type Route = {
   Route_CompanyID: string
   FromCity: string
@@ -18,7 +19,13 @@ type Route = {
   EndLocation: string
   Status: string
 }
-
+const headers = [
+  { title: 'Từ thành phố', center: true },
+  { title: 'Đến thành phố' },
+  { title: 'Địa điểm bắt đầu' },
+  { title: 'Địa điểm kết thúc', center: true },
+  { title: 'Trạng thái', center: true },
+];
 function Routes() {
   const { user } = useAuth()
   console.log('user o route', user)
@@ -103,9 +110,7 @@ function Routes() {
   }
   if (isLoadingRoutes) {
     return (
-      <div className='flex justify-center items-center '>
-        <div className='animate-pulse mx-auto'>Đang tải dữ liệu...</div>
-      </div>
+      <TableSkeleton />
     )
   }
 

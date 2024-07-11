@@ -1,47 +1,49 @@
 import { Avatar, AvatarFallback, AvatarImage } from '../atoms/ui/avatar'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../atoms/ui/table'
+import TableSkeleton from '../organisms/TableSkeleton'
+const headers = [
+  { title: 'Từ thành phố', center: true },
+  { title: 'Đến thành phố' },
+  { title: 'Địa điểm bắt đầu' },
+  { title: 'Địa điểm kết thúc', center: true },
+  { title: 'Trạng thái', center: true }
+]
 
 function Trip() {
   return (
     <div>
-    <div className='flex items-center justify-between mb-6'>
-      <div className='text-3xl font-bold'>Danh sách chuyến đi</div>
-    </div>
+      <div className='flex items-center justify-between mb-6'>
+        <div className='text-3xl font-bold'>Danh sách chuyến đi</div>
+      </div>
 
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className='text-center'>From City</TableHead>
-          <TableHead>To City</TableHead>
-          <TableHead>Start Location</TableHead>
-          <TableHead className='text-center'>EndLocation</TableHead>
-          <TableHead className='text-center'>Status</TableHead>
-          <TableHead className='text-end'></TableHead>
-        </TableRow>
-      </TableHeader>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className='text-center'>From City</TableHead>
+            <TableHead>To City</TableHead>
+            <TableHead>Start Location</TableHead>
+            <TableHead className='text-center'>EndLocation</TableHead>
+            <TableHead className='text-center'>Status</TableHead>
+            <TableHead className='text-end'></TableHead>
+          </TableRow>
+        </TableHeader>
 
         <TableBody>
-              <TableRow key={1}>
-                <TableCell className='text-center flex justify-center'>
-                  <Avatar className='cursor-pointer'>
-                  
-                    <AvatarImage src={ 'https://github.com/shadcn.png'} />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell className='font-medium'></TableCell>
-                <TableCell className='font-medium'></TableCell>
-                <TableCell className='text-center flex justify-center'>
-                
-                </TableCell>
-                <TableCell className='text-center'>
-                 
-                </TableCell>
-              </TableRow>
+          <TableRow key={1}>
+            <TableCell className='text-center flex justify-center'>
+              <Avatar className='cursor-pointer'>
+                <AvatarImage src={'https://github.com/shadcn.png'} />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </TableCell>
+            <TableCell className='font-medium'></TableCell>
+            <TableCell className='font-medium'></TableCell>
+            <TableCell className='text-center flex justify-center'></TableCell>
+            <TableCell className='text-center'></TableCell>
+          </TableRow>
         </TableBody>
-    </Table>
-   
-  </div>
+      </Table>
+    </div>
   )
 }
 

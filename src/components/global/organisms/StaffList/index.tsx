@@ -1,17 +1,11 @@
 // import { useDispatch, useSelector } from 'react-redux'
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { columns } from './columns'
 
 import { DataTable } from '../table/main'
 // import { RootState } from '@/store'
 import { DataTableToolbar } from './toolbar'
-import { useAuth } from '@/auth/AuthProvider'
-import busAPI from '@/lib/busAPI'
-import { toast } from '../../atoms/ui/use-toast'
-import axios from 'axios'
-import TableSkeleton from '../TableSkeleton'
-
 const users:any =[
 	{
 		id: '1',
@@ -234,107 +228,7 @@ const users:any =[
 		status: false,
 	  },
 ]
-type Route = {
-	Route_CompanyID: string
-	FromCity: string
-	ToCity: string
-	StartLocation: string
-	EndLocation: string
-	Status: string
-  }
-  
-function ListRoute() {
-	const { user } = useAuth()
-  console.log('user o route', user)
-  const [routes, setRoutes] = useState<Route[]>([])
-  const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
-  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
-  const [newStatus, setNewStatus] = useState<string>('')
-  const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
-
-  useEffect(() => {
-    const fetchRoutes = async () => {
-      setIsLoadingRoutes(true)
-      try {
-        const { data } = await busAPI.get<Route[]>(`route-management/managed-routes/company-routes/${user?.CompanyID}`)
-        console.log('data', data)
-        setRoutes(data || [])
-        // Initialize tempStatus with current statuses
-        const initialStatuses: { [key: string]: string } = {}
-        data.forEach((route) => {
-          initialStatuses[route.Route_CompanyID] = route.Status
-        })
-        setTempStatus(initialStatuses)
-      } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Không thể tải dữ liệu tuyến đường',
-          description: 'Vui lòng thử lại sau'
-        })
-        console.log(error)
-      } finally {
-        setIsLoadingRoutes(false)
-      }
-    }
-
-    fetchRoutes()
-  }, [])
-
-  const handleStatusChange = (route: Route, status: string) => {
-    setSelectedRoute(route)
-    setNewStatus(status)
-    setIsModalOpen(true)
-  }
-
-  const confirmStatusChange = async () => {
-    setIsLoadingUpdate(true)
-    if (selectedRoute) {
-      try {
-        const response = await busAPI.put(
-          `status-management?entity=ROUTE_COMPANY&id=${selectedRoute.Route_CompanyID}`
-        )
-        setRoutes(
-          routes.map((route) =>
-            route.Route_CompanyID === selectedRoute.Route_CompanyID ? { ...route, Status: newStatus } : route
-          )
-        )
-        setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: newStatus })
-        setIsModalOpen(false)
-        toast({
-          variant: 'success',
-          title: 'Cập nhật thành công',
-          description: 'Đã đổi trạng thái tuyến đường này thành ' + newStatus
-        })
-        setIsLoadingUpdate(false)
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-          const message = error.response.data.Result.message
-          setIsModalOpen(false)
-          setIsLoadingUpdate(false)
-          // Revert status change on error
-          setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: selectedRoute.Status })
-          toast({
-            variant: 'destructive',
-            title: 'Không thể cập nhật trạng thái tuyến đường',
-            description: message || 'Vui lòng thử lại sau'
-          })
-        }
-      } finally {
-        setIsLoadingUpdate(false)
-        setIsModalOpen(false)
-      }
-    }
-  }
-  if (isLoadingRoutes) {
-    return (
-		<TableSkeleton/>
-    //   <div className='flex justify-center items-center '>
-    //     <div className='animate-pulse mx-auto'>Đang tải dữ liệu...</div>
-    //   </div>
-    )
-  }
+function ListStaff() {
 	// const dispatch = useDispatch()
 	// useEffect(() => {
 	// 	dispatch({
@@ -344,11 +238,11 @@ function ListRoute() {
 	// const users = useSelector((state: RootState) => state.allUser.users)
 	return (
 		<div className="flex h-full flex-1 flex-col ">
-			<h1 className="my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 ">
-				Danh sách tuyến đường
+			<h1 className="my-4 border-b pb-2 pt-4 text-3xl font-semibold tracking-wider first:mt-0 ">
+				Danh sách nhân viên
 			</h1>
-			<DataTable data={routes} columns={columns} Toolbar={DataTableToolbar} rowString="Tuyến" />
+			<DataTable data={users} columns={columns} Toolbar={DataTableToolbar} rowString="user" />
 		</div>
 	)
 }
-export default ListRoute
+export default ListStaff

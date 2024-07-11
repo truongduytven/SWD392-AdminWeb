@@ -11,6 +11,7 @@ import { Badge } from '../atoms/ui/badge'
 import busAPI from '@/lib/busAPI'
 import { toast } from '../atoms/ui/use-toast'
 import { useSearchParams } from 'react-router-dom'
+import ListStaff from '../organisms/StaffList'
 
 type Props = {}
 type Payment = {
@@ -214,89 +215,8 @@ function Staff() {
     }
   }
   return (
-    <div>
-    <div className='flex items-center justify-between mb-6'>
-      <div className='text-3xl font-bold'>Tài khoản nhân viên</div>
-    </div>
-
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className='text-center'>Ảnh đại diên</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Tên</TableHead>
-          <TableHead className='text-center'>Xác minh</TableHead>
-          <TableHead className='text-center'>Vai trò</TableHead>
-          <TableHead className='text-end'></TableHead>
-        </TableRow>
-      </TableHeader>
-
-      {/* {!isLoadingAccounts && ( */}
-        <TableBody>
-          {/* {accounts.map((account) => { */}
-            {/* return ( */}
-              <TableRow key={1}>
-                <TableCell className='text-center flex justify-center'>
-                  <Avatar className='cursor-pointer'>
-                    {/* <AvatarImage src={account.imageUrl || defaultAvatarUrl || 'https://github.com/shadcn.png'} /> */}
-                    <AvatarImage src={ 'https://github.com/shadcn.png'} />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                </TableCell>
-                <TableCell className='font-medium'>admin@gmail.com</TableCell>
-                <TableCell className='font-medium'>admin</TableCell>
-                <TableCell className='text-center flex justify-center'>
-                  {/* {account.verified ? ( */}
-                    <Check className='text-primary w-8 h-8' />
-                  {/* ) : ( */}
-                    {/* <X className='text-destructive w-8 h-8' /> */}
-                  {/* )} */}
-                </TableCell>
-                <TableCell className='text-center'>
-                  <Select
-                    // disabled={account.role === 'admin'}
-                    // onValueChange={(val: Role) => {
-                    //   changeRole(account._id, val)
-                    // }}
-                    // defaultValue={(() => {
-                    //   return account.role.toString()
-                    // })()}
-                  >
-                    <SelectTrigger className='w-fit mx-auto'>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className='w-fit'>
-                      <SelectItem value='customer'>
-                        <Badge variant='breed'>Khách hàng</Badge>
-                      </SelectItem>
-                      <SelectItem value='staff'>
-                        <Badge variant='success'>Nhân viên</Badge>
-                      </SelectItem>
-                      <SelectItem value='manager'>
-                        <Badge variant='warning'>Quản lý</Badge>
-                      </SelectItem>
-                      <SelectItem value='admin'>
-                        <Badge variant='info'>Quản trị viên</Badge>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </TableCell>
-              </TableRow>
-            {/* ) */}
-          {/* })} */}
-        </TableBody>
-      {/* )} */}
-    </Table>
-    {/* {isLoadingAccounts && <div>Đang tải</div>} */}
-    {/* {!!totalPages && (
-      <Paginate
-        className='mt-8'
-        path={addSearchParams('/admin/accounts', {})}
-        pageSize={pageSize}
-        pageNumber={pageNumber}
-        totalPages={totalPages}
-      />
-    )} */}
+    <div className='h-screen overflow-hidden'>
+    <ListStaff/>
   </div>
   )
 }
