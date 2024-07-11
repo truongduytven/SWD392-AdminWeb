@@ -1,10 +1,11 @@
 import React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../atoms/ui/avatar'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../atoms/ui/table'
+import ListStation from '../organisms/StationList'
 function Stations() {
   return (
     <div>
-    <div className='flex items-center justify-between mb-6'>
+      {/* <div className='flex items-center justify-between mb-6'>
       <div className='text-3xl font-bold'>Danh sách trạm dừng</div>
     </div>
 
@@ -39,9 +40,9 @@ function Stations() {
                 </TableCell>
               </TableRow>
         </TableBody>
-    </Table>
-   
-  </div>
+    </Table> */}
+      <ListStation />
+    </div>
   )
 }
 

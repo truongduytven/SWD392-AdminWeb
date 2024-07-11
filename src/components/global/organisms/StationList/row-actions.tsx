@@ -10,45 +10,59 @@ import { Dialog, DialogContent, DialogOverlay } from '../../atoms/ui/dialog'
 import { Button } from '@/components/global/atoms/ui/button'
 import { Loader } from 'lucide-react'
 
-interface DataTableRowActionsProps<TData extends Route> {
+interface DataTableRowActionsProps<TData extends Station> {
   // Add extends Route
   row: Row<TData>
 }
 
-type Route = {
-  Route_CompanyID: string
-  FromCity: string
-  ToCity: string
-  StartLocation: string
-  EndLocation: string
-  Status: string
-}
-
-export function DataTableRowActions<TData extends Route>({ row }: DataTableRowActionsProps<TData>) {
+// Define the interface for the Service
+interface Service {
+	ServiceID: string;
+	Price: number;
+	Name: string;
+	ImageUrl: string;
+  }
+  
+  // Define the interface for the ServiceType
+  interface ServiceType {
+	ServiceTypeID: string;
+	ServiceTypeName: string;
+	ServiceInStation: Service[];
+  }
+  
+  // Define the interface for the Station
+  interface Station {
+	StationID: string;
+	CityID: string;
+	CityName: string;
+	StationName: string;
+	Status: string;
+	ServiceTypeInStation: ServiceType[];
+  }
+export function DataTableRowActions<TData extends Station>({ row }: DataTableRowActionsProps<TData>) {
   const { user } = useAuth()
   console.log('user o route', user)
-  const [routes, setRoutes] = useState<Route[]>([])
+  // const [routes, setRoutes] = useState<Station[]>([])
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null)
   const [newStatus, setNewStatus] = useState<string>('')
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({
-    [row.original.Route_CompanyID]: row.original.Status
+    [row.original.StationID]: row.original.Status
   })
 
-  const handleStatusChange = (route: Route, status: string) => {
-    setSelectedRoute(route)
+  const handleStatusChange = (station: Station, status: string) => {
+    setSelectedStation(station)
     setNewStatus(status)
     setIsModalOpen(true)
   }
 
   const confirmStatusChange = async () => {
     setIsLoadingUpdate(true)
-    if (selectedRoute) {
-      console.log("id dôi status route", selectedRoute.Route_CompanyID)
+    if (selectedStation) {
       try {
         const response = await busAPI.put(
-          `status-management?entity=ROUTE_COMPANY&id=${selectedRoute.Route_CompanyID}`,
+          `status-management?entity=STATION&id=${selectedStation.StationID}`,
           { status: newStatus }
         )
         // setRoutes(
@@ -60,25 +74,25 @@ export function DataTableRowActions<TData extends Route>({ row }: DataTableRowAc
         // )
         setTempStatus((prevState) => ({
           ...prevState,
-          [selectedRoute.Route_CompanyID]: newStatus
+          [selectedStation.StationID]: newStatus
         }))
         toast({
           variant: 'success',
           title: 'Cập nhật thành công',
-          description: 'Đã đổi trạng thái tuyến đường này thành ' + newStatus
+          description: 'Đã đổi trạng thái trạm này thành ' + newStatus
         })
         setIsLoadingUpdate(false)
       } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
 			toast({
 			  variant: 'destructive',
-			  title: 'Không thể cập nhật trạng thái tuyến đường',
+			  title: 'Không thể cập nhật trạng thái trạm',
 			  description: 'Vui lòng thử lại sau'
 			})
           const message = error.response.data.Result.message || null
           setTempStatus((prevState) => ({
             ...prevState,
-            [selectedRoute.Route_CompanyID]: selectedRoute.Status
+            [selectedStation.StationID]: selectedStation.Status
           }))
         }
       } finally {
@@ -92,7 +106,7 @@ export function DataTableRowActions<TData extends Route>({ row }: DataTableRowAc
     <div>
       <Select
         onValueChange={(status) => handleStatusChange(row.original, status)}
-        value={tempStatus[row.original.Route_CompanyID] || row.original.Status}
+        value={tempStatus[row.original.StationID] || row.original.Status}
       >
         <SelectTrigger className='w-fit'>
           <SelectValue />
@@ -111,7 +125,7 @@ export function DataTableRowActions<TData extends Route>({ row }: DataTableRowAc
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className='bg-/60' />
           <DialogContent className=''>
-            <p>Bạn có chắc chắn muốn thay đổi trạng thái của tuyến đường này?</p>
+            <p>Bạn có chắc chắn muốn thay đổi trạng thái của trạm dừng này?</p>
             <div className='flex justify-end mt-4'>
               <Button variant='outline' onClick={() => setIsModalOpen(false)}>
                 Hủy
