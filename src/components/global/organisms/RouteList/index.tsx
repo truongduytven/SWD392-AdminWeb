@@ -329,24 +329,13 @@ function ListRoute() {
     }
   }
   if (isLoadingRoutes) {
-    return (
-      <TableSkeleton />
-      //   <div className='flex justify-center items-center '>
-      //     <div className='animate-pulse mx-auto'>Đang tải dữ liệu...</div>
-      //   </div>
-    )
+    return <TableSkeleton />
   }
-  // const dispatch = useDispatch()
-  // useEffect(() => {
-  // 	dispatch({
-  // 		type: 'users/fetchUsers',
-  // 	})
-  // }, [dispatch])
-  // const users = useSelector((state: RootState) => state.allUser.users)
+
   return (
     <div className='flex h-full flex-1 flex-col '>
       <h1 className='my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 '>Danh sách tuyến đường</h1>
-      <DataTable data={routes} columns={columns(handleStatusChange)}  Toolbar={DataTableToolbar} rowString='Tuyến' />
+      <DataTable data={routes} columns={columns(handleStatusChange)} Toolbar={DataTableToolbar} rowString='Tuyến' />
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay />

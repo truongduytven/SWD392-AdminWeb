@@ -13,6 +13,8 @@ import { Loader } from 'lucide-react'
 interface DataTableRowActionsProps<TData extends Station> {
   // Add extends Route
   row: Row<TData>
+  handleStatusChange: (station: Station, status: string) => void;
+
 }
 
 // Define the interface for the Service
@@ -39,7 +41,7 @@ interface Service {
 	Status: string;
 	ServiceTypeInStation: ServiceType[];
   }
-export function DataTableRowActions<TData extends Station>({ row }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends Station>({ row,handleStatusChange }: DataTableRowActionsProps<TData>) {
   const { user } = useAuth()
   console.log('user o route', user)
   // const [routes, setRoutes] = useState<Station[]>([])
@@ -51,62 +53,62 @@ export function DataTableRowActions<TData extends Station>({ row }: DataTableRow
     [row.original.StationID]: row.original.Status
   })
 
-  const handleStatusChange = (station: Station, status: string) => {
-    setSelectedStation(station)
-    setNewStatus(status)
-    setIsModalOpen(true)
-  }
+  // const handleStatusChange = (station: Station, status: string) => {
+  //   setSelectedStation(station)
+  //   setNewStatus(status)
+  //   setIsModalOpen(true)
+  // }
 
-  const confirmStatusChange = async () => {
-    setIsLoadingUpdate(true)
-    if (selectedStation) {
-      try {
-        const response = await busAPI.put(
-          `status-management?entity=STATION&id=${selectedStation.StationID}`,
-          { status: newStatus }
-        )
-        // setRoutes(
-        //   routes.map((route) =>
-        //     route.Route_CompanyID === selectedRoute.Route_CompanyID
-        //       ? { ...route, Status: newStatus }
-        //       : route
-        //   )
-        // )
-        setTempStatus((prevState) => ({
-          ...prevState,
-          [selectedStation.StationID]: newStatus
-        }))
-        toast({
-          variant: 'success',
-          title: 'Cập nhật thành công',
-          description: 'Đã đổi trạng thái trạm này thành ' + newStatus
-        })
-        setIsLoadingUpdate(false)
-      } catch (error) {
-        if (axios.isAxiosError(error) && error.response) {
-			toast({
-			  variant: 'destructive',
-			  title: 'Không thể cập nhật trạng thái trạm',
-			  description: 'Vui lòng thử lại sau'
-			})
-          const message = error.response.data.Result.message || null
-          setTempStatus((prevState) => ({
-            ...prevState,
-            [selectedStation.StationID]: selectedStation.Status
-          }))
-        }
-      } finally {
-        setIsLoadingUpdate(false)
-        setIsModalOpen(false)
-      }
-    }
-  }
+  // const confirmStatusChange = async () => {
+  //   setIsLoadingUpdate(true)
+  //   if (selectedStation) {
+  //     try {
+  //       const response = await busAPI.put(
+  //         `status-management?entity=STATION&id=${selectedStation.StationID}`,
+  //         { status: newStatus }
+  //       )
+  //       // setRoutes(
+  //       //   routes.map((route) =>
+  //       //     route.Route_CompanyID === selectedRoute.Route_CompanyID
+  //       //       ? { ...route, Status: newStatus }
+  //       //       : route
+  //       //   )
+  //       // )
+  //       setTempStatus((prevState) => ({
+  //         ...prevState,
+  //         [selectedStation.StationID]: newStatus
+  //       }))
+  //       toast({
+  //         variant: 'success',
+  //         title: 'Cập nhật thành công',
+  //         description: 'Đã đổi trạng thái trạm này thành ' + newStatus
+  //       })
+  //       setIsLoadingUpdate(false)
+  //     } catch (error) {
+  //       if (axios.isAxiosError(error) && error.response) {
+	// 		toast({
+	// 		  variant: 'destructive',
+	// 		  title: 'Không thể cập nhật trạng thái trạm',
+	// 		  description: 'Vui lòng thử lại sau'
+	// 		})
+  //         const message = error.response.data.Result.message || null
+  //         setTempStatus((prevState) => ({
+  //           ...prevState,
+  //           [selectedStation.StationID]: selectedStation.Status
+  //         }))
+  //       }
+  //     } finally {
+  //       setIsLoadingUpdate(false)
+  //       setIsModalOpen(false)
+  //     }
+  //   }
+  // }
 
   return (
     <div>
       <Select
-        onValueChange={(status) => handleStatusChange(row.original, status)}
-        value={tempStatus[row.original.StationID] || row.original.Status}
+        value={row.original.Status}
+        onValueChange={(value) => handleStatusChange(row.original, value)}
       >
         <SelectTrigger className='w-fit'>
           <SelectValue />
@@ -121,22 +123,7 @@ export function DataTableRowActions<TData extends Station>({ row }: DataTableRow
         </SelectContent>
       </Select>
 
-      {isModalOpen && (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogOverlay className='bg-/60' />
-          <DialogContent className=''>
-            <p>Bạn có chắc chắn muốn thay đổi trạng thái của trạm dừng này?</p>
-            <div className='flex justify-end mt-4'>
-              <Button variant='outline' onClick={() => setIsModalOpen(false)}>
-                Hủy
-              </Button>
-              <Button onClick={confirmStatusChange} className='ml-2'>
-                {isLoadingUpdate && <Loader className='animate-spin w-4 h-4' />} Xác nhận
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
-      )}
+     
     </div>
   )
 }

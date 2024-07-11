@@ -11,6 +11,9 @@ import busAPI from '@/lib/busAPI'
 import { toast } from '../../atoms/ui/use-toast'
 import axios from 'axios'
 import TableSkeleton from '../TableSkeleton'
+import { Dialog, DialogContent, DialogOverlay } from '../../atoms/ui/dialog'
+import { Button } from '../../atoms/ui/button'
+import { Loader } from 'lucide-react'
 
 
 // Define the interface for the Service
@@ -76,72 +79,83 @@ function ListStation() {
     fetchStations()
   }, [])
 
-//   const handleStatusChange = (route: Route, status: string) => {
-//     setSelectedStation(route)
-//     setNewStatus(status)
-//     setIsModalOpen(true)
-//   }
+  const handleStatusChange = (station: Station, status: string) => {
+    setSelectedStation(station)
+    setNewStatus(status)
+    setIsModalOpen(true)
+  }
 
-//   const confirmStatusChange = async () => {
-//     setIsLoadingUpdate(true)
-//     if (selectedStation) {
-//       try {
-//         const response = await busAPI.put(
-//           `status-management?entity=ROUTE_COMPANY&id=${selectedStation.Route_CompanyID}`
-//         )
-//         setStations(
-//           stations.map((station) =>
-//             station.Route_CompanyID === se.Route_CompanyID ? { ...route, Status: newStatus } : route
-//           )
-//         )
-//         setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: newStatus })
-//         setIsModalOpen(false)
-//         toast({
-//           variant: 'success',
-//           title: 'Cập nhật thành công',
-//           description: 'Đã đổi trạng thái tuyến đường này thành ' + newStatus
-//         })
-//         setIsLoadingUpdate(false)
-//       } catch (error) {
-//         if (axios.isAxiosError(error) && error.response) {
-//           const message = error.response.data.Result.message
-//           setIsModalOpen(false)
-//           setIsLoadingUpdate(false)
-//           // Revert status change on error
-//           setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: selectedRoute.Status })
-//           toast({
-//             variant: 'destructive',
-//             title: 'Không thể cập nhật trạng thái tuyến đường',
-//             description: message || 'Vui lòng thử lại sau'
-//           })
-//         }
-//       } finally {
-//         setIsLoadingUpdate(false)
-//         setIsModalOpen(false)
-//       }
-//     }
-//   }
+  const confirmStatusChange = async () => {
+    setIsLoadingUpdate(true)
+    if (selectedStation) {
+      try {
+        const response = await busAPI.put(
+          `status-management?entity=STATION&id=${selectedStation.StationID}`
+        )
+        setStations(
+          stations.map((station) =>
+            station.StationID === selectedStation.StationID ? { ...station, Status: newStatus } : station
+          )
+        )
+        setTempStatus({ ...tempStatus, [selectedStation.StationID]: newStatus })
+        setIsModalOpen(false)
+        toast({
+          variant: 'success',
+          title: 'Cập nhật thành công',
+          description: 'Đã đổi trạng thái tuyến đường này thành ' + newStatus
+        })
+        setIsLoadingUpdate(false)
+      } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+          const message = error.response.data.Result.message
+          setIsModalOpen(false)
+          setIsLoadingUpdate(false)
+          // Revert status change on error
+          setTempStatus({ ...tempStatus, [selectedStation.StationID]: selectedStation.Status })
+          toast({
+            variant: 'destructive',
+            title: 'Không thể cập nhật trạng thái tuyến đường',
+            description: message || 'Vui lòng thử lại sau'
+          })
+        }
+      } finally {
+        setIsLoadingUpdate(false)
+        setIsModalOpen(false)
+      }
+    }
+  }
   if (isLoadingStations) {
     return (
 		<TableSkeleton/>
-    //   <div className='flex justify-center items-center '>
-    //     <div className='animate-pulse mx-auto'>Đang tải dữ liệu...</div>
-    //   </div>
+  
     )
   }
-	// const dispatch = useDispatch()
-	// useEffect(() => {
-	// 	dispatch({
-	// 		type: 'users/fetchUsers',
-	// 	})
-	// }, [dispatch])
-	// const users = useSelector((state: RootState) => state.allUser.users)
+
 	return (
 		<div className="flex h-full flex-1 flex-col ">
 			<h1 className="my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 ">
-				Danh sách tuyến đường
+				Danh sách trạm dừng
 			</h1>
-			<DataTable data={stations} columns={columns} Toolbar={DataTableToolbar} rowString="Trạm" />
+			<DataTable data={stations} columns={columns(handleStatusChange)} Toolbar={DataTableToolbar} rowString="Trạm" />
+      {isModalOpen && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogOverlay />
+          <DialogContent>
+            <h3 className='text-lg font-medium leading-6 text-gray-900'>Xác nhận thay đổi trạng thái</h3>
+            <div className='mt-2'>
+              <p>Bạn có chắc chắn muốn thay đổi trạng thái của trạm dừng này?</p>
+            </div>
+            <div className='mt-4 flex justify-end space-x-2'>
+              <Button variant='secondary' onClick={() => setIsModalOpen(false)}>
+                Hủy
+              </Button>
+              <Button onClick={confirmStatusChange} disabled={isLoadingUpdate}>
+                {isLoadingUpdate ? <Loader className='animate-spin' /> : 'Xác nhận'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
 		</div>
 	)
 }

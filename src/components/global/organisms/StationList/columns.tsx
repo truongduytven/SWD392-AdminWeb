@@ -7,7 +7,32 @@ import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
 
-export const columns: ColumnDef<Task>[] = [
+// Define the interface for the Service
+interface Service {
+	ServiceID: string;
+	Price: number;
+	Name: string;
+	ImageUrl: string;
+  }
+  
+  // Define the interface for the ServiceType
+  interface ServiceType {
+	ServiceTypeID: string;
+	ServiceTypeName: string;
+	ServiceInStation: Service[];
+  }
+  
+  // Define the interface for the Station
+  interface Station {
+	StationID: string;
+	CityID: string;
+	CityName: string;
+	StationName: string;
+	Status: string;
+	ServiceTypeInStation: ServiceType[];
+  }
+export const columns = (handleStatusChange: (route: Station, status: string) => void): ColumnDef<Station>[] => [
+
   {
     accessorKey: 'StationID',
     header: ({ column }) => null,
@@ -56,7 +81,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'Status',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Trạng thái' />,
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => <DataTableRowActions row={row} handleStatusChange={handleStatusChange}/>,
     filterFn: (row, id, value) => value.includes(row.getValue(id))
   }
 ]
