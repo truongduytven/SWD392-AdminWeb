@@ -6,8 +6,16 @@ import { DataTableColumnHeader } from '../table/col-header'
 import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
+type Route = {
+  Route_CompanyID: string
+  FromCity: string
+  ToCity: string
+  StartLocation: string
+  EndLocation: string
+  Status: string
+}
 
-export const columns: ColumnDef<Task>[] = [
+export const columns = (handleStatusChange: (route: Route, status: string) => void): ColumnDef<Route>[] => [
   {
     accessorKey: 'Route_CompanyID',
     header: ({ column }) => null,
@@ -47,7 +55,7 @@ export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: 'Status',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Trạng thái' />,
-    cell: ({ row }) => <DataTableRowActions row={row} />,
+    cell: ({ row }) => <DataTableRowActions row={row} handleStatusChange={handleStatusChange}/>,
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
   }
 ]
