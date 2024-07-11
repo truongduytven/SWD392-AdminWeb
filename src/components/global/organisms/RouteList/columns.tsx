@@ -21,7 +21,7 @@ export const columns: ColumnDef<Task>[] = [
         <span className='max-w-[500px] truncate font-medium'>{row.getValue('FromCity')}</span>
       </div>
     ),
-    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    // filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableHiding: false
   },
   {
