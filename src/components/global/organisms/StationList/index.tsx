@@ -139,7 +139,7 @@ function ListStation() {
 			<DataTable data={stations} columns={columns(handleStatusChange)} Toolbar={DataTableToolbar} rowString="Trạm" />
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogOverlay />
+          <DialogOverlay className='bg-/60' />
           <DialogContent>
             <h3 className='text-lg font-medium leading-6 text-gray-900'>Xác nhận thay đổi trạng thái</h3>
             <div className='mt-2'>

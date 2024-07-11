@@ -1,6 +1,8 @@
+import { useRef, useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '../atoms/ui/avatar'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../atoms/ui/table'
 import TableSkeleton from '../organisms/TableSkeleton'
+import { Button, Divider, Input, InputRef, Select, SelectProps, Space } from 'antd'
 const headers = [
   { title: 'Từ thành phố', center: true },
   { title: 'Đến thành phố' },
@@ -8,8 +10,38 @@ const headers = [
   { title: 'Địa điểm kết thúc', center: true },
   { title: 'Trạng thái', center: true }
 ]
-
+let index = 0
 function Trip() {
+  const options: SelectProps['options'] = []
+
+  for (let i = 10; i < 36; i++) {
+    options.push({
+      label: i.toString(36) + i,
+      value: i.toString(36) + i
+    })
+  }
+
+  const [items, setItems] = useState(['jack', 'lucy'])
+  const [name, setName] = useState('')
+  const inputRef = useRef<InputRef>(null)
+
+  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value)
+  }
+
+  const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+    e.preventDefault()
+    setItems([...items, name || `New item ${items.length + 1}`])
+    setName('')
+    setTimeout(() => {
+      inputRef.current?.focus()
+    }, 0)
+  }
+
+  const handleChange = (value: string[]) => {
+    console.log(`selected ${value}`)
+  }
+
   return (
     <div>
       <div className='flex items-center justify-between mb-6'>
@@ -43,6 +75,56 @@ function Trip() {
           </TableRow>
         </TableBody>
       </Table>
+      <div>
+        <Space style={{ width: '100%' }} direction='vertical'>
+          <Select
+            mode='multiple'
+            allowClear
+            style={{ width: '100%' }}
+            placeholder='Please select'
+            onChange={handleChange}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: '8px 0' }} />
+                <Space style={{ padding: '0 8px 4px' }}>
+                  <Input
+                    placeholder='Please enter item'
+                    ref={inputRef}
+                    value={name}
+                    onChange={onNameChange}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                  <Button type='text' onClick={addItem}>
+                    Add item
+                  </Button>
+                </Space>
+              </>
+            )}
+            options={items.map((item) => ({ label: item, value: item }))}
+          />
+          {/* <Select
+        mode="multiple"
+        allowClear
+        style={{ width: '100%' }}
+        placeholder="Please select"
+        disabled
+        defaultValue={['jack', 'lucy']}
+        options={items.map((item) => ({ label: item, value: item }))}
+      /> */}
+        </Space>
+        <Space style={{ width: '100%' }} direction='vertical'>
+          <Select
+            mode='multiple'
+            allowClear
+            style={{ width: '100%' }}
+            placeholder='Please select'
+            defaultValue={['a10', 'c12']}
+            onChange={handleChange}
+            options={options}
+          />
+        </Space>
+      </div>
     </div>
   )
 }

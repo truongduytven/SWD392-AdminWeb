@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import ListStation from '../organisms/StationList'
 function Stations() {
   return (
-    <div>
+    <div className='h-screen overflow-hidden'>
       {/* <div className='flex items-center justify-between mb-6'>
       <div className='text-3xl font-bold'>Danh sách trạm dừng</div>
     </div>
