@@ -2,7 +2,7 @@ import { ColumnDef } from '@tanstack/react-table'
 
 import { Tooltip } from 'antd'
 import { DataTableColumnHeader } from '../table/col-header'
-import { statuses } from './data/data'
+// import { statuses } from './data/data'
 import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
@@ -21,28 +21,33 @@ export const columns: ColumnDef<Task>[] = [
         <span className='max-w-[500px] truncate font-medium'>{row.getValue('FromCity')}</span>
       </div>
     ),
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
     enableHiding: false
   },
   {
     accessorKey: 'ToCity',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Đến thành phố' />,
-    cell: ({ row }) => <div>{row.getValue('ToCity')}</div>
+    cell: ({ row }) => <div>{row.getValue('ToCity')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
   {
     accessorKey: 'StartLocation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Địa điểm bắt đầu' />,
-    cell: ({ row }) => <div>{row.getValue('StartLocation')}</div>
+    cell: ({ row }) => <div>{row.getValue('StartLocation')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
 
   {
     accessorKey: 'EndLocation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Địa điểm kết thúc' />,
-    cell: ({ row }) => <div>{row.getValue('EndLocation')}</div>
+    cell: ({ row }) => <div>{row.getValue('EndLocation')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
 
   {
     accessorKey: 'Status',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Trạng thái' />,
-    cell: ({ row }) => <DataTableRowActions row={row} />
+    cell: ({ row }) => <DataTableRowActions row={row} />,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
   }
 ]

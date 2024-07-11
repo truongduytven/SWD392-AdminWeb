@@ -68,9 +68,7 @@ function Routes() {
     setIsLoadingUpdate(true)
     if (selectedRoute) {
       try {
-        const response = await busAPI.put(
-          `status-management?entity=ROUTE_COMPANY&id=${selectedRoute.Route_CompanyID}`
-        )
+        const response = await busAPI.put(`status-management?entity=ROUTE_COMPANY&id=${selectedRoute.Route_CompanyID}`)
         setRoutes(
           routes.map((route) =>
             route.Route_CompanyID === selectedRoute.Route_CompanyID ? { ...route, Status: newStatus } : route
@@ -112,7 +110,9 @@ function Routes() {
   }
 
   return (
-    <ListRoute/>
+    <div className='h-screen'>
+      <ListRoute />
+    </div>
     // <div>
     //   <div className='flex items-center justify-between mb-6'>
     //     <div className='text-3xl font-bold'>Danh sách tuyến đường</div>
