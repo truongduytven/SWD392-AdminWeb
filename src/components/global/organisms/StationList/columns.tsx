@@ -6,33 +6,39 @@ import { DataTableColumnHeader } from '../table/col-header'
 import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
+import { Badge } from '../../atoms/ui/badge'
+import { Edit2, Eye, Plus } from 'lucide-react'
+import { Button } from '../../atoms/ui/button'
+import { Link } from 'react-router-dom'
 
 // Define the interface for the Service
 interface Service {
-	ServiceID: string;
-	Price: number;
-	Name: string;
-	ImageUrl: string;
-  }
-  
-  // Define the interface for the ServiceType
-  interface ServiceType {
-	ServiceTypeID: string;
-	ServiceTypeName: string;
-	ServiceInStation: Service[];
-  }
-  
-  // Define the interface for the Station
-  interface Station {
-	StationID: string;
-	CityID: string;
-	CityName: string;
-	StationName: string;
-	Status: string;
-	ServiceTypeInStation: ServiceType[];
-  }
-export const columns = (handleStatusChange: (route: Station, status: string) => void): ColumnDef<Station>[] => [
+  ServiceID: string
+  Price: number
+  Name: string
+  ImageUrl: string
+}
 
+// Define the interface for the ServiceType
+interface ServiceType {
+  ServiceTypeID: string
+  ServiceTypeName: string
+  ServiceInStation: Service[]
+}
+
+// Define the interface for the Station
+interface Station {
+  StationID: string
+  CityID: string
+  CityName: string
+  StationName: string
+  Status: string
+  ServiceTypeInStation: ServiceType[]
+}
+export const columns = (
+  handleStatusChange: (route: Station, status: string) => void,
+  handleEditName: (station: Station, newName: string) => void
+): ColumnDef<Station>[] => [
   {
     accessorKey: 'StationID',
     header: ({ column }) => null,
@@ -44,6 +50,9 @@ export const columns = (handleStatusChange: (route: Station, status: string) => 
     cell: ({ row }) => (
       <div className='flex space-x-2'>
         <span className='max-w-[500px] truncate font-medium'>{row.getValue('StationName')}</span>
+        <Tooltip title='Edit'>
+          <Edit2 className='cursor-pointer w-4 text-primary' onClick={() => handleEditName(row.original, row.getValue('StationName'))} />
+        </Tooltip>
       </div>
     ),
     // filterFn: (row, id, value) => value.includes(row.getValue(id)),
@@ -65,23 +74,29 @@ export const columns = (handleStatusChange: (route: Station, status: string) => 
     accessorKey: 'ServiceTypeInStation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Dịch vụ' />,
     cell: ({ row }) => {
-      const services = row.original.ServiceTypeInStation;
+      const services = row.original.ServiceTypeInStation
       return (
         <div>
           {services.length === 0 ? (
-            <span>Không có dịch vụ</span>
+             <Link to="/" className='text-primary flex gap-2 items-center'>
+             <Plus className="w-4 h-4 mr-2" />
+             Thêm dịch vụ
+           </Link>
           ) : (
-            <span>Có dịch vụ</span>
+            <Link to="/" className='text-primary flex gap-2 items-center'>
+              <Eye className="w-4 h-4 mr-2" />
+              Xem dịch vụ
+            </Link>
           )}
         </div>
-      );
-    },
-    filterFn: (row, id, value) => value.includes(row.getValue(id))
+      )
+    }
+    // filterFn: (row, id, value) => value.includes(row.getValue(id))
   },
   {
     accessorKey: 'Status',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Trạng thái' />,
-    cell: ({ row }) => <DataTableRowActions row={row} handleStatusChange={handleStatusChange}/>,
+    cell: ({ row }) => <DataTableRowActions row={row} handleStatusChange={handleStatusChange} />,
     filterFn: (row, id, value) => value.includes(row.getValue(id))
   }
 ]

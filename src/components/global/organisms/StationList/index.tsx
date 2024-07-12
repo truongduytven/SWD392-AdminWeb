@@ -50,7 +50,8 @@ function ListStation() {
   const [selectedStation, setSelectedStation] = useState<Station | null>(null)
   const [newStatus, setNewStatus] = useState<string>('')
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
-
+  const [isEditing, setIsEditing] = useState<Station | null>(null)
+  const [newName, setNewName] = useState<string>('')
   useEffect(() => {
     const fetchStations = async () => {
       setIsLoadingStations(true)
@@ -130,13 +131,51 @@ function ListStation() {
   
     )
   }
+  const handleEditName = (station: Station, currentName: string) => {
+    setIsEditing(station)
+    setNewName(currentName)
+}
 
+const confirmEditName = async () => {
+    setIsLoadingUpdate(true)
+    if (isEditing) {
+      console.log("fjfhfsjkgh", isEditing)
+        try {
+          
+            await busAPI.put(`station-management/managed-stations/${isEditing.StationID}`, {
+                stationName: newName
+            })
+            setStations(
+                stations.map((station) =>
+                    station.StationID === isEditing.StationID ? { ...station, StationName: newName } : station
+                )
+            )
+            toast({
+                variant: 'success',
+                title: 'Cập nhật thành công',
+                description: 'Đã cập nhật tên trạm dừng'
+            })
+            setIsEditing(null)
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                const message = error.response.data.Result.message
+                toast({
+                    variant: 'destructive',
+                    title: 'Không thể cập nhật tên trạm dừng',
+                    description: message || 'Vui lòng thử lại sau'
+                })
+            }
+        } finally {
+            setIsLoadingUpdate(false)
+        }
+    }
+}
 	return (
 		<div className="flex h-full flex-1 flex-col ">
 			<h1 className="my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 ">
 				Danh sách trạm dừng
 			</h1>
-			<DataTable data={stations} columns={columns(handleStatusChange)} Toolbar={DataTableToolbar} rowString="Trạm" />
+			<DataTable data={stations} columns={columns(handleStatusChange, handleEditName)} Toolbar={DataTableToolbar} rowString="Trạm" />
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className='bg-/60' />
@@ -156,6 +195,30 @@ function ListStation() {
           </DialogContent>
         </Dialog>
       )}
+        {isEditing && (
+                <Dialog open={isEditing !== null} onOpenChange={() => setIsEditing(null)}>
+                    <DialogOverlay className='bg-/60' />
+                    <DialogContent>
+                        <h3 className='text-lg font-medium leading-6 text-gray-900'>Cập nhật tên trạm dừng</h3>
+                        <div className='mt-2'>
+                            <input
+                                type='text'
+                                value={newName}
+                                onChange={(e) => setNewName(e.target.value)}
+                                className='w-full rounded border p-2'
+                            />
+                        </div>
+                        <div className='mt-4 flex justify-end space-x-2'>
+                            <Button variant='secondary' onClick={() => setIsEditing(null)}>
+                                Hủy
+                            </Button>
+                            <Button onClick={confirmEditName} disabled={isLoadingUpdate}>
+                                {isLoadingUpdate ? <Loader className='animate-spin' /> : 'Cập nhật'}
+                            </Button>
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
 		</div>
 	)
 }

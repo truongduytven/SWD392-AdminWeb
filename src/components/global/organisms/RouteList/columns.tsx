@@ -26,7 +26,7 @@ export const columns = (handleStatusChange: (route: Route, status: string) => vo
     header: ({ column }) => <DataTableColumnHeader column={column} title='Từ thành phố' />,
     cell: ({ row }) => (
       <div className='flex space-x-2'>
-        <span className='max-w-[500px] truncate font-medium'>{row.getValue('FromCity')}</span>
+        <span className='max-w-[500px] truncate '>{row.getValue('FromCity')}</span>
       </div>
     ),
     // filterFn: (row, id, value) => value.includes(row.getValue(id)),
@@ -41,14 +41,14 @@ export const columns = (handleStatusChange: (route: Route, status: string) => vo
   {
     accessorKey: 'StartLocation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Địa điểm bắt đầu' />,
-    cell: ({ row }) => <div>{row.getValue('StartLocation')}</div>,
+    cell: ({ row }) => <div className='font-medium'>{row.getValue('StartLocation')}</div>,
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
 
   {
     accessorKey: 'EndLocation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Địa điểm kết thúc' />,
-    cell: ({ row }) => <div>{row.getValue('EndLocation')}</div>,
+    cell: ({ row }) => <div className='font-medium'>{row.getValue('EndLocation')}</div>,
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
 
