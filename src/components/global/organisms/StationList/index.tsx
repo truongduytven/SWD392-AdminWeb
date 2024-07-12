@@ -183,7 +183,10 @@ function ListStation() {
   const handleAddStation = () => {
     setIsAdding(true)
   }
-
+  const handleModalAddClose = () => {
+    setIsAdding(false);
+    formAddStation.reset(); // Reset form when closing
+  };
   const confirmAddStation = async (values: z.infer<typeof AddStationSchema>) => {
     setIsLoadingUpdate(true)
     try {
@@ -192,8 +195,9 @@ function ListStation() {
         cityID: values.CityID,
         companyID: user?.CompanyID
       })
-      console.log("fjhhfjhkjg", data)
-      setStations([...stations, data])
+      const newStation = {...data,ServiceTypeInStation:[]}
+      console.log("fjhhfjhkjg", newStation)
+      setStations([...stations, newStation])
       toast({
         variant: 'success',
         title: 'Thêm trạm dừng thành công',
@@ -291,7 +295,7 @@ function ListStation() {
         </Dialog>
       )}
       {isAdding && (
-        <Dialog open={isAdding} onOpenChange={() => setIsAdding(false)}>
+        <Dialog open={isAdding} onOpenChange={handleModalAddClose}>
           <DialogOverlay className='bg-/60' />
           <DialogContent>
             <Form {...formAddStation}>
@@ -363,7 +367,7 @@ function ListStation() {
                   )}
                 />
                 <div className='flex gap-2 justify-end'>
-                  <Button variant='outline' className='w-fit' onClick={() => setIsAdding(false)}>
+                  <Button variant='outline' className='w-fit' onClick={handleModalAddClose}>
                     Hủy
                   </Button>
                   <Button type='submit' disabled={isLoadingUpdate} className='w-fit'>

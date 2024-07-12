@@ -49,10 +49,10 @@ export const columns = (
     header: ({ column }) => <DataTableColumnHeader column={column} title='Tên trạm dừng' />,
     cell: ({ row }) => (
       <div className='flex space-x-2'>
-        <span className='max-w-[500px] truncate font-medium'>{row.getValue('StationName')}</span>
-        <Tooltip title='Edit'>
+        <Tooltip title='Chỉnh sửa' className='mr-1'>
           <Edit2 className='cursor-pointer w-4 text-primary' onClick={() => handleEditName(row.original, row.getValue('StationName'))} />
         </Tooltip>
+        <span className='max-w-[500px] truncate font-medium'>{row.getValue('StationName')}</span>
       </div>
     ),
     // filterFn: (row, id, value) => value.includes(row.getValue(id)),

@@ -23,7 +23,7 @@ export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
   )
 
   return (
-    <div className='mb-2 flex justify-between'>
+    <div className='ml-2 mb-2 flex justify-between'>
       <div className='flex space-x-2 '>
         <Input
           placeholder='Tìm tên trạm... '
