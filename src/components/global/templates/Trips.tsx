@@ -3,6 +3,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '../atoms/ui/avatar'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../atoms/ui/table'
 import TableSkeleton from '../organisms/TableSkeleton'
 import { Button, Divider, Input, InputRef, Select, SelectProps, Space } from 'antd'
+import { Dialog, DialogContent, DialogOverlay } from '../atoms/ui/dialog'
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from '../atoms/ui/form'
+import { Plus } from 'lucide-react'
+import { Button as But } from '../atoms/ui/button'
 const headers = [
   { title: 'Từ thành phố', center: true },
   { title: 'Đến thành phố' },
@@ -124,6 +128,8 @@ function Trip() {
             options={options}
           />
         </Space>
+      <But className='flex justify-center items-center bg-white border-primary border-[1px] text-primary hover:bg-primary hover:text-white'><Plus className='w-6 mr-1'/>Thêm trạm dừng</But>
+        
       </div>
     </div>
   )
