@@ -2,9 +2,8 @@
 
 import PageTitle from '@/components/global/organisms/PageTitle'
 // import Image from "next/image";
-import Card, { CardContent, CardProps } from '@/components/global/organisms/Card'
-import SalesCard, { SalesProps } from '@/components/global/organisms/SalesCard'
-import { Activity, DollarSign, Users, Bus, Ticket, Route, HandCoins } from 'lucide-react'
+import Card, { CardContent } from '@/components/global/organisms/Card'
+import { Bus, Ticket, Route, HandCoins } from 'lucide-react'
 import { fetchDashboardManager } from '@/apis/dashboardAPI'
 import { useAuth } from '@/auth/AuthProvider'
 import Loading from '../molecules/Loading'
@@ -12,66 +11,9 @@ import { formatPrice } from '@/lib/utils'
 import BarChartManager from '../organisms/BarChartManager'
 import PopularTripCard from '../organisms/PopularTripCard'
 
-const cardData: CardProps[] = [
-  {
-    label: 'Tổng doanh thu trong tháng',
-    amount: '45,231,000 vnđ',
-    discription: '+20.1% from last month',
-    icon: DollarSign
-  },
-  {
-    label: 'Tổng số vé được đặt trong tháng',
-    amount: '53',
-    discription: '+201 since last hour',
-    icon: Activity
-  },
-  {
-    label: 'Tổng số người dùng',
-    amount: '235',
-    discription: '+180.1% from last month',
-    icon: Users
-  },
-  {
-    label: 'Tổng số nhà xe',
-    amount: '12',
-    discription: '+19% from last month',
-    icon: Bus
-  },
-]
-
-const uesrSalesData: SalesProps[] = [
-  {
-    name: 'Olivia Martin',
-    email: 'olivia.martin@email.com',
-    saleAmount: '+$1,999.00'
-  },
-  {
-    name: 'Jackson Lee',
-    email: 'isabella.nguyen@email.com',
-    saleAmount: '+$1,999.00'
-  },
-  {
-    name: 'Isabella Nguyen',
-    email: 'isabella.nguyen@email.com',
-    saleAmount: '+$39.00'
-  },
-  {
-    name: 'William Kim',
-    email: 'will@email.com',
-    saleAmount: '+$299.00'
-  },
-  {
-    name: 'Sofia Davis',
-    email: 'sofia.davis@email.com',
-    saleAmount: '+$39.00'
-  }
-]
-
 export default function DashboardManager() {
   const { user } = useAuth()
   const { data, isLoading } = fetchDashboardManager(user?.CompanyID || '')
-
-
 
   if (isLoading) return <Loading />
   return (

@@ -6,7 +6,7 @@ export const fetchDashboardManager = (CompanyID: string) => {
     return useQuery<DashboardManagerProps>({
         queryKey: ['dashboardManager', CompanyID],
         queryFn: async () => {
-            const { data } = await busAPI.get<DashboardManagerProps>(`/dashboard-management/managed-dashboard/company/${CompanyID}`);
+            const { data } = await busAPI.get<DashboardManagerProps>(`/dashboard-management/managed-dashboards/company/${CompanyID}`);
             return data;
         }
     })

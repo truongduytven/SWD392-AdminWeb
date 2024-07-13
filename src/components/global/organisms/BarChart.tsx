@@ -6,6 +6,7 @@ import {
     Bar,
     BarChart as BarGraph,
     ResponsiveContainer,
+    Tooltip,
     XAxis,
     YAxis
 } from "recharts";
@@ -83,6 +84,10 @@ export default function BarChart({ data }: BarChartProps) {
           stroke="#888888"
           fontSize={12}
           tickFormatter={(value) => formatPrice(value)}
+        />
+        <Tooltip
+          formatter={(value: number) => formatPrice(value)}
+          labelFormatter={(label: string) => `Month: ${label}`}
         />
         <Bar dataKey={"TotalRevenueMonthInYear"} radius={[4, 4, 0, 0]} />
       </BarGraph>
