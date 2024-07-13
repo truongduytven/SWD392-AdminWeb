@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Input, Form, ConfigProvider, Upload, Button } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { ArrowRightLeft, Pen } from 'lucide-react';
 
 interface Service {
   ServiceID: string;
@@ -84,12 +85,12 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
               >
                 <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
               </Upload>
-              <div style={{ marginTop: 10 }}>
+              <div style={{ marginTop: 10, display: 'flex', gap: '40px'  }} >
                 {/* Display existing service image */}
                 {service?.ImageUrl && (
                   <div>
-                    <span>Existing Image:</span>
-                    <img
+                    <span>Ảnh hiện tại:</span>
+                    <img className='rounded-lg'
                       src={service.ImageUrl}
                       alt="Existing"
                       style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 10, marginRight: 10 }}
@@ -98,13 +99,20 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
                 )}
                 {/* Display new uploaded image if exists */}
                 {fileList.length > 0 && (
-                  <div>
-                    <span>New Image:</span>
+                  <div className='flex justify-center items-center gap-[40px]'>
+                    <div>
+                    <ArrowRightLeft/>
+                        </div>
+                    <div>
+
+                    <span>Ảnh mới:</span>
                     <img
-                      src={URL.createObjectURL(fileList[0].originFileObj)} // Create a URL for the uploaded image
-                      alt="New"
-                      style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 10 }}
+                    className='rounded-lg'
+                    src={URL.createObjectURL(fileList[0].originFileObj)} // Create a URL for the uploaded image
+                    alt="New"
+                    style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 10 }}
                     />
+                    </div>
                   </div>
                 )}
               </div>
