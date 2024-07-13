@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Modal, Button, List, ConfigProvider, Tooltip, Space, Select, InputRef, Divider, Input, message } from 'antd'
+import { Modal, Button, List, ConfigProvider, Tooltip, Space, Select, InputRef, Divider, Input, message, Form, Upload } from 'antd'
 import { Edit2, Plus } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { EditServiceModal } from './EditServiceModal'
@@ -133,10 +133,10 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     const [items, setItems] = useState<{ label: string; value: string }[]>([]);
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
-    const [selectedValues, setSelectedValues] = useState<string[]>([]); // State for selected values
+    const [selectedValues, setSelectedValues] = useState<string[]>([]);
+    const [showForm, setShowForm] = useState(false);
     const inputRef = useRef<InputRef>(null);
-  
+    
     const fetchItems = async () => {
       try {
         const response = await busAPI.get('service-management/managed-services');
@@ -149,7 +149,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
         setItems(flattenedItems);
         setLoading(false);
       } catch (err: any) {
-        setError(err);
+        message.error('Failed to fetch services');
         setLoading(false);
       }
     };
@@ -180,13 +180,27 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     };
   
     const handleChange = (value: string[]) => {
-      setSelectedValues(value); // Update selected values
+      setSelectedValues(value);
+    };
+  
+    const handleContinue = () => {
+      if (selectedValues.length > 0) {
+        setShowForm(true);
+      } else {
+        message.warning('Please select at least one service.');
+      }
+    };
+  
+    const handleFormFinish = async (values: any) => {
+      console.log("Submitted values:", values);
+      // Handle the submission logic here (e.g., sending the data to the API)
+      onOk(); // Close the modal after handling the submission
     };
   
     const handleClose = () => {
-      setName(''); // Clear the input field
-      setSelectedValues([]); // Reset selected values
-      fetchItems(); // Reset items to initial state
+      setName('');
+      setSelectedValues([]);
+      setShowForm(false);
       onOk(); // Call the onOk function
     };
   
@@ -204,35 +218,75 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
         }}
       >
         <Modal title='Thêm dịch vụ' visible={visible} onOk={handleClose} onCancel={handleClose}>
-          <Space style={{ width: '100%' }} direction="vertical">
-            <Select
-              mode="multiple"
-              allowClear
-              style={{ width: '100%' }}
-              placeholder="Please select"
-              onChange={handleChange}
-              value={selectedValues} // Bind selected values
-              dropdownRender={(menu) => (
-                <>
-                  {menu}
-                  <Divider style={{ margin: '8px 0' }} />
-                  <Space style={{ padding: '0 8px 4px' }}>
-                    <Input
-                      placeholder="Please enter item"
-                      ref={inputRef}
-                      value={name}
-                      onChange={onNameChange}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    />
-                    <Button type="text" onClick={addItem}>
-                      Add item
-                    </Button>
-                  </Space>
-                </>
-              )}
-              options={items}
-            />
-          </Space>
+          {!showForm ? (
+            <Space style={{ width: '100%' }} direction="vertical">
+              <Select
+                mode="multiple"
+                allowClear
+                style={{ width: '100%' }}
+                placeholder="Please select"
+                onChange={handleChange}
+                value={selectedValues}
+                dropdownRender={(menu) => (
+                  <>
+                    {menu}
+                    <Divider style={{ margin: '8px 0' }} />
+                    <Space style={{ padding: '0 8px 4px' }}>
+                      <Input
+                        placeholder="Please enter item"
+                        ref={inputRef}
+                        value={name}
+                        onChange={onNameChange}
+                        onKeyDown={(e) => e.stopPropagation()}
+                      />
+                      <Button type="text" onClick={addItem}>
+                        Add item
+                      </Button>
+                    </Space>
+                  </>
+                )}
+                options={items}
+              />
+              <Button type="primary" onClick={handleContinue}>
+                Continue
+              </Button>
+            </Space>
+          ) : (
+            <Form onFinish={handleFormFinish} className='h-[460px] overflow-y-auto'>
+            <Space direction="vertical" style={{ width: '100%' }}>
+              {selectedValues.map(serviceID => {
+                const selectedService = items.find(item => item.value === serviceID);
+                return (
+                  <div key={serviceID}>
+                    <h4>{selectedService?.label || serviceID}</h4>
+                   
+                    <Form.Item name={[serviceID, 'price']} label="Price" rules={[{ required: true, message: 'Please enter a price' }]}>
+                      <Input placeholder="Enter price" />
+                    </Form.Item>
+                    <Form.Item name={[serviceID, 'image']} label="Upload Image">
+                      <Upload
+                        beforeUpload={() => false} // Prevent automatic upload
+                        showUploadList={false} // Hide default upload list
+                        onChange={({ file }) => {
+                          if (file.status === 'done') {
+                            // Handle successful upload
+                          }
+                        }}
+                      >
+                        <Button>Click to upload</Button>
+                      </Upload>
+                    </Form.Item>
+                  </div>
+                );
+              })}
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Submit
+                </Button>
+              </Form.Item>
+            </Space>
+          </Form>
+          )}
         </Modal>
       </ConfigProvider>
     );
