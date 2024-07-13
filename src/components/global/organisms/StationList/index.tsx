@@ -184,9 +184,9 @@ function ListStation() {
     setIsAdding(true)
   }
   const handleModalAddClose = () => {
-    setIsAdding(false);
-    formAddStation.reset(); // Reset form when closing
-  };
+    setIsAdding(false)
+    formAddStation.reset() // Reset form when closing
+  }
   const confirmAddStation = async (values: z.infer<typeof AddStationSchema>) => {
     setIsLoadingUpdate(true)
     try {
@@ -195,8 +195,8 @@ function ListStation() {
         cityID: values.CityID,
         companyID: user?.CompanyID
       })
-      const newStation = {...data,ServiceTypeInStation:[]}
-      console.log("fjhhfjhkjg", newStation)
+      const newStation = { ...data, ServiceTypeInStation: [] }
+      console.log('fjhhfjhkjg', newStation)
       setStations([...stations, newStation])
       toast({
         variant: 'success',
@@ -305,30 +305,6 @@ function ListStation() {
                 className='w-full flex gap-5 flex-col h-full text-center mr-20'
               >
                 <h3 className='text-lg font-medium leading-6 text-gray-900'>Thêm trạm dừng mới</h3>
-                {/* <FormField
-                  control={formAddStation.control}
-                  name='CityID'
-                  render={({ field }) => (
-                    <FormItem className='w-full flex flex-col justify-center items-start'>
-                      <FormLabel>Chọn thành phố</FormLabel>
-                      <FormControl>
-                        <Select {...field}>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Chọn thành phố' />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {cities.map((city) => (
-                              <SelectItem key={city.CityID} value={city.CityID}>
-                                {city.Name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <FormField
                   control={formAddStation.control}
                   name='CityID'

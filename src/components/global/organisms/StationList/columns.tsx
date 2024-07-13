@@ -78,12 +78,12 @@ export const columns = (
       return (
         <div>
           {services.length === 0 ? (
-             <Link to="/" className='text-primary flex gap-2 items-center'>
+             <Link to="/station/service/:id" className='text-primary flex gap-2 items-center'>
              <Plus className="w-4 h-4 mr-2" />
              Thêm dịch vụ
            </Link>
           ) : (
-            <Link to="/" className='text-primary flex gap-2 items-center'>
+            <Link to="/station/service/:id" className='text-primary flex gap-2 items-center'>
               <Eye className="w-4 h-4 mr-2" />
               Xem dịch vụ
             </Link>
