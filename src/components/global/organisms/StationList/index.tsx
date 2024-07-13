@@ -18,6 +18,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { AddStationSchema } from '@/components/Schema/AddStationSchema'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../atoms/ui/select'
+import { ServiceModal, AddServiceModal } from '../ServiceModals'; 
 
 // Define the interface for the Service
 interface Service {
@@ -60,6 +61,27 @@ function ListStation() {
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
   const [isEditing, setIsEditing] = useState<Station | null>(null)
   const [isAdding, setIsAdding] = useState(false)
+  const [isServiceModalVisible, setServiceModalVisible] = useState(false);
+  const [isAddServiceModalVisible, setAddServiceModalVisible] = useState(false);
+  // const [selectedStation, setSelectedStation] = useState<Station | null>(null);
+
+  const handleShowServiceModal = (station: Station) => {
+    setSelectedStation(station);
+    setServiceModalVisible(true);
+  };
+
+  const handleShowAddServiceModal = () => {
+    setAddServiceModalVisible(true);
+  };
+
+  const handleServiceModalOk = () => {
+    setServiceModalVisible(false);
+  };
+
+  const handleAddServiceModalOk = () => {
+    // Handle the logic for adding a service
+    setAddServiceModalVisible(false);
+  };
   const formStation = useForm<z.infer<typeof StationNameSchema>>({
     resolver: zodResolver(StationNameSchema),
     defaultValues: {
@@ -236,7 +258,7 @@ function ListStation() {
       </div>
       <DataTable
         data={stations}
-        columns={columns(handleStatusChange, handleEditName)}
+        columns={columns(handleStatusChange, handleEditName, handleShowServiceModal)}
         Toolbar={DataTableToolbar}
         rowString='Trạm'
       />
@@ -356,6 +378,16 @@ function ListStation() {
           </DialogContent>
         </Dialog>
       )}
+       <ServiceModal
+        visible={isServiceModalVisible}
+        onOk={handleServiceModalOk}
+        station={selectedStation}
+        onAddService={handleShowAddServiceModal}
+      />
+      <AddServiceModal
+        visible={isAddServiceModalVisible}
+        onOk={handleAddServiceModalOk}
+      />
     </div>
   )
 }

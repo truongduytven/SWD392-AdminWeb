@@ -10,7 +10,6 @@ import { Badge } from '../../atoms/ui/badge'
 import { Edit2, Eye, Plus } from 'lucide-react'
 import { Button } from '../../atoms/ui/button'
 import { Link } from 'react-router-dom'
-
 // Define the interface for the Service
 interface Service {
   ServiceID: string
@@ -37,7 +36,8 @@ interface Station {
 }
 export const columns = (
   handleStatusChange: (route: Station, status: string) => void,
-  handleEditName: (station: Station, newName: string) => void
+  handleEditName: (station: Station, newName: string) => void,
+  handleShowServiceModal: (station: Station) => void 
 ): ColumnDef<Station>[] => [
   {
     accessorKey: 'StationID',
@@ -77,17 +77,22 @@ export const columns = (
       const services = row.original.ServiceTypeInStation
       return (
         <div>
+          <div
+          className='text-primary flex gap-2 items-center cursor-pointer'
+          onClick={() => handleShowServiceModal(row.original)} // Use the handler here
+        >
           {services.length === 0 ? (
-             <Link to="/station/service/:id" className='text-primary flex gap-2 items-center'>
-             <Plus className="w-4 h-4 mr-2" />
-             Thêm dịch vụ
-           </Link>
+            <>
+              <Plus className="w-4 h-4 mr-2" />
+              Thêm dịch vụ
+            </>
           ) : (
-            <Link to="/station/service/:id" className='text-primary flex gap-2 items-center'>
+            <>
               <Eye className="w-4 h-4 mr-2" />
               Xem dịch vụ
-            </Link>
+            </>
           )}
+        </div>
         </div>
       )
     }
