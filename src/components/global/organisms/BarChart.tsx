@@ -1,9 +1,12 @@
 /** @format */
 "use client";
+import { formatPrice } from "@/lib/utils";
+import { RevenueAllMonthInYears } from "@/types";
 import {
     Bar,
     BarChart as BarGraph,
     ResponsiveContainer,
+    Tooltip,
     XAxis,
     YAxis
 } from "recharts";
@@ -60,12 +63,16 @@ const data = [
   }
 ];
 
-export default function BarChart() {
+interface BarChartProps {
+  data: RevenueAllMonthInYears[] | undefined
+}
+
+export default function BarChart({ data }: BarChartProps) {
   return (
     <ResponsiveContainer width={"100%"} height={350}>
       <BarGraph data={data}>
         <XAxis
-          dataKey={"name"}
+          dataKey={"Month"}
           tickLine={false}
           axisLine={false}
           stroke="#888888"
@@ -76,9 +83,13 @@ export default function BarChart() {
           axisLine={false}
           stroke="#888888"
           fontSize={12}
-          tickFormatter={(value) => `$${value}`}
+          tickFormatter={(value) => formatPrice(value)}
         />
-        <Bar dataKey={"total"} radius={[4, 4, 0, 0]} />
+        <Tooltip
+          formatter={(value: number) => formatPrice(value)}
+          labelFormatter={(label: string) => `Month: ${label}`}
+        />
+        <Bar dataKey={"TotalRevenueMonthInYear"} radius={[4, 4, 0, 0]} />
       </BarGraph>
     </ResponsiveContainer>
   );

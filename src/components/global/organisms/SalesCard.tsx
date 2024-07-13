@@ -5,35 +5,48 @@
  * @format
  */
 
+import { formatPrice } from "@/lib/utils"
+import { RevenueOfCompanyInMonths } from "@/types"
+
 /** @format */
 
 
 export type SalesProps = {
-  name: string
-  email: string
-  saleAmount: string
+  data: RevenueOfCompanyInMonths
+  index: number
 }
 
-export default function SalesCard(props: SalesProps) {
+export default function SalesCard({ data, index }: SalesProps) {
+  var color = ''
+  var text = ''
+  switch(index) {
+    case 0:  color = '#FFD700'
+            text = '#FFFFFF'
+            break;
+    case 1:  color = '#C0C0C0'
+            text = '#FFFFFF'
+            break;  
+    case 2: color = '#cd7f32'
+            text = '#FFFFFF'
+            break;
+    default: color = '#FFFFFF'
+            text = '#000000'
+  }
+
   return (
     <div className='  flex flex-wrap justify-between gap-3 '>
       <section className='flex justify-between gap-3 '>
-        <div className=' h-12 w-12 rounded-full bg-gray-100 p-1'>
-          <img
-            width={200}
-            height={200}
-            src={`https://api.dicebear.com/7.x/lorelei/svg?seed=${props.name}`}
-            alt='avatar'
-          />
+        <div className='flex justify-center items-center h-12 w-12 rounded-full p-1' style={{backgroundColor: color}}>
+          <div className="font-bold text-xl" style={{ color: text }}>{index + 1}</div>
         </div>
         <div className='text-sm'>
-          <p>{props.name}</p>
+          <p>{data.CompanyName}</p>
           <div className='text-ellipsis overflow-hidden whitespace-nowrap w-[120px]  sm:w-auto  text-gray-400'>
-            {props.email}
+            Tháng {data.Month} năm {data.Year}
           </div>
         </div>
       </section>
-      <p>{props.saleAmount}</p>
+      <p>{formatPrice(data.TotalRevenueOfCompanyInMonth)}</p>
     </div>
   )
 }
