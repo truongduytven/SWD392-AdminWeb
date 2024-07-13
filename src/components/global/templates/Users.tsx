@@ -8,6 +8,7 @@ import busAPI from '@/lib/busAPI'
 import { User } from '@/types/User'
 import { useEffect, useState, useRef } from 'react'
 import { toast } from 'sonner'
+import Loading from '../molecules/Loading'
 
 type Props = {}
 
@@ -56,18 +57,17 @@ type Props = {}
 
 const defaultValue: User[] = [
   {
-    UserName: "",
-    FullName: "",
-    Email: "",
-    CreatedDate: "",
-    RoleName: "",
-    Status: "",    
-  },
+    UserName: '',
+    FullName: '',
+    Email: '',
+    CreatedDate: '',
+    Status: ''
+  }
 ]
 
 export default function UsersPage({}: Props) {
-  const [Data, setData] = useState<User[]>(defaultValue);
-  const toastShown = useRef(false);
+  const [Data, setData] = useState<User[]>(defaultValue)
+  const toastShown = useRef(false)
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -85,7 +85,9 @@ export default function UsersPage({}: Props) {
     fetchUsers()
   }, [])
 
-  return (
+  return Data[0].CreatedDate === '' ? (
+    <Loading />
+  ) : (
     <div className='flex flex-col gap-5  w-full'>
       <PageTitle title='Danh sách người dùng' />
       <DataTable columns={columns} data={Data} />
