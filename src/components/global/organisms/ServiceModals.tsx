@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Modal, Button, List, ConfigProvider, Tooltip, Space, Select, InputRef, Divider, Input } from 'antd'
+import { Modal, Button, List, ConfigProvider, Tooltip, Space, Select, InputRef, Divider, Input, message } from 'antd'
 import { Edit2, Plus } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { EditServiceModal } from './EditServiceModal'
@@ -65,6 +65,8 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
         }
         hideEditModal(); // Close the modal
       };
+
+      
     return (
       <ConfigProvider
         theme={{
@@ -132,46 +134,61 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     const [name, setName] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
+    const [selectedValues, setSelectedValues] = useState<string[]>([]); // State for selected values
     const inputRef = useRef<InputRef>(null);
+  
+    const fetchItems = async () => {
+      try {
+        const response = await busAPI.get('service-management/managed-services');
+        const flattenedItems = response.data.flatMap((serviceType: any) =>
+          serviceType.Services.map((service: any) => ({
+            label: service.ServiceName,
+            value: service.ServiceID
+          }))
+        );
+        setItems(flattenedItems);
+        setLoading(false);
+      } catch (err: any) {
+        setError(err);
+        setLoading(false);
+      }
+    };
+  
     useEffect(() => {
-        const fetchItems = async () => {
-          try {
-            const response = await busAPI.get('service-management/managed-services'); // Replace with your actual endpoint
-            const flattenedItems = response.data.flatMap((serviceType: any) => 
-              serviceType.Services.map((service: any) => ({
-                label: service.ServiceName,
-                value: service.ServiceID
-              }))
-            );
-            setItems(flattenedItems);
-            setLoading(false);
-          } catch (err:any) {
-            setError(err);
-            setLoading(false);
-          }
-        };
-    
-        fetchItems();
-      }, []);
-      const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setName(event.target.value);
-      };
-    
-      const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-        e.preventDefault();
-        if (name) {
-          const newItem = { label: name, value: name }; // Assuming value should be the name for new items
-          setItems([...items, newItem]);
-          setName('');
-          setTimeout(() => {
-            inputRef.current?.focus();
-          }, 0);
+      fetchItems();
+    }, []);
+  
+    const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setName(event.target.value);
+    };
+  
+    const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+      e.preventDefault();
+      if (name) {
+        const exists = items.some((item) => item.label === name || item.value === name);
+        if (exists) {
+          message.warning(`${name} đã tồn tại trong list!`);
+          return;
         }
-      };
-    
-      const handleChange = (value: string[]) => {
-        console.log(`selected ${value}`);
-      };
+        const newItem = { label: name, value: name };
+        setItems([...items, newItem]);
+        setName('');
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
+      }
+    };
+  
+    const handleChange = (value: string[]) => {
+      setSelectedValues(value); // Update selected values
+    };
+  
+    const handleClose = () => {
+      setName(''); // Clear the input field
+      setSelectedValues([]); // Reset selected values
+      fetchItems(); // Reset items to initial state
+      onOk(); // Call the onOk function
+    };
   
     return (
       <ConfigProvider
@@ -186,35 +203,36 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
           },
         }}
       >
-        <Modal title='Thêm dịch vụ' visible={visible} onOk={onOk} onCancel={onOk}>
-        <Space style={{ width: '100%' }} direction="vertical">
-          <Select
-            mode="multiple"
-            allowClear
-            style={{ width: '100%' }}
-            placeholder="Please select"
-            onChange={handleChange}
-            dropdownRender={(menu) => (
-              <>
-                {menu}
-                <Divider style={{ margin: '8px 0' }} />
-                <Space style={{ padding: '0 8px 4px' }}>
-                  <Input
-                    placeholder="Please enter item"
-                    ref={inputRef}
-                    value={name}
-                    onChange={onNameChange}
-                    onKeyDown={(e) => e.stopPropagation()}
-                  />
-                  <Button type="text" onClick={addItem}>
-                    Add item
-                  </Button>
-                </Space>
-              </>
-            )}
-            options={items}
-          />
-        </Space>
+        <Modal title='Thêm dịch vụ' visible={visible} onOk={handleClose} onCancel={handleClose}>
+          <Space style={{ width: '100%' }} direction="vertical">
+            <Select
+              mode="multiple"
+              allowClear
+              style={{ width: '100%' }}
+              placeholder="Please select"
+              onChange={handleChange}
+              value={selectedValues} // Bind selected values
+              dropdownRender={(menu) => (
+                <>
+                  {menu}
+                  <Divider style={{ margin: '8px 0' }} />
+                  <Space style={{ padding: '0 8px 4px' }}>
+                    <Input
+                      placeholder="Please enter item"
+                      ref={inputRef}
+                      value={name}
+                      onChange={onNameChange}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                    <Button type="text" onClick={addItem}>
+                      Add item
+                    </Button>
+                  </Space>
+                </>
+              )}
+              options={items}
+            />
+          </Space>
         </Modal>
       </ConfigProvider>
     );
