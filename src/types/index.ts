@@ -22,3 +22,26 @@ export type PopularRoutes = {
   EndLocation: string
   TotalBooking: number
 }
+
+export type DashboardAdminProps = {
+  TotalRevenueInMonth: number
+  TotalTicketBookedInMonth: number
+  ToTalUsers: number
+  TotalCompanies: number
+  RevenueAllMonthInYears: RevenueAllMonthInYears[]
+  RevenueOfCompanyInMonths: RevenueOfCompanyInMonths[]
+}
+
+export type RevenueAllMonthInYears = {
+  Month: number
+  Year: number
+  TotalRevenueMonthInYear: number
+}
+
+export type RevenueOfCompanyInMonths = {
+  CompanyID: string
+  CompanyName: string
+  Month: number
+  Year: number
+  TotalRevenueOfCompanyInMonth: number
+}
