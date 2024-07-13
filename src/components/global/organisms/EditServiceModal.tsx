@@ -42,15 +42,23 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
           const formData = new FormData()
           formData.append('Price', values.Price)
           if (fileList.length > 0) {
-            formData.append('Image', fileList[0].originFileObj) // Append new image file
+            formData.append('ImageUrl', fileList[0].originFileObj) // Append new image file
           }
 
           // API request to update the service
           const response = await busAPI.put(`station-service-management/managed-station-services/${service?.Service_StationID}`, formData)
           console.log('thanh cong', response)
+          const updateService: Service = {
+            Service_StationID: service?.Service_StationID || "",
+            Name: service?.Name || "",
+            ServiceID: service?.ServiceID || "",
+            Price: values.Price, // Use values.Price
+            ImageUrl: fileList.length > 0 ? URL.createObjectURL(fileList[0].originFileObj) : service?.ImageUrl || "",
+          };
+          console.log("update service ne", updateService);
           // if (response.status === 200) {
           //   message.success('Service updated successfully!');
-          onUpdate(response.data) // Update parent state with the new service data
+          onUpdate(updateService) // Update parent state with the new service data
           onOk() // Close the modal
           // }
         } catch (error) {
