@@ -204,6 +204,7 @@ function ListStation() {
         description: 'Trạm dừng mới đã được thêm thành công'
       })
       setIsAdding(false)
+      formAddStation.reset()
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         const message = error.response.data.Result.message
