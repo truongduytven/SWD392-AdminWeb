@@ -1,82 +1,98 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, Input, Form, ConfigProvider, Upload, Button } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
-import { ArrowRightLeft, Pen } from 'lucide-react';
+import React, { useEffect, useState } from 'react'
+import { Modal, Input, Form, ConfigProvider, Upload, Button } from 'antd'
+import { UploadOutlined } from '@ant-design/icons'
+import { ArrowRightLeft, Pen } from 'lucide-react'
+import busAPI from '@/lib/busAPI'
 
 interface Service {
-  ServiceID: string;
-  Price: number;
-  Name: string;
-  ImageUrl: string; // Existing image URL
+  Service_StationID: string
+  ServiceID: string
+  Price: number
+  Name: string
+  ImageUrl: string // Existing image URL
 }
 
 interface EditServiceModalProps {
-  visible: boolean;
-  onOk: () => void;
-  service: Service | null;
+  visible: boolean
+  onOk: () => void
+  service: Service | null
+  onUpdate: (updatedService: Service) => void
 }
 
-export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onOk, service }) => {
-  const [form] = Form.useForm();
-  const [fileList, setFileList] = useState<any[]>([]); // For the new image
+export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onOk, service, onUpdate }) => {
+  const [form] = Form.useForm()
+  const [fileList, setFileList] = useState<any[]>([]) // For the new image
 
   useEffect(() => {
     if (service) {
       form.setFieldsValue({
         Price: service.Price,
-        ImageUrl: service.ImageUrl,
-      });
-      setFileList([]); // Reset file list when the service changes
+        ImageUrl: service.ImageUrl
+      })
+      setFileList([]) // Reset file list when the service changes
     }
-  }, [service, form]);
+  }, [service, form])
 
   const handleOk = () => {
-    form.validateFields().then(values => {
-      console.log("Updated Price:", values.Price);
-      console.log("Uploaded File:", fileList[0]?.originFileObj); // Access the binary file
-      onOk(); // Close the modal
-    }).catch(info => {
-      console.log('Validation Failed:', info);
-    });
-  };
+    form
+      .validateFields()
+      .then(async (values) => {
+        try {
+          // Prepare data for the API request
+          const formData = new FormData()
+          formData.append('Price', values.Price)
+          if (fileList.length > 0) {
+            formData.append('Image', fileList[0].originFileObj) // Append new image file
+          }
+
+          // API request to update the service
+          const response = await busAPI.put(`station-service-management/managed-station-services/${service?.Service_StationID}`, formData)
+          console.log('thanh cong', response)
+          // if (response.status === 200) {
+          //   message.success('Service updated successfully!');
+          onUpdate(response.data) // Update parent state with the new service data
+          onOk() // Close the modal
+          // }
+        } catch (error) {
+          // message.error('Failed to update service. Please try again.');
+          console.error(error)
+        }
+      })
+      .catch((info) => {
+        console.log('Validation Failed:', info)
+      })
+  }
 
   const handleImageChange = (newFileList: any) => {
     if (newFileList && newFileList.length > 0) {
-      setFileList([newFileList[0]]);
+      setFileList([newFileList[0]])
     } else {
-      setFileList([]); // Clear if no file is selected
+      setFileList([]) // Clear if no file is selected
     }
-  };
+  }
 
   return (
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: '#F97316',
+          colorPrimary: '#F97316'
         },
         components: {
           Button: {
-            colorTextLightSolid: '#fff',
-          },
-        },
+            colorTextLightSolid: '#fff'
+          }
+        }
       }}
     >
       <Modal title='Chỉnh sửa dịch vụ' visible={visible} onOk={handleOk} onCancel={onOk}>
-        <Form form={form} layout="vertical">
-          <Form.Item label="Tên dịch vụ:">
+        <Form form={form} layout='vertical'>
+          <Form.Item label='Tên dịch vụ:'>
             <Input value={service?.Name} readOnly />
           </Form.Item>
-          <Form.Item
-            label="Giá:"
-            name="Price"
-            rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}
-          >
+          <Form.Item label='Giá:' name='Price' rules={[{ required: true, message: 'Vui lòng nhập giá!' }]}>
             <Input type='number' placeholder='Giá' />
           </Form.Item>
-          <Form.Item
-            label="Hình ảnh:"
-            rules={[{ required: true, message: 'Vui lòng chọn hình ảnh!' }]}
-          >
+          <Form.Item label='Hình ảnh:' rules={[{ required: true, message: 'Vui lòng chọn hình ảnh!' }]}>
             <div>
               <Upload
                 beforeUpload={() => false} // Prevent automatic upload
@@ -85,14 +101,15 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
               >
                 <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
               </Upload>
-              <div style={{ marginTop: 10, display: 'flex', gap: '40px'  }} >
+              <div style={{ marginTop: 10, display: 'flex', gap: '40px' }}>
                 {/* Display existing service image */}
                 {service?.ImageUrl && (
                   <div>
                     <span>Ảnh hiện tại:</span>
-                    <img className='rounded-lg'
+                    <img
+                      className='rounded-lg'
                       src={service.ImageUrl}
-                      alt="Existing"
+                      alt='Existing'
                       style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 10, marginRight: 10 }}
                     />
                   </div>
@@ -101,17 +118,16 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
                 {fileList.length > 0 && (
                   <div className='flex justify-center items-center gap-[40px]'>
                     <div>
-                    <ArrowRightLeft/>
-                        </div>
+                      <ArrowRightLeft />
+                    </div>
                     <div>
-
-                    <span>Ảnh mới:</span>
-                    <img
-                    className='rounded-lg'
-                    src={URL.createObjectURL(fileList[0].originFileObj)} // Create a URL for the uploaded image
-                    alt="New"
-                    style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 10 }}
-                    />
+                      <span>Ảnh mới:</span>
+                      <img
+                        className='rounded-lg'
+                        src={URL.createObjectURL(fileList[0].originFileObj)} // Create a URL for the uploaded image
+                        alt='New'
+                        style={{ width: 100, height: 100, objectFit: 'cover', marginTop: 10 }}
+                      />
                     </div>
                   </div>
                 )}
@@ -121,5 +137,5 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
         </Form>
       </Modal>
     </ConfigProvider>
-  );
-};
+  )
+}

@@ -1,9 +1,11 @@
-import React, { useState } from 'react'
-import { Modal, Button, List, ConfigProvider, Tooltip } from 'antd'
+import React, { useEffect, useRef, useState } from 'react'
+import { Modal, Button, List, ConfigProvider, Tooltip, Space, Select, InputRef, Divider, Input } from 'antd'
 import { Edit2, Plus } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { EditServiceModal } from './EditServiceModal'
+import busAPI from '@/lib/busAPI'
 interface Service {
+    Service_StationID:string
   ServiceID: string
   Price: number
   Name: string
@@ -37,7 +39,7 @@ interface ServiceModalProps {
 export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, station, onAddService }) => {
     const [isEditModalVisible, setEditModalVisible] = useState(false);
     const [currentService, setCurrentService] = useState<Service | null>(null);
-  
+    const [updatedServiceStation, setUpdatedServiceStation] = useState<Station | null>(station); // Local state for updated station data
     const showEditModal = (service: Service) => {
       setCurrentService(service);
       setEditModalVisible(true);
@@ -47,7 +49,22 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
       setEditModalVisible(false);
       setCurrentService(null); // Clear current service on close
     };
-  
+    const handleServiceUpdate = (updatedService: Service) => {
+        if (updatedServiceStation) {
+          const updatedServiceTypes = updatedServiceStation.ServiceTypeInStation.map(serviceType => ({
+            ...serviceType,
+            ServiceInStation: serviceType.ServiceInStation.map(service =>
+              service.ServiceID === updatedService.ServiceID ? updatedService : service
+            ),
+          }));
+    
+          setUpdatedServiceStation({
+            ...updatedServiceStation,
+            ServiceTypeInStation: updatedServiceTypes,
+          });
+        }
+        hideEditModal(); // Close the modal
+      };
     return (
       <ConfigProvider
         theme={{
@@ -100,7 +117,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
             )}
           </div>
         </Modal>
-        <EditServiceModal visible={isEditModalVisible} onOk={hideEditModal} service={currentService} />
+        <EditServiceModal visible={isEditModalVisible} onOk={hideEditModal} service={currentService}  onUpdate={handleServiceUpdate} />
       </ConfigProvider>
     );
   };
@@ -110,22 +127,95 @@ interface AddServiceModalProps {
   onOk: () => void
 }
 
-export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk }) => (
-  <ConfigProvider
-    theme={{
-      token: {
-        colorPrimary: '#F97316'
-      },
-      components: {
-        Button: {
-          colorTextLightSolid: '#fff'
+export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk }) => {
+    const [items, setItems] = useState<{ label: string; value: string }[]>([]);
+    const [name, setName] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    const inputRef = useRef<InputRef>(null);
+    useEffect(() => {
+        const fetchItems = async () => {
+          try {
+            const response = await busAPI.get('service-management/managed-services'); // Replace with your actual endpoint
+            const flattenedItems = response.data.flatMap((serviceType: any) => 
+              serviceType.Services.map((service: any) => ({
+                label: service.ServiceName,
+                value: service.ServiceID
+              }))
+            );
+            setItems(flattenedItems);
+            setLoading(false);
+          } catch (err:any) {
+            setError(err);
+            setLoading(false);
+          }
+        };
+    
+        fetchItems();
+      }, []);
+      const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setName(event.target.value);
+      };
+    
+      const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (name) {
+          const newItem = { label: name, value: name }; // Assuming value should be the name for new items
+          setItems([...items, newItem]);
+          setName('');
+          setTimeout(() => {
+            inputRef.current?.focus();
+          }, 0);
         }
-      }
-    }}
-  >
-    <Modal title='Thêm dịch vụ' visible={visible} onOk={onOk} onCancel={onOk}>
-      {/* Your form for adding a service goes here */}
-      <p>Form for adding a new service goes here.</p>
-    </Modal>
-  </ConfigProvider>
-)
+      };
+    
+      const handleChange = (value: string[]) => {
+        console.log(`selected ${value}`);
+      };
+  
+    return (
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#F97316',
+          },
+          components: {
+            Button: {
+              colorTextLightSolid: '#fff',
+            },
+          },
+        }}
+      >
+        <Modal title='Thêm dịch vụ' visible={visible} onOk={onOk} onCancel={onOk}>
+        <Space style={{ width: '100%' }} direction="vertical">
+          <Select
+            mode="multiple"
+            allowClear
+            style={{ width: '100%' }}
+            placeholder="Please select"
+            onChange={handleChange}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: '8px 0' }} />
+                <Space style={{ padding: '0 8px 4px' }}>
+                  <Input
+                    placeholder="Please enter item"
+                    ref={inputRef}
+                    value={name}
+                    onChange={onNameChange}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  />
+                  <Button type="text" onClick={addItem}>
+                    Add item
+                  </Button>
+                </Space>
+              </>
+            )}
+            options={items}
+          />
+        </Space>
+        </Modal>
+      </ConfigProvider>
+    );
+  };

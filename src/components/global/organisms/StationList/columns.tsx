@@ -12,6 +12,7 @@ import { Button } from '../../atoms/ui/button'
 import { Link } from 'react-router-dom'
 // Define the interface for the Service
 interface Service {
+  Service_StationID:string
   ServiceID: string
   Price: number
   Name: string

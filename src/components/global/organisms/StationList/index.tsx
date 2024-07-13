@@ -22,6 +22,7 @@ import { ServiceModal, AddServiceModal } from '../ServiceModals';
 
 // Define the interface for the Service
 interface Service {
+  Service_StationID:string
   ServiceID: string
   Price: number
   Name: string

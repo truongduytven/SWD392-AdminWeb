@@ -19,6 +19,7 @@ interface DataTableRowActionsProps<TData extends Station> {
 
 // Define the interface for the Service
 interface Service {
+  Service_StationID:string
 	ServiceID: string;
 	Price: number;
 	Name: string;
