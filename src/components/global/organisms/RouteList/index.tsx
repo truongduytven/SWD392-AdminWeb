@@ -69,6 +69,7 @@ function ListRoute() {
 
   // Function to open edit modal with selected route data
   const openEditRouteModal = async (route: Route) => {
+    console.log("cái rout updaye", route)
     setSelectedRouteForEdit(route)
     // formEdit.setFieldsValue({
     //   fromCityID: route.FromCity,
@@ -87,8 +88,8 @@ function ListRoute() {
         stationID: station.StationID, // Adjust according to actual property name
         orderInRoute: index + 1 // Start order from 1
       }))
-      const formattedStationIDs = data.map((station: any) => station.StationID); // Adjust according to actual property name
-
+      const formattedStationIDs = data.map((station: any) => station.StationID) // Adjust according to actual property name
+      setSelectedStations(formattedStationIDs)
       console.log('giá tri', formattedStations)
       // Assuming data is an array of station IDs
       formEdit.setFieldsValue({
@@ -112,6 +113,19 @@ function ListRoute() {
 
   // Handle editing a route
   const handleEditRoute = async (values: any) => {
+    const fromCityID = cities.find(city => city.Name === values.fromCityID)?.CityID;
+    const toCityID = cities.find(city => city.Name === values.toCityID)?.CityID;
+    const updateRouteWithStations = {
+      ...values,
+      fromCityID, // Replace with ID
+      toCityID,   // Replace with ID
+      stationInRoutes: selectedStations.map((stationID, index) => ({
+        stationID,
+        orderInRoute: index + 1
+      })),
+      companyID:user?.CompanyID
+    }
+    console.log("updaye ne", updateRouteWithStations)
     // Perform validation similar to the add route
     if (!values.fromCityID || !values.toCityID || !values.startLocation || !values.endLocation) {
       message.error('Please fill in all fields')
@@ -122,13 +136,23 @@ function ListRoute() {
       message.warning('Start and end cities cannot be the same')
       return
     }
-
-    try {
-      const response = await busAPI.put(`route-management/managed-routes/${selectedRouteForEdit?.RouteID}`, values)
+  try {
+      const response = await busAPI.put(`route-management/managed-routes/${selectedRouteForEdit?.RouteID}`, updateRouteWithStations)
       // Update the routes state with the edited route
-      setRoutes(routes.map((route) => (route.RouteID === selectedRouteForEdit?.RouteID ? response.data : route)))
+      // setRoutes(routes.map((route) => (route.RouteID === selectedRouteForEdit?.RouteID ? updateRouteWithStations : route)));
+      //
+      setRoutes(routes.map((route) => (route.RouteID === selectedRouteForEdit?.RouteID ? { ...route, StartLocation:updateRouteWithStations.startLocation,EndLocation:updateRouteWithStations.endLocation} : route)));
+      // setRoutes([...routes, response.data])
+      //
+      
       setIsEditRouteModalOpen(false)
       formEdit.resetFields()
+      setSelectedStations([])
+      toast({
+        variant: 'success',
+        title: 'Cập nhật tuyến đường thành công',
+        description: 'Tuyến đường đã được cập nhật'
+      })
       message.success('Route updated successfully')
     } catch (error) {
       message.error('Failed to update route. Please try again.')
@@ -596,10 +620,19 @@ function ListRoute() {
           </Form>
         </Modal>
       </ConfigProvider>
-      <ConfigProvider>
+      <ConfigProvider theme={{
+          token: {
+            colorPrimary: '#F97316'
+          },
+          components: {
+            Button: {
+              colorTextLightSolid: '#fff'
+            }
+          }
+        }}>
         <Modal
           visible={isEditRouteModalOpen}
-          title='Edit Route'
+          title='Cập nhật tuyến đường'
           onCancel={() => {
             setIsEditRouteModalOpen(false)
             formEdit.resetFields()
@@ -609,10 +642,10 @@ function ListRoute() {
           <Form form={formEdit} layout='vertical' onFinish={handleEditRoute}>
             <Form.Item
               name='fromCityID'
-              label='Starting City'
-              rules={[{ required: true, message: 'Please select the starting city' }]}
+              label='Từ thành phố'
+              rules={[{ required: true, message: 'Vui lòng chọn thành phố bắt đầu' }]}
             >
-              <Select placeholder='Select starting city'>
+              <Select placeholder='Chọn thành phố bắt đầu' disabled>
                 {cities.map((city) => (
                   <Select.Option key={city.CityID} value={city.CityID}>
                     {city.Name}
@@ -622,10 +655,10 @@ function ListRoute() {
             </Form.Item>
             <Form.Item
               name='toCityID'
-              label='Ending City'
-              rules={[{ required: true, message: 'Please select the ending city' }]}
+              label='Đến thành phố'
+              rules={[{ required: true, message: 'Vui lòng chọn thành phố đến' }]}
             >
-              <Select placeholder='Select ending city'>
+              <Select placeholder='Chọn thành phố đến' disabled>
                 {cities.map((city) => (
                   <Select.Option key={city.CityID} value={city.CityID}>
                     {city.Name}
@@ -635,22 +668,22 @@ function ListRoute() {
             </Form.Item>
             <Form.Item
               name='startLocation'
-              label='Start Location'
-              rules={[{ required: true, message: 'Please enter the start location' }]}
+              label='Địa điểm bắt đầu'
+              rules={[{ required: true, message: 'Vui lòng nhập điểm bắt đầu' }]}
             >
-              <Input placeholder='Enter start location' />
+              <Input placeholder='Nhập điểm bắt đầu' />
             </Form.Item>
             <Form.Item
               name='endLocation'
-              label='End Location'
-              rules={[{ required: true, message: 'Please enter the end location' }]}
+              label='Địa điểm kết thúc'
+              rules={[{ required: true, message: 'Vui lòng nhập điểm kết thúc' }]}
             >
-              <Input placeholder='Enter end location' />
+              <Input placeholder='Nhập điểm kết thúc' />
             </Form.Item>
             <Form.Item
               name='stationInRoutes'
-              label='Stations'
-              rules={[{ required: true, message: 'Please select at least one station' }]}
+              label='Trạm dừng'
+              rules={[{ required: true, message: 'Vui lòng chọn trạm dừng' }]}
             >
               <Select
                 mode='multiple'
@@ -667,7 +700,7 @@ function ListRoute() {
             </Form.Item>
             <Form.Item>
               <ButtonAnt type='primary' htmlType='submit'>
-                Update Route
+                Cập nhật tuyến đường
               </ButtonAnt>
             </Form.Item>
           </Form>
