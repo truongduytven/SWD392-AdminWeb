@@ -27,7 +27,7 @@ import { Handshake } from 'lucide-react'
 import { useWindowWidth } from '@react-hook/window-size'
 
 export default function SideNavbar({ isAdmin }: SideNavbarProps) {
-  console.log('admin ơ nav', isAdmin)
+  // console.log('admin ơ nav', isAdmin)
   const [isCollapsed, setIsCollapsed] = useState(false)
 
   const onlyWidth = useWindowWidth()

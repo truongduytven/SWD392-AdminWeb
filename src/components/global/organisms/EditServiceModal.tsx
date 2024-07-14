@@ -47,7 +47,7 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
 
           // API request to update the service
           const response = await busAPI.put(`station-service-management/managed-station-services/${service?.Service_StationID}`, formData)
-          console.log('thanh cong', response)
+          // console.log('thanh cong', response)
           const updateService: Service = {
             Service_StationID: service?.Service_StationID || "",
             Name: service?.Name || "",
@@ -55,7 +55,7 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
             Price: values.Price, // Use values.Price
             ImageUrl: fileList.length > 0 ? URL.createObjectURL(fileList[0].originFileObj) : service?.ImageUrl || "",
           };
-          console.log("update service ne", updateService);
+          // console.log("update service ne", updateService);
           // if (response.status === 200) {
           //   message.success('Service updated successfully!');
           onUpdate(updateService) // Update parent state with the new service data

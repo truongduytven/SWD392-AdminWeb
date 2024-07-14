@@ -19,7 +19,8 @@ type Route = {
 
 export const columns = (
   handleStatusChange: (route: Route, status: string) => void,
-  handleViewDetails: (routeId: string) => void
+  handleViewDetails: (routeId: string) => void,
+  openEditRouteModal: (route: Route) => void // Add this parameter
 ): ColumnDef<Route>[] => [
   {
     accessorKey: 'Route_CompanyID',
@@ -69,6 +70,17 @@ export const columns = (
     cell: ({ row }) => (
       <Tooltip title='Xem trạm dừng' className='mr-1'>
         <Eye className='cursor-pointer w-4 text-primary' onClick={() => handleViewDetails(row.original.RouteID)} />
+      </Tooltip>
+    )
+  },
+  {
+    id: 'edit',
+    header: 'Chỉnh sửa',
+    cell: ({ row }) => (
+      <Tooltip title='Chỉnh sửa tuyến' className='mr-1'>
+        <span className='cursor-pointer text-primary' onClick={() => openEditRouteModal(row.original)}>
+          Chỉnh sửa
+        </span>
       </Tooltip>
     )
   }

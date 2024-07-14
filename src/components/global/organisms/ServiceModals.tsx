@@ -76,7 +76,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
           service.ServiceID === updatedService.ServiceID ? updatedService : service
         )
       }))
-      console.log('cps update', updatedServiceTypes)
+      // console.log('cps update', updatedServiceTypes)
 
       setUpdatedServiceStation({
         ...updatedServiceStation,
@@ -85,7 +85,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
     }
     hideEditModal() // Close the modal
   }
-  console.log('After update:', updatedServiceStation)
+  // console.log('After update:', updatedServiceStation)
   return (
     <ConfigProvider
       theme={{
@@ -246,7 +246,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     onOk() // Call the onOk function
   }
 
-  console.log('anh', imagePreviews)
+  // console.log('anh', imagePreviews)
   return (
     <ConfigProvider
       theme={{

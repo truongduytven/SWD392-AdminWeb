@@ -13,8 +13,8 @@ import axios from 'axios'
 import TableSkeleton from '../TableSkeleton'
 import { Dialog, DialogContent, DialogOverlay } from '../../atoms/ui/dialog'
 import { Button } from '../../atoms/ui/button'
-import { Loader, Plus, Trash } from 'lucide-react'
-import { Input, message, Modal, Select, Space, Tag } from 'antd'
+import { Loader, Pen, Plus, Trash } from 'lucide-react'
+import { Form, Input, message, Modal, Select, Space, Button as ButtonAnt, Tag, ConfigProvider, Tooltip } from 'antd'
 
 type Route = {
   Route_CompanyID: string
@@ -52,20 +52,94 @@ function ListRoute() {
   const [selectedRouteDetails, setSelectedRouteDetails] = useState<any>(null)
   const [stations, setStations] = useState<Station[]>([])
   const [isAddRouteModalOpen, setIsAddRouteModalOpen] = useState(false)
-  const [selectedStations, setSelectedStations] = useState<string[]>([]);
+
+  const [isEditRouteModalOpen, setIsEditRouteModalOpen] = useState(false)
+  const [selectedRouteForEdit, setSelectedRouteForEdit] = useState<Route | null>(null)
+  const [selectedStations, setSelectedStations] = useState<string[]>([])
+  const [form] = Form.useForm()
   const [newRoute, setNewRoute] = useState<{
     fromCityID: string
     toCityID: string
     startLocation: string
     endLocation: string
-    stationInRoutes: { stationID: string; orderInRoute: number }[]; 
-  }>({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '', stationInRoutes:[] })
+    stationInRoutes: { stationID: string; orderInRoute: number }[]
+  }>({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '', stationInRoutes: [] })
+  // Initialize form
+  const [formEdit] = Form.useForm()
+
+  // Function to open edit modal with selected route data
+  const openEditRouteModal = async (route: Route) => {
+    setSelectedRouteForEdit(route)
+    // formEdit.setFieldsValue({
+    //   fromCityID: route.FromCity,
+    //   toCityID: route.ToCity,
+    //   startLocation: route.StartLocation,
+    //   endLocation: route.EndLocation
+    //   // Set other fields as necessary
+    // })
+    try {
+      console.log('vo dya')
+      const { data } = await busAPI.get<any>(
+        `station-management/managed-stations/routes/${route.RouteID}/companyID/${user?.CompanyID}`
+      )
+      // Assuming data is an array of objects with stationID, status, and Name
+      const formattedStations = data.map((station: any, index: any) => ({
+        stationID: station.StationID, // Adjust according to actual property name
+        orderInRoute: index + 1 // Start order from 1
+      }))
+      const formattedStationIDs = data.map((station: any) => station.StationID); // Adjust according to actual property name
+
+      console.log('giá tri', formattedStations)
+      // Assuming data is an array of station IDs
+      formEdit.setFieldsValue({
+        fromCityID: route.FromCity,
+        toCityID: route.ToCity,
+        startLocation: route.StartLocation,
+        endLocation: route.EndLocation,
+        stationInRoutes: formattedStationIDs // Set the fetched station data as initial value
+      })
+      setIsEditRouteModalOpen(true)
+    } catch (error) {
+      console.error('Error fetching station data:', error)
+      toast({
+        variant: 'destructive',
+        title: 'Không thể tải trạm dừng',
+        description: 'Vui lòng thử lại sau'
+      })
+      // Handle error as necessary (e.g., show a message to the user)
+    }
+  }
+
+  // Handle editing a route
+  const handleEditRoute = async (values: any) => {
+    // Perform validation similar to the add route
+    if (!values.fromCityID || !values.toCityID || !values.startLocation || !values.endLocation) {
+      message.error('Please fill in all fields')
+      return
+    }
+
+    if (values.fromCityID === values.toCityID) {
+      message.warning('Start and end cities cannot be the same')
+      return
+    }
+
+    try {
+      const response = await busAPI.put(`route-management/managed-routes/${selectedRouteForEdit?.RouteID}`, values)
+      // Update the routes state with the edited route
+      setRoutes(routes.map((route) => (route.RouteID === selectedRouteForEdit?.RouteID ? response.data : route)))
+      setIsEditRouteModalOpen(false)
+      formEdit.resetFields()
+      message.success('Route updated successfully')
+    } catch (error) {
+      message.error('Failed to update route. Please try again.')
+    }
+  }
 
   const fetchRoutes = async () => {
     setIsLoadingRoutes(true)
     try {
       const { data } = await busAPI.get<Route[]>(`route-management/managed-routes/company-routes/${user?.CompanyID}`)
-      console.log('data', data)
+      // console.log('data', data)
       setRoutes(data || [])
       // Initialize tempStatus with current statuses
       const initialStatuses: { [key: string]: string } = {}
@@ -165,10 +239,56 @@ function ListRoute() {
       setIsLoadingRouteDetail(false)
     }
   }
-  const handleAddRoute = async () => {
-    console.log('tao', newRoute)
-    // Simple validation check
-    if (!newRoute.fromCityID || !newRoute.toCityID || !newRoute.startLocation || !newRoute.endLocation) {
+  // const handleAddRoute = async () => {
+  //   console.log('tao', newRoute)
+  //   // Simple validation check
+  //   if (!newRoute.fromCityID || !newRoute.toCityID || !newRoute.startLocation || !newRoute.endLocation) {
+  //     toast({
+  //       variant: 'destructive',
+  //       title: 'Thêm tuyến đường thất bại',
+  //       description: 'Vui lòng điền đầy đủ thông tin'
+  //     })
+  //     return
+  //   }
+  //   if (newRoute.fromCityID === newRoute.toCityID) {
+  //     message.warning('Thành phố bắt đầu và thành phố kết thúc không thể giống nhau')
+  //     // toast({
+  //     //   variant: 'destructive',
+  //     //   title: 'Thêm tuyến đường thất bại',
+  //     //   description: 'Thành phố bắt đầu và thành phố kết thúc không thể giống nhau'
+  //     // })
+  //     return
+  //   }
+  //   try {
+  //     const response = await busAPI.post(`route-management/managed-routes`, { ...newRoute, CompanyID: user?.CompanyID })
+  //     setRoutes([...routes, response.data]) // Update the routes list
+  //     setIsAddRouteModalOpen(false) // Close modal
+  //     setNewRoute({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '' , stationInRoutes:[]}) // Reset the form
+  //     toast({
+  //       variant: 'success',
+  //       title: 'Thêm tuyến đường thành công',
+  //       description: 'Tuyến đường đã được thêm'
+  //     })
+  //   } catch (error) {
+  //     toast({
+  //       variant: 'destructive',
+  //       title: 'Không thể thêm tuyến đường',
+  //       description: 'Vui lòng thử lại sau'
+  //     })
+  //   }
+  // }
+  const handleAddRoute = async (values: any) => {
+    const newRouteWithStations = {
+      ...values,
+      stationInRoutes: selectedStations.map((stationID, index) => ({
+        stationID,
+        orderInRoute: index + 1
+      }))
+    }
+
+    // console.log('Tao', newRouteWithStations)
+
+    if (!values.fromCityID || !values.toCityID || !values.startLocation || !values.endLocation) {
       toast({
         variant: 'destructive',
         title: 'Thêm tuyến đường thất bại',
@@ -176,35 +296,41 @@ function ListRoute() {
       })
       return
     }
-    if (newRoute.fromCityID === newRoute.toCityID) {
+
+    if (values.fromCityID === values.toCityID) {
       message.warning('Thành phố bắt đầu và thành phố kết thúc không thể giống nhau')
-      // toast({
-      //   variant: 'destructive',
-      //   title: 'Thêm tuyến đường thất bại',
-      //   description: 'Thành phố bắt đầu và thành phố kết thúc không thể giống nhau'
-      // })
       return
     }
+
     try {
-      const response = await busAPI.post(`route-management/managed-routes`, { ...newRoute, CompanyID: user?.CompanyID })
-      setRoutes([...routes, response.data]) // Update the routes list
-      setIsAddRouteModalOpen(false) // Close modal
-      setNewRoute({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '' , stationInRoutes:[]}) // Reset the form
+      const response = await busAPI.post(`route-management/managed-routes`, {
+        ...newRouteWithStations,
+        CompanyID: user?.CompanyID
+      })
+      setRoutes([...routes, response.data])
+      setIsAddRouteModalOpen(false)
+      form.resetFields()
+      setSelectedStations([])
       toast({
         variant: 'success',
         title: 'Thêm tuyến đường thành công',
         description: 'Tuyến đường đã được thêm'
       })
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Không thể thêm tuyến đường',
-        description: 'Vui lòng thử lại sau'
-      })
+      if (axios.isAxiosError(error) && error.response) {
+        const messages = error.response.data.Result.message
+        toast({
+          variant: 'destructive',
+          title: 'Không thể thêm tuyến đường',
+          description: messages || 'Vui lòng thử lại sau'
+        })
+        message.error(messages || 'Vui lòng thử lại sau')
+      }
     }
   }
+
   const handleStationChange = (selectedStationIDs: string[]) => {
-    setSelectedStations(selectedStationIDs);
+    setSelectedStations(selectedStationIDs)
     const selectedStationsData = selectedStationIDs.map((stationID, index) => ({
       stationID,
       orderInRoute: index + 1 // Using index + 1 as the order
@@ -212,13 +338,13 @@ function ListRoute() {
     setNewRoute((prev) => ({ ...prev, stationInRoutes: selectedStationsData }))
   }
   const tagRender = ({ label, value, onClose }: any) => {
-    const index = selectedStations.indexOf(value); // Calculate index based on selected stations
+    const index = selectedStations.indexOf(value) // Calculate index based on selected stations
     return (
       <Tag closable={true} onClose={onClose} style={{ marginRight: 3 }}>
         {`${label}_${index + 1}`} {/* Display label with order */}
       </Tag>
-    );
-  };
+    )
+  }
   const fetchStations = async () => {
     try {
       const { data } = await busAPI.get<Station[]>(`station-management/managed-stations`)
@@ -251,6 +377,7 @@ function ListRoute() {
       })
     }
   }
+
   if (isLoadingRoutes) {
     return <TableSkeleton />
   }
@@ -269,7 +396,7 @@ function ListRoute() {
       </div>
       <DataTable
         data={routes}
-        columns={columns(handleStatusChange, handleViewDetails)}
+        columns={columns(handleStatusChange, handleViewDetails, openEditRouteModal)}
         Toolbar={DataTableToolbar}
         rowString='Tuyến'
       />
@@ -298,6 +425,7 @@ function ListRoute() {
           <DialogOverlay className='bg-/60' />
           <DialogContent>
             <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết trạm dừng</h3>
+
             {isLoadingRoutesDetail ? (
               <div className='flex justify-center items-center mt-4'>
                 <Loader className='animate-spin' />
@@ -332,7 +460,7 @@ function ListRoute() {
       )}
 
       {/* Add Route Modal */}
-      <Modal
+      {/* <Modal
         title='Thêm tuyến đường'
         visible={isAddRouteModalOpen}
         onCancel={() => setIsAddRouteModalOpen(false)}
@@ -377,7 +505,174 @@ function ListRoute() {
             tagRender={tagRender}
           />
         </Space>
-      </Modal>
+      </Modal> */}
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: '#F97316'
+          },
+          components: {
+            Button: {
+              colorTextLightSolid: '#fff'
+            }
+          }
+        }}
+      >
+        <Modal
+          visible={isAddRouteModalOpen}
+          title='Thêm Tuyến Đường Mới'
+          onCancel={() => {
+            setIsAddRouteModalOpen(false)
+            form.resetFields()
+            setSelectedStations([]) // Reset the selected stations as well
+          }}
+          footer={null}
+        >
+          <Form form={form} layout='vertical' onFinish={handleAddRoute}>
+            <Form.Item
+              name='fromCityID'
+              label='Thành Phố Bắt Đầu'
+              rules={[{ required: true, message: 'Vui lòng chọn thành phố bắt đầu' }]}
+            >
+              <Select placeholder='Chọn thành phố' onChange={(value) => handleCityChange(value, true)}>
+                {cities.map((city) => (
+                  <Select.Option key={city.CityID} value={city.CityID}>
+                    {city.Name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name='toCityID'
+              label='Thành Phố Kết Thúc'
+              rules={[{ required: true, message: 'Vui lòng chọn thành phố kết thúc' }]}
+            >
+              <Select placeholder='Chọn thành phố' onChange={(value) => handleCityChange(value, false)}>
+                {cities.map((city) => (
+                  <Select.Option key={city.CityID} value={city.CityID}>
+                    {city.Name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name='startLocation'
+              label='Địa Điểm Bắt Đầu'
+              rules={[{ required: true, message: 'Vui lòng nhập địa điểm bắt đầu' }]}
+            >
+              <Input placeholder='Nhập địa điểm bắt đầu' />
+            </Form.Item>
+            <Form.Item
+              name='endLocation'
+              label='Địa Điểm Kết Thúc'
+              rules={[{ required: true, message: 'Vui lòng nhập địa điểm kết thúc' }]}
+            >
+              <Input placeholder='Nhập địa điểm kết thúc' />
+            </Form.Item>
+            <Form.Item
+              name='stationInRoutes'
+              label='Các Trạm Dừng'
+              rules={[{ required: true, message: 'Vui lòng chọn ít nhất một trạm' }]}
+            >
+              <Select
+                mode='multiple'
+                placeholder='Chọn các trạm'
+                value={selectedStations}
+                onChange={handleStationChange}
+                tagRender={tagRender}
+              >
+                {stations.map((station) => (
+                  <Select.Option key={station.StationID} value={station.StationID}>
+                    {station.Name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <ButtonAnt type='primary' htmlType='submit' className='float-right'>
+                Thêm Tuyến Đường
+              </ButtonAnt>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </ConfigProvider>
+      <ConfigProvider>
+        <Modal
+          visible={isEditRouteModalOpen}
+          title='Edit Route'
+          onCancel={() => {
+            setIsEditRouteModalOpen(false)
+            formEdit.resetFields()
+          }}
+          footer={null}
+        >
+          <Form form={formEdit} layout='vertical' onFinish={handleEditRoute}>
+            <Form.Item
+              name='fromCityID'
+              label='Starting City'
+              rules={[{ required: true, message: 'Please select the starting city' }]}
+            >
+              <Select placeholder='Select starting city'>
+                {cities.map((city) => (
+                  <Select.Option key={city.CityID} value={city.CityID}>
+                    {city.Name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name='toCityID'
+              label='Ending City'
+              rules={[{ required: true, message: 'Please select the ending city' }]}
+            >
+              <Select placeholder='Select ending city'>
+                {cities.map((city) => (
+                  <Select.Option key={city.CityID} value={city.CityID}>
+                    {city.Name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name='startLocation'
+              label='Start Location'
+              rules={[{ required: true, message: 'Please enter the start location' }]}
+            >
+              <Input placeholder='Enter start location' />
+            </Form.Item>
+            <Form.Item
+              name='endLocation'
+              label='End Location'
+              rules={[{ required: true, message: 'Please enter the end location' }]}
+            >
+              <Input placeholder='Enter end location' />
+            </Form.Item>
+            <Form.Item
+              name='stationInRoutes'
+              label='Stations'
+              rules={[{ required: true, message: 'Please select at least one station' }]}
+            >
+              <Select
+                mode='multiple'
+                placeholder='Select stations'
+                onChange={handleStationChange}
+                tagRender={tagRender}
+              >
+                {stations.map((station) => (
+                  <Select.Option key={station.StationID} value={station.StationID}>
+                    {station.Name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Form.Item>
+            <Form.Item>
+              <ButtonAnt type='primary' htmlType='submit'>
+                Update Route
+              </ButtonAnt>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </ConfigProvider>
     </div>
   )
 }
