@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/u
 import { Eye } from 'lucide-react'
 type Route = {
   Route_CompanyID: string
-  RouteID:string
+  RouteID: string
   FromCity: string
   ToCity: string
   StartLocation: string
@@ -17,7 +17,10 @@ type Route = {
   Status: string
 }
 
-export const columns = (handleStatusChange: (route: Route, status: string) => void,  handleViewDetails: (routeId: string) => void): ColumnDef<Route>[] => [
+export const columns = (
+  handleStatusChange: (route: Route, status: string) => void,
+  handleViewDetails: (routeId: string) => void
+): ColumnDef<Route>[] => [
   {
     accessorKey: 'Route_CompanyID',
     header: ({ column }) => null,
@@ -38,35 +41,35 @@ export const columns = (handleStatusChange: (route: Route, status: string) => vo
     accessorKey: 'ToCity',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Đến thành phố' />,
     cell: ({ row }) => <div>{row.getValue('ToCity')}</div>,
-    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    filterFn: (row, id, value) => value.includes(row.getValue(id))
   },
   {
     accessorKey: 'StartLocation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Địa điểm bắt đầu' />,
     cell: ({ row }) => <div className='font-medium'>{row.getValue('StartLocation')}</div>,
-    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    filterFn: (row, id, value) => value.includes(row.getValue(id))
   },
 
   {
     accessorKey: 'EndLocation',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Địa điểm kết thúc' />,
     cell: ({ row }) => <div className='font-medium'>{row.getValue('EndLocation')}</div>,
-    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    filterFn: (row, id, value) => value.includes(row.getValue(id))
   },
 
   {
     accessorKey: 'Status',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Trạng thái' />,
-    cell: ({ row }) => <DataTableRowActions row={row} handleStatusChange={handleStatusChange}/>,
-    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    cell: ({ row }) => <DataTableRowActions row={row} handleStatusChange={handleStatusChange} />,
+    filterFn: (row, id, value) => value.includes(row.getValue(id))
   },
   {
     id: 'view',
     header: 'Xem',
     cell: ({ row }) => (
-      <button onClick={() => handleViewDetails(row.original.RouteID)}>
-        <Eye className='text-gray-500' />
-      </button>
+      <Tooltip title='Xem trạm dừng' className='mr-1'>
+        <Eye className='cursor-pointer w-4 text-primary' onClick={() => handleViewDetails(row.original.RouteID)} />
+      </Tooltip>
     )
   }
 ]
