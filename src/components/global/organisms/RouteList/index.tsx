@@ -239,6 +239,7 @@ const users: any = [
 ]
 type Route = {
   Route_CompanyID: string
+  RouteID:string
   FromCity: string
   ToCity: string
   StartLocation: string
@@ -380,30 +381,37 @@ function ListRoute() {
         </Dialog>
       )}
 
-      {isModalDetailOpen && (
-        <Dialog open={isModalDetailOpen} onOpenChange={setIsModalDetailOpen}>
-          <DialogOverlay className='bg-/60' />
-          <DialogContent>
-            {selectedRouteDetails ? (
-              <>
-                <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết trạm dừng</h3>
-                <div className='mt-2'>
-                  <p>ID: {selectedRouteDetails.id}</p>
-                  <p>Tên: {selectedRouteDetails.name}</p>
-                  <p>Địa chỉ: {selectedRouteDetails.address}</p>
-                </div>
-                <div className='mt-4 flex justify-end space-x-2'>
-                  <Button variant='secondary' onClick={() => setIsModalDetailOpen(false)}>
-                    Đóng
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <p>Loading...</p>
-            )}
-          </DialogContent>
-        </Dialog>
+{isModalDetailOpen && (
+  <Dialog open={isModalDetailOpen} onOpenChange={setIsModalDetailOpen}>
+    <DialogOverlay className='bg-/60' />
+    <DialogContent>
+      <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết trạm dừng</h3>
+      {selectedRouteDetails && selectedRouteDetails.length > 0 ? (
+        <div className='ml-10 mt-8 text-base flex justify-center items-center'>
+          <div>
+            <ol className='relative border-l border-orange-400 border-dashed'>
+              {selectedRouteDetails.map((item: any, index: any) => (
+                <li key={index} className='mb-10 ml-6'>
+                  <span className='flex absolute text-white -left-3 bg-primary justify-center items-center w-6 h-6 rounded-full ring-8 ring-white'>
+                    {index + 1}
+                  </span>
+                  <h3 className='flex items-center mb-1'>{item.Name}</h3>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      ) : (
+        <p className='mt-4 text-center'>Tuyến đường này chưa có trạm dừng</p>
       )}
+      <div className='mt-4 flex justify-end space-x-2'>
+        <Button onClick={() => setIsModalDetailOpen(false)}>
+          Đóng
+        </Button>
+      </div>
+    </DialogContent>
+  </Dialog>
+)}
     </div>
   )
 }

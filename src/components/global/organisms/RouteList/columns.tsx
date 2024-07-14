@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/u
 import { Eye } from 'lucide-react'
 type Route = {
   Route_CompanyID: string
+  RouteID:string
   FromCity: string
   ToCity: string
   StartLocation: string
@@ -63,7 +64,7 @@ export const columns = (handleStatusChange: (route: Route, status: string) => vo
     id: 'view',
     header: 'Xem',
     cell: ({ row }) => (
-      <button onClick={() => handleViewDetails(row.original.Route_CompanyID)}>
+      <button onClick={() => handleViewDetails(row.original.RouteID)}>
         <Eye className='text-gray-500' />
       </button>
     )
