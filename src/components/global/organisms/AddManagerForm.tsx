@@ -44,6 +44,7 @@ function AddManager() {
   return (
     <div>
       <div className='flex items-center justify-between px-5'>
+        
           <Dialog open={isOpen} onOpenChange={handleClose}>
             <DialogTrigger>
               <Button variant={'outline_primary'}>
@@ -51,7 +52,7 @@ function AddManager() {
                 Tạo mới nhà xe
               </Button>
             </DialogTrigger>
-            <DialogContent className='w-[600px] p-0'>
+            <DialogContent className='w-[600px] flex flex-col overflow-hidden bg-white p-0'>
               <div className='bg-primary py-2 rounded-tl-md rounded-tr-md text-center font-semibold text-white'>Tạo mới nhà xe</div>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className='flex w-full flex-col gap-5 rounded-md bg-white px-8 py-6'>

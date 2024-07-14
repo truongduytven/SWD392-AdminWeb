@@ -9,6 +9,7 @@ import { DataTableFacetedFilter } from '../table/faceted-filter'
 import { DataTableViewOptions } from '../table/view-options'
 import { Button } from '@/components/global/atoms/ui/button'
 import { Input } from '@/components/global/atoms/ui/input'
+import { AddStaff } from './addStaff'
 
 export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
   const isFiltered = table.getState().columnFilters.length > 0
@@ -34,7 +35,8 @@ export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
           </Button>
         )}
       </div>
-      <div>
+      <div className='flex justify-center'>
+        <AddStaff />
         <DataTableViewOptions table={table} />
       </div>
     </div>
