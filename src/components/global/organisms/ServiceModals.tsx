@@ -50,9 +50,10 @@ interface ServiceModalProps {
   onOk: () => void
   station: Station | null
   onAddService: () => void
+  onUpdateService : (updatedService:any) => void
 }
 
-export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, station, onAddService }) => {
+export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, station, onAddService, onUpdateService  }) => {
   const [isEditModalVisible, setEditModalVisible] = useState(false)
   const [currentService, setCurrentService] = useState<Service | null>(null)
   const [updatedServiceStation, setUpdatedServiceStation] = useState<Station | null>(station) // Local state for updated station data
@@ -82,10 +83,15 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
         ...updatedServiceStation,
         ServiceTypeInStation: updatedServiceTypes
       })
+      // onUpdateService(updatedServiceStation)
+      onUpdateService({
+        ...updatedServiceStation,
+        ServiceTypeInStation: updatedServiceTypes
+      });
     }
     hideEditModal() // Close the modal
   }
-  // console.log('After update:', updatedServiceStation)
+  console.log('After update:', updatedServiceStation)
   return (
     <ConfigProvider
       theme={{

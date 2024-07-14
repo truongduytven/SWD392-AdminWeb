@@ -44,6 +44,8 @@ function ListRoute() {
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
   const [isLoadingRoutesDetail, setIsLoadingRouteDetail] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
+  const [isLoadingEditRoute, setIsLoadingEdiRoute] = useState(false)
+  const [isLoadingAddRoute, setIsLoadingAddRoute] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isModalDetailOpen, setIsModalDetailOpen] = useState(false)
   const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
