@@ -9,6 +9,7 @@ import AdminProtectedRoute from './auth/AdminProtectedRoute'
 import ManagerProtectedRoute from './auth/ManagerProtectedRoute'
 import { useAuth } from './auth/AuthProvider'
 import NotFoundPage from './components/global/templates/NotFoundPage'
+import ProfilePage from './components/global/templates/ProfilePage'
 const RouteLayout = React.lazy(() => import('./components/global/Layout/RouteLayout'))
 const UsersPage = React.lazy(() => import('./components/global/templates/Users'))
 const CompaniesPage = React.lazy(() => import('./components/global/templates/Companies'))
@@ -38,7 +39,9 @@ function App() {
   //   }
   // }, [loading, user, navigate])
   return loading ? (
-    <Loading />
+    <div className='h-screen w-screen flex justify-center items-center'>
+      <Loading />
+    </div>
   ) : (
     <Routes>
       <Route element={<RouteLayout />}>
@@ -143,6 +146,7 @@ function App() {
             </ManagerProtectedRoute>
           }
         />
+        <Route path='/profile' element={<ProfilePage />} />
       </Route>
 
       <Route
@@ -153,6 +157,7 @@ function App() {
           </ProtectedRoute>
         }
       />
+      
       <Route path='/not-authorized' element={<NotAuthorized />} />
       <Route path='*' element={<NotFoundPage />} />
 
