@@ -54,12 +54,12 @@ function ListRoute() {
   const [isAddRouteModalOpen, setIsAddRouteModalOpen] = useState(false)
   const [selectedStations, setSelectedStations] = useState<string[]>([]);
   const [newRoute, setNewRoute] = useState<{
-    FromCity: string
-    ToCity: string
-    StartLocation: string
-    EndLocation: string
-    stationInRoutes?: { stationID: string; orderInRoute: number }[]; 
-  }>({ FromCity: '', ToCity: '', StartLocation: '', EndLocation: '' })
+    fromCityID: string
+    toCityID: string
+    startLocation: string
+    endLocation: string
+    stationInRoutes: { stationID: string; orderInRoute: number }[]; 
+  }>({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '', stationInRoutes:[] })
 
   const fetchRoutes = async () => {
     setIsLoadingRoutes(true)
@@ -168,7 +168,7 @@ function ListRoute() {
   const handleAddRoute = async () => {
     console.log('tao', newRoute)
     // Simple validation check
-    if (!newRoute.FromCity || !newRoute.ToCity || !newRoute.StartLocation || !newRoute.EndLocation) {
+    if (!newRoute.fromCityID || !newRoute.toCityID || !newRoute.startLocation || !newRoute.endLocation) {
       toast({
         variant: 'destructive',
         title: 'Thêm tuyến đường thất bại',
@@ -176,7 +176,7 @@ function ListRoute() {
       })
       return
     }
-    if (newRoute.FromCity === newRoute.ToCity) {
+    if (newRoute.fromCityID === newRoute.toCityID) {
       message.warning('Thành phố bắt đầu và thành phố kết thúc không thể giống nhau')
       // toast({
       //   variant: 'destructive',
@@ -189,7 +189,7 @@ function ListRoute() {
       const response = await busAPI.post(`route-management/managed-routes`, { ...newRoute, CompanyID: user?.CompanyID })
       setRoutes([...routes, response.data]) // Update the routes list
       setIsAddRouteModalOpen(false) // Close modal
-      setNewRoute({ FromCity: '', ToCity: '', StartLocation: '', EndLocation: '' }) // Reset the form
+      setNewRoute({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '' , stationInRoutes:[]}) // Reset the form
       toast({
         variant: 'success',
         title: 'Thêm tuyến đường thành công',
@@ -239,9 +239,9 @@ function ListRoute() {
 
       // Update the newRoute state based on whether it's the FromCity or ToCity
       if (isFromCity) {
-        setNewRoute((prev) => ({ ...prev, FromCity: cityID }))
+        setNewRoute((prev) => ({ ...prev, fromCityID: cityID }))
       } else {
-        setNewRoute((prev) => ({ ...prev, ToCity: cityID }))
+        setNewRoute((prev) => ({ ...prev, toCityID: cityID }))
       }
     } catch (error) {
       toast({
@@ -357,14 +357,14 @@ function ListRoute() {
 
           <Input
             placeholder='Vị trí bắt đầu'
-            value={newRoute.StartLocation}
-            onChange={(e) => setNewRoute({ ...newRoute, StartLocation: e.target.value })}
+            value={newRoute.startLocation}
+            onChange={(e) => setNewRoute({ ...newRoute, startLocation: e.target.value })}
           />
 
           <Input
             placeholder='Vị trí kết thúc'
-            value={newRoute.EndLocation}
-            onChange={(e) => setNewRoute({ ...newRoute, EndLocation: e.target.value })}
+            value={newRoute.endLocation}
+            onChange={(e) => setNewRoute({ ...newRoute, endLocation: e.target.value })}
           />
 
           <Select
