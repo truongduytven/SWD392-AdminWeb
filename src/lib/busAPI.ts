@@ -2,7 +2,7 @@ import axios from "axios"
 
 const busAPI = axios.create({
     baseURL: 'https://ticket-booking-swd392-project.azurewebsites.net',
-    timeout: 20000,
+    timeout: 50000,
     headers: {
       "Content-Type": "application/json"
     }

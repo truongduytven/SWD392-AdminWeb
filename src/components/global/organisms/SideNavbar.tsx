@@ -100,12 +100,12 @@ export default function SideNavbar({ isAdmin }: SideNavbarProps) {
       icon: LandPlot,
       variant: 'default' as 'default' | 'ghost'
     },
-    {
-      title: 'Dịch vụ',
-      href: '/services',
-      icon: HandPlatter,
-      variant: 'default' as 'default' | 'ghost'
-    },
+    // {
+    //   title: 'Dịch vụ',
+    //   href: '/services',
+    //   icon: HandPlatter,
+    //   variant: 'default' as 'default' | 'ghost'
+    // },
     // {
     //   title: 'Đăng xuất',
     //   href: '/login',
