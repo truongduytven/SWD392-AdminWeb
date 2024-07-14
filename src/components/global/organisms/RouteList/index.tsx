@@ -265,44 +265,7 @@ function ListRoute() {
       setIsLoadingRouteDetail(false)
     }
   }
-  // const handleAddRoute = async () => {
-  //   console.log('tao', newRoute)
-  //   // Simple validation check
-  //   if (!newRoute.fromCityID || !newRoute.toCityID || !newRoute.startLocation || !newRoute.endLocation) {
-  //     toast({
-  //       variant: 'destructive',
-  //       title: 'Thêm tuyến đường thất bại',
-  //       description: 'Vui lòng điền đầy đủ thông tin'
-  //     })
-  //     return
-  //   }
-  //   if (newRoute.fromCityID === newRoute.toCityID) {
-  //     message.warning('Thành phố bắt đầu và thành phố kết thúc không thể giống nhau')
-  //     // toast({
-  //     //   variant: 'destructive',
-  //     //   title: 'Thêm tuyến đường thất bại',
-  //     //   description: 'Thành phố bắt đầu và thành phố kết thúc không thể giống nhau'
-  //     // })
-  //     return
-  //   }
-  //   try {
-  //     const response = await busAPI.post(`route-management/managed-routes`, { ...newRoute, CompanyID: user?.CompanyID })
-  //     setRoutes([...routes, response.data]) // Update the routes list
-  //     setIsAddRouteModalOpen(false) // Close modal
-  //     setNewRoute({ fromCityID: '', toCityID: '', startLocation: '', endLocation: '' , stationInRoutes:[]}) // Reset the form
-  //     toast({
-  //       variant: 'success',
-  //       title: 'Thêm tuyến đường thành công',
-  //       description: 'Tuyến đường đã được thêm'
-  //     })
-  //   } catch (error) {
-  //     toast({
-  //       variant: 'destructive',
-  //       title: 'Không thể thêm tuyến đường',
-  //       description: 'Vui lòng thử lại sau'
-  //     })
-  //   }
-  // }
+ 
   const handleAddRoute = async (values: any) => {
     const newRouteWithStations = {
       ...values,
@@ -485,53 +448,7 @@ function ListRoute() {
         </Dialog>
       )}
 
-      {/* Add Route Modal */}
-      {/* <Modal
-        title='Thêm tuyến đường'
-        visible={isAddRouteModalOpen}
-        onCancel={() => setIsAddRouteModalOpen(false)}
-        onOk={handleAddRoute}
-      >
-        <Space style={{ width: '100%' }} direction='vertical'>
-          <Select
-            showSearch
-            className='w-full'
-            placeholder='Chọn thành phố từ'
-            onChange={(value) => handleCityChange(value, true)}
-            options={cities.map((city) => ({ value: city.CityID, label: city.Name }))}
-          />
-
-          <Select
-            showSearch
-            className='w-full'
-            placeholder='Chọn thành phố đến'
-            onChange={(value) => handleCityChange(value, false)}
-            options={cities.map((city) => ({ value: city.CityID, label: city.Name }))}
-          />
-
-          <Input
-            placeholder='Vị trí bắt đầu'
-            value={newRoute.startLocation}
-            onChange={(e) => setNewRoute({ ...newRoute, startLocation: e.target.value })}
-          />
-
-          <Input
-            placeholder='Vị trí kết thúc'
-            value={newRoute.endLocation}
-            onChange={(e) => setNewRoute({ ...newRoute, endLocation: e.target.value })}
-          />
-
-          <Select
-            mode='multiple'
-            allowClear
-            style={{ width: '100%' }}
-            placeholder='Chọn trạm'
-            onChange={handleStationChange}
-            options={stations?.map((station: any) => ({ value: station.StationID, label: station.Name }))}
-            tagRender={tagRender}
-          />
-        </Space>
-      </Modal> */}
+     
       <ConfigProvider
         theme={{
           token: {

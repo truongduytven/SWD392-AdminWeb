@@ -41,6 +41,7 @@ function ListTrip() {
   const [isLoadingTrips, setIsLoadingTrips] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalDetailOpen, setIsModalDetailOpen] = useState(false)
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [newStatus, setNewStatus] = useState<string>('')
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
@@ -83,7 +84,7 @@ function ListTrip() {
     setIsLoadingUpdate(true)
     if (selectedTrip) {
       try {
-        const response = await busAPI.put(`status-management?entity=ROUTE_COMPANY&id=${selectedTrip.TripID}`)
+        const response = await busAPI.put(`status-management?entity=TRIP&id=${selectedTrip.TripID}`)
         
         setTrips(
           trips.map((trip) =>
@@ -144,7 +145,7 @@ function ListTrip() {
         data={trips}
         columns={columns(handleStatusChange, handleViewDetails)}
         Toolbar={DataTableToolbar}
-        rowString='Tuyến'
+        rowString='Chuyến'
       />
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
@@ -152,7 +153,7 @@ function ListTrip() {
           <DialogContent>
             <h3 className='text-lg font-medium leading-6 text-gray-900'>Xác nhận thay đổi trạng thái</h3>
             <div className='mt-2'>
-              <p>Bạn có chắc chắn muốn thay đổi trạng thái của tuyến đường này?</p>
+              <p>Bạn có chắc chắn muốn thay đổi trạng thái của chuyến xe này? Lưu ý: Chuyến xe sẽ không được hủy nếu đã có vé đặt!</p>
             </div>
             <div className='mt-4 flex justify-end space-x-2'>
               <Button variant='secondary' onClick={() => setIsModalOpen(false)}>
@@ -166,7 +167,7 @@ function ListTrip() {
         </Dialog>
       )}
 
-       {isModalOpen && (
+       {isModalDetailOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className='bg-/60' />
           <DialogContent>
