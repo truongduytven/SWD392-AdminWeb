@@ -15,9 +15,11 @@ import {
   Upload,
   Image
 } from 'antd'
-import { Edit2, Pen, Plus } from 'lucide-react'
+import { Edit2, Pen, PenBox, Plus } from 'lucide-react'
 import { formatPrice } from '@/lib/utils'
 import { EditServiceModal } from './EditServiceModal'
+import { UploadOutlined } from '@ant-design/icons'
+
 import busAPI from '@/lib/busAPI'
 interface Service {
   Service_StationID: string
@@ -64,18 +66,17 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
     setCurrentService(null) // Clear current service on close
   }
   useEffect(() => {
-    setUpdatedServiceStation(station);
-  }, [station]);
+    setUpdatedServiceStation(station)
+  }, [station])
   const handleServiceUpdate = (updatedService: Service) => {
-    
-      if (updatedServiceStation) {
-          const updatedServiceTypes = updatedServiceStation.ServiceTypeInStation.map((serviceType) => ({
-              ...serviceType,
-              ServiceInStation: serviceType.ServiceInStation.map((service) =>
-                service.ServiceID === updatedService.ServiceID ? updatedService : service
-            )
-        }))
-        console.log("cps update", updatedServiceTypes)
+    if (updatedServiceStation) {
+      const updatedServiceTypes = updatedServiceStation.ServiceTypeInStation.map((serviceType) => ({
+        ...serviceType,
+        ServiceInStation: serviceType.ServiceInStation.map((service) =>
+          service.ServiceID === updatedService.ServiceID ? updatedService : service
+        )
+      }))
+      console.log('cps update', updatedServiceTypes)
 
       setUpdatedServiceStation({
         ...updatedServiceStation,
@@ -84,7 +85,7 @@ export const ServiceModal: React.FC<ServiceModalProps> = ({ visible, onOk, stati
     }
     hideEditModal() // Close the modal
   }
-  console.log("After update:", updatedServiceStation);
+  console.log('After update:', updatedServiceStation)
   return (
     <ConfigProvider
       theme={{
@@ -160,7 +161,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
   const [showForm, setShowForm] = useState(false)
   const inputRef = useRef<InputRef>(null)
   const [fileLists, setFileLists] = useState<{ [key: string]: any[] }>({})
-  const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string[] }>({})
+  const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string }>({});
   const fetchItems = async () => {
     try {
       const response = await busAPI.get('service-management/managed-services')
@@ -207,15 +208,6 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     setSelectedValues(value)
   }
 
-  const handleImageChange = (serviceID: string) => (info: any) => {
-    if (info.file.status === 'done') {
-      const newImage = URL.createObjectURL(info.file.originFileObj);
-      setImagePreviews((prev) => ({
-        ...prev,
-        [serviceID]: [...(prev[serviceID] || []), newImage]
-      }));
-    }
-  };
   const handleContinue = () => {
     if (selectedValues.length > 0) {
       setShowForm(true)
@@ -224,6 +216,21 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     }
   }
 
+  const handleUploadChange = (info: any, serviceID: string) => {
+    if (info.fileList.length > 0) {
+      const file = info.fileList[0].originFileObj;
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreviews((prev) => ({
+            ...prev,
+            [serviceID]: reader.result as string,
+          }));
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  };
   const handleFormFinish = async (values: any) => {
     console.log('Submitted values:', values)
     // Handle the submission logic here (e.g., sending the data to the API)
@@ -238,7 +245,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
     setImagePreviews({})
     onOk() // Call the onOk function
   }
- 
+
   console.log('anh', imagePreviews)
   return (
     <ConfigProvider
@@ -291,8 +298,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
           <Form onFinish={handleFormFinish} className='h-[460px] overflow-y-auto'>
             <Space direction='vertical' style={{ width: '100%' }}>
               {selectedValues.map((serviceID) => {
-                
-                const selectedService = items.find((item) => item.value === serviceID)
+                const selectedService = items.find((item) => item.value === serviceID);
                 return (
                   <div key={serviceID}>
                     <h4>{selectedService?.label || serviceID}</h4>
@@ -304,7 +310,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
                           required: true,
                           type: 'number',
                           message: 'Please enter a valid price',
-                          transform: (value) => (value ? parseFloat(value) : NaN), // Convert input to number
+                          transform: (value) => (value ? parseFloat(value) : NaN),
                           validator: (_, value) => {
                             if (value && value >= 1) {
                               return Promise.resolve();
@@ -316,20 +322,31 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
                     >
                       <Input placeholder='Enter price' type='number' />
                     </Form.Item>
-                    <Form.Item label='Upload Images'>
+                    <Form.Item
+                      name={[serviceID, 'image']}
+                      label='Image'
+                      valuePropName='fileList'
+                      getValueFromEvent={({ fileList }) => fileList}
+                      rules={[{ required: true, message: 'Please upload an image' }]}
+                    >
                       <Upload
-                        onChange={handleImageChange(serviceID)}
-                        showUploadList={false}
+                        listType='picture'
+                        beforeUpload={() => false}
+                        maxCount={1}
+                        onChange={(info) => handleUploadChange(info, serviceID)}
                       >
-                        <Button icon={<Pen />}>Upload Image</Button>
+                        <Button icon={<UploadOutlined />}>Upload Image</Button>
                       </Upload>
-                      {imagePreviews[serviceID]?.map((imgSrc, index) => (
-                        
-                        <Image key={index} src={imgSrc} width={100} preview={false} />
-                      ))}
+                      {/* {imagePreviews[serviceID] && (
+                        <img
+                          src={imagePreviews[serviceID]}
+                          alt="Service Preview"
+                          style={{ width: '100px', height: 'auto', marginTop: '10px' }}
+                        />
+                      )} */}
                     </Form.Item>
                   </div>
-                )
+                );
               })}
               <Form.Item>
                 <Button type='primary' htmlType='submit'>
