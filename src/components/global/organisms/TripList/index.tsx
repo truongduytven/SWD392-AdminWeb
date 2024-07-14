@@ -18,77 +18,84 @@ import { Loader } from 'lucide-react'
 
 
  
-type Route = {
-  Route_CompanyID: string
-  FromCity: string
-  ToCity: string
-  StartLocation: string
-  EndLocation: string
-  Status: string
+type Trip = {
+  TripID: string
+    FromCity: string
+    ToCity:string
+    StartLocation: string
+    EndLocation: string
+    StartTime: string
+    EndTime: string
+    StartDate: string
+    EndDate: string
+    StaffName: string
+    MinPrice: number
+    MaxPrice: number
+    Status: string
 }
 
 function ListTrip() {
   const { user } = useAuth()
   console.log('user o route', user)
-  const [routes, setRoutes] = useState<Route[]>([])
-  const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
+  const [trips, setTrips] = useState<Trip[]>([])
+  const [isLoadingTrips, setIsLoadingTrips] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [newStatus, setNewStatus] = useState<string>('')
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
-  const [selectedRouteDetails, setSelectedRouteDetails] = useState<any>(null)
+  const [selectedTripDetails, setSelectedTripDetails] = useState<any>(null)
   useEffect(() => {
-    const fetchRoutes = async () => {
-      setIsLoadingRoutes(true)
+    const fetchTrips = async () => {
+      setIsLoadingTrips(true)
       try {
-        const { data } = await busAPI.get<Route[]>(`route-management/managed-routes/company-routes/${user?.CompanyID}`)
+        const { data } = await busAPI.get<Trip[]>(`trip-management/manage-trips/${user?.CompanyID}`)
         console.log('data', data)
-        setRoutes(data || [])
+        setTrips(data || [])
         // Initialize tempStatus with current statuses
         const initialStatuses: { [key: string]: string } = {}
-        data.forEach((route) => {
-          initialStatuses[route.Route_CompanyID] = route.Status
+        data.forEach((trip) => {
+          initialStatuses[trip.TripID] = trip.Status
         })
         setTempStatus(initialStatuses)
       } catch (error) {
         toast({
           variant: 'destructive',
-          title: 'Không thể tải dữ liệu tuyến đường',
+          title: 'Không thể tải dữ liệu chuyến đi',
           description: 'Vui lòng thử lại sau'
         })
         console.log(error)
       } finally {
-        setIsLoadingRoutes(false)
+        setIsLoadingTrips(false)
       }
     }
 
-    fetchRoutes()
+    fetchTrips()
   }, [])
 
-  const handleStatusChange = (route: Route, status: string) => {
-    setSelectedRoute(route)
+  const handleStatusChange = (trip: Trip, status: string) => {
+    setSelectedTrip(trip)
     setNewStatus(status)
     setIsModalOpen(true)
   }
 
   const confirmStatusChange = async () => {
     setIsLoadingUpdate(true)
-    if (selectedRoute) {
+    if (selectedTrip) {
       try {
-        const response = await busAPI.put(`status-management?entity=ROUTE_COMPANY&id=${selectedRoute.Route_CompanyID}`)
+        const response = await busAPI.put(`status-management?entity=ROUTE_COMPANY&id=${selectedTrip.TripID}`)
         
-        setRoutes(
-          routes.map((route) =>
-            route.Route_CompanyID === selectedRoute.Route_CompanyID ? { ...route, Status: newStatus } : route
+        setTrips(
+          trips.map((trip) =>
+            trip.TripID === selectedTrip.TripID ? { ...trip, Status: newStatus } : trip
           )
         )
-        setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: newStatus })
+        setTempStatus({ ...tempStatus, [selectedTrip.TripID]: newStatus })
         setIsModalOpen(false)
         toast({
           variant: 'success',
           title: 'Cập nhật thành công',
-          description: 'Đã đổi trạng thái tuyến đường này thành ' + newStatus
+          description: 'Đã đổi trạng thái chuyến đi này thành ' + newStatus
         })
         setIsLoadingUpdate(false)
       } catch (error) {
@@ -97,10 +104,10 @@ function ListTrip() {
           setIsModalOpen(false)
           setIsLoadingUpdate(false)
           // Revert status change on error
-          setTempStatus({ ...tempStatus, [selectedRoute.Route_CompanyID]: selectedRoute.Status })
+          setTempStatus({ ...tempStatus, [selectedTrip.TripID]: selectedTrip.Status })
           toast({
             variant: 'destructive',
-            title: 'Không thể cập nhật trạng thái tuyến đường',
+            title: 'Không thể cập nhật trạng thái chuyến đi',
             description: message || 'Vui lòng thử lại sau'
           })
         }
@@ -111,30 +118,30 @@ function ListTrip() {
     }
   }
   const handleViewDetails = async (routeId: string) => {
-    setIsLoadingRoutes(true)
+    setIsLoadingTrips(true)
     try {
       const { data } = await busAPI.get<any>(`route-management/station-details/${routeId}`)
-      setSelectedRouteDetails(data)
+      selectedTripDetails(data)
       setIsModalOpen(true)
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Không thể tải chi tiết trạm dừng',
+        title: 'Không thể tải chi tiết chuyến đi',
         description: 'Vui lòng thử lại sau'
       })
     } finally {
-      setIsLoadingRoutes(false)
+      setIsLoadingTrips(false)
     }
   }
-  if (isLoadingRoutes) {
+  if (isLoadingTrips) {
     return <TableSkeleton />
   }
 
   return (
     <div className='flex h-full flex-1 flex-col '>
-      <h1 className='my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 '>Danh sách tuyến đường</h1>
+      <h1 className='my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 '>Danh sách chuyến đi</h1>
       <DataTable
-        data={routes}
+        data={trips}
         columns={columns(handleStatusChange, handleViewDetails)}
         Toolbar={DataTableToolbar}
         rowString='Tuyến'
@@ -159,17 +166,17 @@ function ListTrip() {
         </Dialog>
       )}
 
-      {isModalOpen && (
+       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className='bg-/60' />
           <DialogContent>
-            {selectedRouteDetails ? (
+            {selectedTripDetails ? (
               <>
                 <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết trạm dừng</h3>
                 <div className='mt-2'>
-                  <p>ID: {selectedRouteDetails.id}</p>
-                  <p>Tên: {selectedRouteDetails.name}</p>
-                  <p>Địa chỉ: {selectedRouteDetails.address}</p>
+                  <p>ID: {selectedTripDetails.id}</p>
+                  <p>Tên: {selectedTripDetails.name}</p>
+                  <p>Địa chỉ: {selectedTripDetails.address}</p>
                 </div>
                 <div className='mt-4 flex justify-end space-x-2'>
                   <Button variant='secondary' onClick={() => setIsModalOpen(false)}>
@@ -182,7 +189,7 @@ function ListTrip() {
             )}
           </DialogContent>
         </Dialog>
-      )}
+      )} 
     </div>
   )
 }

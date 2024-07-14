@@ -7,18 +7,24 @@ import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
 import { Eye } from 'lucide-react'
-type Route = {
-  Route_CompanyID: string
-  FromCity: string
-  ToCity: string
-  StartLocation: string
-  EndLocation: string
-  Status: string
+type Trip = {
+  TripID: string
+    FromCity: string
+    ToCity:string
+    StartLocation: string
+    EndLocation: string
+    StartTime: string
+    EndTime: string
+    StartDate: string
+    EndDate: string
+    StaffName: string
+    MinPrice: number
+    MaxPrice: number
+    Status: string
 }
-
-export const columns = (handleStatusChange: (route: Route, status: string) => void,  handleViewDetails: (routeId: string) => void): ColumnDef<Route>[] => [
+export const columns = (handleStatusChange: (trip: Trip, status: string) => void,  handleViewDetails: (routeId: string) => void): ColumnDef<Trip>[] => [
   {
-    accessorKey: 'Route_CompanyID',
+    accessorKey: 'TripID',
     header: ({ column }) => null,
     cell: ({ row }) => null
   },
@@ -52,6 +58,29 @@ export const columns = (handleStatusChange: (route: Route, status: string) => vo
     cell: ({ row }) => <div className='font-medium'>{row.getValue('EndLocation')}</div>,
     filterFn: (row, id, value) => value.includes(row.getValue(id)),
   },
+  {
+    accessorFn: row => `${row.StartTime} - ${row.EndTime}`,
+    id: 'StartEndTime',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Thời gian' />,
+    cell: ({ row }) => <div className='font-medium'>{row.getValue('StartEndTime')}</div>,
+  },
+  {
+    accessorKey: 'StartDate',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Ngày bắt đầu' />,
+    cell: ({ row }) => <div>{row.getValue('StartDate')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+  },
+  {
+    accessorKey: 'EndDate',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Ngày kết thúc' />,
+    cell: ({ row }) => <div>{row.getValue('EndDate')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id)),
+  },
+  {
+    accessorKey: 'StaffName',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Tên nhân viên' />,
+    cell: ({ row }) => <div>{row.getValue('StaffName')}</div>
+  },
 
   {
     accessorKey: 'Status',
@@ -63,7 +92,7 @@ export const columns = (handleStatusChange: (route: Route, status: string) => vo
     id: 'view',
     header: 'Xem',
     cell: ({ row }) => (
-      <button onClick={() => handleViewDetails(row.original.Route_CompanyID)}>
+      <button onClick={() => handleViewDetails(row.original.TripID)}>
         <Eye className='text-gray-500' />
       </button>
     )

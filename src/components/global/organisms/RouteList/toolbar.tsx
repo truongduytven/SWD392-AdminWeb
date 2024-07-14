@@ -33,7 +33,7 @@ export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
     <div className='mb-2 flex justify-between'>
       <div className='flex space-x-2 '>
         <Input
-          placeholder='Tìm chuyến bắt đầu từ tp...'
+          placeholder='Tìm tuyến bắt đầu từ tp...'
           value={(table.getColumn('FromCity')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('FromCity')?.setFilterValue(event.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'
