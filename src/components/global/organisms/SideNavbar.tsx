@@ -20,7 +20,7 @@ import {
   HandPlatter,
   Users,
   UsersRound,
-  LogOut
+  SwatchBook
 } from 'lucide-react'
 import { Button } from '../atoms/ui/button'
 import { Handshake } from 'lucide-react'
@@ -100,12 +100,12 @@ export default function SideNavbar({ isAdmin }: SideNavbarProps) {
       icon: LandPlot,
       variant: 'default' as 'default' | 'ghost'
     },
-    // {
-    //   title: 'Dịch vụ',
-    //   href: '/services',
-    //   icon: HandPlatter,
-    //   variant: 'default' as 'default' | 'ghost'
-    // },
+    {
+      title: 'Chuyến xe mẫu',
+      href: '/templates',
+      icon: SwatchBook,
+      variant: 'default' as 'default' | 'ghost'
+    },
     // {
     //   title: 'Đăng xuất',
     //   href: '/login',
