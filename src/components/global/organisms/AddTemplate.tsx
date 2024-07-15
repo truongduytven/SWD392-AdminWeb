@@ -74,7 +74,6 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
   const [isRange, setIsRange] = useState(false) // State to toggle between single and range date selection
   useEffect(() => {
     if (isModalVisible) {
-      
       form.setFieldsValue({
         times: [{ startTime: null, endTime: null }] // Set default values
       })
@@ -135,14 +134,14 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
         }
 
         if (ticketTypes.length > 0) {
-            form.setFieldsValue({
-              ticketTypes: [
-                {
-                  ticketTypeID: ticketTypes[2].TicketTypeID
-                }
-              ]
-            })
-          }
+          form.setFieldsValue({
+            ticketTypes: [
+              {
+                ticketTypeID: ticketTypes[2].TicketTypeID
+              }
+            ]
+          })
+        }
       }
       fetchRoutes()
       fetchStaff()
@@ -153,127 +152,56 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
 
   console.log('route ơ tạo chuyen', routes)
   // Custom validation rule to check for duplicate ticketTypeID
-  const uniqueTicketTypeIDRule = ({ getFieldValue }: any) => ({
-    validator(_, value: any) {
-      const ticketTypeIDs = getFieldValue('ticketTypes').map((ticket: any) => ticket.ticketTypeID)
-      const duplicates = ticketTypeIDs.filter((id: any) => id === value)
-      if (duplicates.length > 1) {
-        return Promise.reject(new Error('Mỗi loại vé phải là duy nhất!'))
-      }
-      return Promise.resolve()
-    }
-  })
+  // const uniqueTicketTypeIDRule = ({ getFieldValue }: any) => ({
+  //   validator(_, value: any) {
+  //     const ticketTypeIDs = getFieldValue('ticketTypes').map((ticket: any) => ticket.ticketTypeID)
+  //     const duplicates = ticketTypeIDs.filter((id: any) => id === value)
+  //     if (duplicates.length > 1) {
+  //       return Promise.reject(new Error('Mỗi loại vé phải là duy nhất!'))
+  //     }
+  //     return Promise.resolve()
+  //   }
+  // })
   const onFinish = (values: any) => {
-    // Format single date
-    if (values.date) {
-      const dates = Array.isArray(values.date) ? values.date : [values.date]
-      values.date = dates.map((date: any) => dayjs(date).format('YYYY-MM-DD')) // Format each date
-    }
-
-    // Check if the dateRange field is provided
-    if (values.dateRange && Array.isArray(values.dateRange)) {
-      const start = dayjs(values.dateRange[0])
-      const end = dayjs(values.dateRange[1])
-
-      const dateList = []
-      let currentDate = start
-
-      while (currentDate.isBefore(end) || currentDate.isSame(end)) {
-        dateList.push(currentDate.format('YYYY/MM/DD'))
-        currentDate = currentDate.add(1, 'day')
-      }
-
-      values.date = dateList // Store the list of formatted dates
-    }
-
-    // Format times
-    if (values.times) {
-      values.times = values.times.map((time: any) => ({
-        startTime: dayjs(time.startTime).format('HH:mm'),
-        endTime: dayjs(time.endTime).format('HH:mm')
-      }))
-    }
-    const timeTrips: TimeTrip[] = []
-    if (Array.isArray(values.date)) {
-      values.date.forEach((date: any) => {
-        values.times.forEach((time: any) => {
-          console.log('time', time) // Log the time object
-
-          // Combine date and time correctly
-          const startDateTime = `${date}T${time.startTime}`
-          const endDateTime = `${date}T${time.endTime}`
-
-          console.log('Combined Start Time:', startDateTime) // Log combined start time
-          console.log('Combined End Time:', endDateTime) // Log combined end time
-
-          // Create timeTrip objects using dayjs
-          const startTimeParsed = dayjs(startDateTime, { timeZone: 'UTC' })
-          const endTimeParsed = dayjs(endDateTime, { timeZone: 'UTC' })
-
-          // Check if parsing was successful
-          if (!startTimeParsed.isValid() || !endTimeParsed.isValid()) {
-            console.error('Invalid date-time parsing:', startDateTime, endDateTime)
-          }
-
-          timeTrips.push({
-            startTime: startTimeParsed.format('YYYY-MM-DDTHH:mm:ss'),
-            endTime: endTimeParsed.format('YYYY-MM-DDTHH:mm:ss')
-          })
-        })
-      })
-    }
-    values.TimeTrips = timeTrips
-    console.log('Trip Details:', timeTrips) // Send this to your backend
-    console.log('Trip Details:', values)
-
-
+   
 
     const requestData = {
-        Route_CompanyID: values.route,
-        IsTemplate: values.isTemplate || false,
-        StaffID: [values.staff] ||[],
-        TemplateID: values.templateID || "",
-        ImageUrls: imageFiles || [],
-        TimeTrips: timeTrips||[],
-        TicketType_TripModels: values.ticketTypes,
-        Trip_UtilityModels: values.utilityModels || []
-      };
-      console.log('Request Data:', requestData);
-      const formData = new FormData();
+      Route_CompanyID: values.route,
+      IsTemplate: values.isTemplate || true,
+      TemplateID: values.templateID || '',
+      ImageUrls: imageFiles || [],
+      TicketType_TripModels: values.ticketTypes,
+      Trip_UtilityModels: values.utilityModels || []
+    }
+    console.log('Request Data:', requestData)
+    const formData = new FormData();
+    formData.append('Route_CompanyID', values.route);
+    formData.append('IsTemplate', values.isTemplate || true);
+    formData.append('TemplateID', values.templateID || '');
+  
+    // Append all image files as an array
+  imageFiles.forEach(file => {
+    formData.append('ImageUrls[]', file.originFileObj); // Use "ImageUrls[]" for array format
+  });
+  
+    formData.append('TicketType_TripModels', JSON.stringify(values.ticketTypes || []));
+    formData.append('Trip_UtilityModels', JSON.stringify(values.utilityModels || []));
+  
 
-      // Append each field to the FormData object
-      formData.append('Route_CompanyID', values.route);
-      formData.append('IsTemplate', values.isTemplate || true);
-    //   formData.append('StaffID', JSON.stringify([values.staff])); // Ensure it's an array
-    requestData.StaffID.forEach(id => formData.append('StaffID[]', id));
-      formData.append('TemplateID', values.templateID || '');
-      imageFiles.forEach(file => formData.append('ImageUrls[]', file)); // Append image files
-      timeTrips.forEach((trip) => {
-        formData.append('TimeTrips[]', JSON.stringify(trip)); // Append each time trip as JSON
-      });
-      
-      values.ticketTypes.forEach((ticketType) => {
-        formData.append('TicketType_TripModels[]', JSON.stringify(ticketType)); // Append each ticket type as JSON
-      });
-    
-      values.utilityModels.forEach((utilityModel) => {
-        formData.append('Trip_UtilityModels[]', JSON.stringify(utilityModel)); // Append each utility model as JSON
-      });
-    
-      busAPI.post('trip-management/managed-trips', formData)
-      .then(response => {
+    busAPI
+      .post('trip-management/managed-trips', formData)
+      .then((response) => {
         setImageFiles([]) // Reset the uploaded images
 
         form.resetFields()
         handleOk()
-        console.log('Response:', response.data);
-        form.resetFields();
+        console.log('Response:', response.data)
+        form.resetFields()
       })
-      .catch(error => {
-        message.error("Lỗi tạo chuyến xe")
-        console.error('Error:', error);
-      });
-   
+      .catch((error) => {
+        message.error('Lỗi tạo chuyến xe')
+        console.error('Error:', error)
+      })
   }
 
   const onCancel = () => {
@@ -295,18 +223,7 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
 
     setImageFiles(formattedFileList) // Update state with the properly formatted file list
   }
-  const onChange = (date: Dayjs | Dayjs[] | null, dateString: string | string[]) => {
-    if (Array.isArray(dateString)) {
-      // Handle range selection
-      console.log(
-        'Selected Range:',
-        dateString.map((d) => dayjs(d).format('YYYY/MM/DD'))
-      )
-    } else {
-      // Handle single date selection
-      console.log('Selected Date:', dayjs(dateString).format('YYYY/MM/DD'))
-    }
-  }
+
   return (
     <ConfigProvider
       theme={{
@@ -320,183 +237,106 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
         }
       }}
     >
-    <Modal title='Tạo chuyến đi' visible={isModalVisible} onCancel={onCancel} footer={null}>
-      <Form form={form} onFinish={onFinish} className='h-[460px] overflow-y-auto'>
-        <Form.Item label='Tuyến' name='route' rules={[{ required: true, message: 'Vui lòng chọn tuyến!' }]}>
-          <Select placeholder='Chọn tuyến'>
-            {routes
-              .filter((route) => route.Status === 'HOẠT ĐỘNG') // Filter for active routes
-              .map((route) => (
-                <Select.Option key={`${route.RouteID}-${route.Route_CompanyID}`} value={route.Route_CompanyID}>
-                  {route.FromCity} - {route.ToCity}
-                </Select.Option>
-              ))}
-          </Select>
-        </Form.Item>
-       
-
-        <Form.Item label='Chọn loại ngày'>
-          <Switch checked={isRange} onChange={setIsRange} />
-          <span style={{ marginLeft: 8 }}>{isRange ? 'Chọn khoảng ngày' : 'Chọn ngày đơn'}</span>
-        </Form.Item>
-
-        {isRange ? (
-          <Form.Item
-            label='Khoảng ngày'
-            name='dateRange'
-            rules={[{ required: true, message: 'Vui lòng chọn khoảng ngày!' }]}
-          >
-            <DatePicker.RangePicker format='DD/MM/YYYY' />
-          </Form.Item>
-        ) : (
-          <Form.Item label='Ngày' name='date' rules={[{ required: true, message: 'Vui lòng chọn ngày!' }]}>
-            <DatePicker multiple onChange={onChange} maxTagCount='responsive' format='YYYY/MM/DD' />
-          </Form.Item>
-        )}
-        <Form.Item label='Thời gian' rules={[{ required: true, message: 'Vui lòng chọn thời gian!' }]}>
-          <Form.List
-            name='times'
-            rules={[
-              {
-                validator: (_, times) =>
-                  times && times.length
-                    ? Promise.resolve()
-                    : Promise.reject(new Error('Vui lòng thêm ít nhất một khoảng thời gian!'))
-              }
-            ]}
-          >
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, fieldKey = key, ...restField }) => (
-                  <Space
-                    key={key}
-                    style={{ display: 'flex', justifyContent: 'start' ,alignItems:"start ", marginBottom: 0 }}
-                    // align='baseline'
-                  >
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'startTime']}
-                      fieldKey={[fieldKey, 'startTime']}
-                      rules={[{ required: true, message: 'Vui lòng chọn thời gian bắt đầu!' }]}
-                    >
-                      <TimePicker placeholder='Thời gian bắt đầu' format='HH:mm:ss' />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'endTime']}
-                      fieldKey={[fieldKey, 'endTime']}
-                      rules={[{ required: true, message: 'Vui lòng chọn thời gian kết thúc!' }]}
-                    >
-                      <TimePicker placeholder='Thời gian kết thúc' format='HH:mm:ss' />
-                    </Form.Item>
-                    <Minus className='w-4' onClick={() => remove(name)} style={{ cursor: 'pointer' }} />
-                  </Space>
+      <Modal title='Tạo chuyến đi' visible={isModalVisible} onCancel={onCancel} footer={null}>
+        <Form form={form} onFinish={onFinish} className='h-[460px] overflow-y-auto'>
+          <Form.Item label='Tuyến' name='route' rules={[{ required: true, message: 'Vui lòng chọn tuyến!' }]}>
+            <Select placeholder='Chọn tuyến'>
+              {routes
+                .filter((route) => route.Status === 'HOẠT ĐỘNG') // Filter for active routes
+                .map((route) => (
+                  <Select.Option key={`${route.RouteID}-${route.Route_CompanyID}`} value={route.Route_CompanyID}>
+                    {route.FromCity} - {route.ToCity}
+                  </Select.Option>
                 ))}
+            </Select>
+          </Form.Item>
 
-                <Form.Item>
-                  <Button type='dashed' className='mx-auto' onClick={() => add()} icon={<Plus />}>
-                    Thêm thời gian
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
-        </Form.Item>
-        <Form.Item label='Loại vé' rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }]}>
-          <Form.List name='ticketTypes'>
-            {(fields, { add, remove }) => (
-              <>
-                {fields.map(({ key, name, fieldKey = key, ...restField }) => (
-                  <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'ticketTypeID']}
-                      fieldKey={[fieldKey, 'ticketTypeID']}
-                      rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }, uniqueTicketTypeIDRule]}
-                    >
-                      <Select placeholder='Chọn loại vé' style={{ width: 200 }}>
-                        {ticketTypes.map((ticket) => (
-                          <Select.Option key={ticket.TicketTypeID} value={ticket.TicketTypeID}>
-                            {ticket.Name}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'price']}
-                      fieldKey={[fieldKey, 'price']}
-                      rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
-                    >
-                      <Input placeholder='Giá vé' type='number' />
-                    </Form.Item>
-                    <Form.Item
-                      {...restField}
-                      name={[name, 'quantity']}
-                      fieldKey={[fieldKey, 'quantity']}
-                      rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
-                    >
-                      <Input placeholder='Số lượng vé' type='number' />
-                    </Form.Item>
-                    <Button type='primary' onClick={() => remove(name)}>
-                      Xóa
+          <Form.Item label='Loại vé' rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }]}>
+            <Form.List name='ticketTypes'>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, fieldKey = key, ...restField }) => (
+                    <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'ticketTypeID']}
+                        fieldKey={[fieldKey, 'ticketTypeID']}
+                        rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }]}
+                      >
+                        <Select placeholder='Chọn loại vé' style={{ width: 200 }}>
+                          {ticketTypes.map((ticket) => (
+                            <Select.Option key={ticket.TicketTypeID} value={ticket.TicketTypeID}>
+                              {ticket.Name}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'price']}
+                        fieldKey={[fieldKey, 'price']}
+                        rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
+                      >
+                        <Input placeholder='Giá vé' type='number' />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, 'quantity']}
+                        fieldKey={[fieldKey, 'quantity']}
+                        rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
+                      >
+                        <Input placeholder='Số lượng vé' type='number' />
+                      </Form.Item>
+                      <Button type='primary' onClick={() => remove(name)}>
+                        Xóa
+                      </Button>
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button type='dashed' onClick={() => add()} block icon={<UploadOutlined />}>
+                      Thêm loại vé
                     </Button>
-                  </Space>
-                ))}
-                <Form.Item>
-                  <Button type='dashed' onClick={() => add()} block icon={<UploadOutlined />}>
-                    Thêm loại vé
-                  </Button>
-                </Form.Item>
-              </>
-            )}
-          </Form.List>
-        </Form.Item>
-        <Form.Item label='Hình ảnh' name='images' rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}>
-          <Upload
-            multiple
-            accept='image/*'
-            onChange={handleChange}
-            beforeUpload={() => false} // Prevent automatic upload
-            fileList={imageFiles} // Display the uploaded files
-            showUploadList={true}
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
+          </Form.Item>
+          <Form.Item label='Hình ảnh' name='images' rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}>
+            <Upload
+              multiple
+              accept='image/*'
+              onChange={handleChange}
+              beforeUpload={() => false} // Prevent automatic upload
+              fileList={imageFiles} // Display the uploaded files
+              showUploadList={true}
+            >
+              <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
+            </Upload>
+          </Form.Item>
+
+          <Form.Item
+            label='Mô hình tiện ích'
+            name='utilityModels'
+            rules={[{ required: true, message: 'Vui lòng chọn ít nhất một mô hình tiện ích!' }]}
           >
-            <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
-          </Upload>
-        </Form.Item>
+            <Select
+              mode='multiple'
+              placeholder='Chọn mô hình tiện ích'
+              options={utilities.map((utility) => ({
+                label: utility.Name,
+                value: utility.UtilityID
+              }))}
+            />
+          </Form.Item>
 
-        <Form.Item
-          label='Mô hình tiện ích'
-          name='utilityModels'
-          rules={[{ required: true, message: 'Vui lòng chọn ít nhất một mô hình tiện ích!' }]}
-        >
-          <Select
-            mode='multiple'
-            placeholder='Chọn mô hình tiện ích'
-            options={utilities.map((utility) => ({
-              label: utility.Name,
-              value: utility.UtilityID
-            }))}
-          />
-        </Form.Item>
-
-        <Form.Item label='Nhân viên' name='staff' rules={[{ required: true, message: 'Vui lòng chọn nhân viên!' }]}>
-          <Select placeholder='Chọn nhân viên'>
-            {staff.map((member) => (
-              <Select.Option key={member.StaffID} value={member.StaffID}>
-                {member.Name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Form.Item>
-        {/* Add more fields as necessary */}
-        <Form.Item>
-          <Button type='primary' htmlType='submit'>
-            Tạo chuyến đi
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
+          {/* Add more fields as necessary */}
+          <Form.Item>
+            <Button type='primary' htmlType='submit'>
+              Tạo chuyến đi mẫu
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
     </ConfigProvider>
   )
 }

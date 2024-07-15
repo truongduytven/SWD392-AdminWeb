@@ -63,8 +63,8 @@ type TicketType = {
   Status: string
 }
 interface TimeTrip {
-  startTime: string
-  endTime: string
+  StartTime: string
+  EndTime: string
 }
 const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
   const { user } = useAuth()
@@ -167,8 +167,8 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
           }
 
           timeTrips.push({
-            startTime: startTimeParsed.format('YYYY-MM-DDTHH:mm:ss'),
-            endTime: endTimeParsed.format('YYYY-MM-DDTHH:mm:ss')
+            StartTime: startTimeParsed.format('YYYY-MM-DDTHH:mm:ss'),
+            EndTime: endTimeParsed.format('YYYY-MM-DDTHH:mm:ss')
           })
         })
       })
@@ -188,7 +188,7 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
     const formData = new FormData()
 
     // formData.append('TimeTrips', requestData.TimeTrips)
-    formData.append('TimeTrips', JSON.stringify(requestData.TimeTrips));
+    formData.append('TimeTripsString', JSON.stringify(requestData.TimeTrips));
     formData.append('IsTemplate', values.isTemplate || false)
     formData.append('StaffID', requestData.StaffID || '')
     formData.append('TemplateID', values.templateID || '')
