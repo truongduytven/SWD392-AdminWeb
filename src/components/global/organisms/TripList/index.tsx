@@ -29,7 +29,7 @@ type Trip = {
   StartDate: string
   EndDate: string
   StaffName: string
-  StaffID:string
+  StaffID: string
   MinPrice: number
   MaxPrice: number
   Status: string
@@ -118,16 +118,16 @@ function ListTrip() {
       }
     }
   }
-  const handleAddTripSuccess = (newData:any) => {
+  const handleAddTripSuccess = (newData: any) => {
     setTrips((prevTrips) => {
       if (Array.isArray(newData)) {
-        return [...prevTrips, ...newData]; // If it's an array, spread the new data
+        return [...prevTrips, ...newData] // If it's an array, spread the new data
       } else {
-        return [...prevTrips, newData]; // If it's a single object, add it to the array
+        return [...prevTrips, newData] // If it's a single object, add it to the array
       }
-    });
-  };
-  
+    })
+  }
+
   const handleViewDetails = async (tripID: string) => {
     setIsLoadingDetailTrips(true)
     try {
@@ -164,26 +164,8 @@ function ListTrip() {
     setIsModalEditOpen(true)
   }
 
-  const handleUpdateTrip = async (updatedTrip: Trip) => {
-    setIsLoadingUpdate(true)
-    try {
-      const response = await busAPI.put(`trip-management/manage-trips/${updatedTrip.TripID}`, updatedTrip)
-      setTrips(trips.map(trip => trip.TripID === updatedTrip.TripID ? updatedTrip : trip))
-      toast({
-        variant: 'success',
-        title: 'Cập nhật thành công',
-        description: 'Thông tin chuyến đi đã được cập nhật'
-      })
-      setIsModalEditOpen(false)
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Không thể cập nhật chuyến đi',
-        description: 'Vui lòng thử lại sau'
-      })
-    } finally {
-      setIsLoadingUpdate(false)
-    }
+  const handleUpdateTrip = (updatedTrip: Trip) => {
+    setTrips(trips.map((trip) => (trip.TripID === updatedTrip.TripID ? updatedTrip : trip)))
   }
   if (isLoadingTrips) {
     return <TableSkeleton />
@@ -253,7 +235,12 @@ function ListTrip() {
         </Dialog>
       )}
 
-      <AddTripModal isModalVisible={isModalAddOpen} handleOk={handleOk} handleCancel={handleCancel}  onSuccess={handleAddTripSuccess}/>
+      <AddTripModal
+        isModalVisible={isModalAddOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        onSuccess={handleAddTripSuccess}
+      />
       <EditTripModal
         visible={isModalEditOpen}
         onClose={() => setIsModalEditOpen(false)}
