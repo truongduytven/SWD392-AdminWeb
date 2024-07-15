@@ -11,7 +11,8 @@ import {
   DatePicker,
   Switch,
   Flex,
-  DatePickerProps
+  DatePickerProps,
+  ConfigProvider
 } from 'antd'
 import { toast } from '../atoms/ui/use-toast'
 import busAPI from '@/lib/busAPI'
@@ -46,15 +47,19 @@ type Staff = {
   Status: string
 }
 type Utility = {
-    UtilityID: string
-    Name: string
-    Status:string
-    Description: string
+  UtilityID: string
+  Name: string
+  Status: string
+  Description: string
 }
 type TicketType = {
-    TicketTypeID: string
-    Name: string
-    Status: string
+  TicketTypeID: string
+  Name: string
+  Status: string
+}
+interface TimeTrip {
+  startTime: string
+  endTime: string
 }
 const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
   const { user } = useAuth()
@@ -62,12 +67,13 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
   const [form] = Form.useForm()
   const [routes, setRoutes] = useState<any[]>([]) // Adjust type as necessary
   const [staff, setStaff] = useState<Staff[]>([])
-  const [utilities, setUtilities] = useState<Utility[]>([]);
-  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]); // State to store ticket types
+  const [utilities, setUtilities] = useState<Utility[]>([])
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]) // State to store ticket types
   const [imageFiles, setImageFiles] = useState<any[]>([])
   const [isRange, setIsRange] = useState(false) // State to toggle between single and range date selection
   useEffect(() => {
     if (isModalVisible) {
+      
       form.setFieldsValue({
         times: [{ startTime: null, endTime: null }] // Set default values
       })
@@ -102,32 +108,41 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
       }
       const fetchUtilities = async () => {
         try {
-          const { data } = await busAPI.get('utility-management/managed-utilities'); // Replace with the correct path
-          setUtilities(data); // Set the fetched utilities
+          const { data } = await busAPI.get('utility-management/managed-utilities') // Replace with the correct path
+          setUtilities(data) // Set the fetched utilities
         } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Không thể tải dữ liệu tiện ích',
-                description: 'Vui lòng thử lại sau'
-              })
+          toast({
+            variant: 'destructive',
+            title: 'Không thể tải dữ liệu tiện ích',
+            description: 'Vui lòng thử lại sau'
+          })
           // Handle error
         }
-      };
-
+      }
 
       const fetchTicketTypes = async () => {
         try {
-          const { data } = await busAPI.get('trip-management/managed-trips/ticket-type'); // Replace with the correct path
-          setTicketTypes(data); // Set the fetched ticket types
+          const { data } = await busAPI.get('trip-management/managed-trips/ticket-type') // Replace with the correct path
+          setTicketTypes(data) // Set the fetched ticket types
         } catch (error) {
-            toast({
-                variant: 'destructive',
-                title: 'Không thể tải dữ liệu loại vé',
-                description: 'Vui lòng thử lại sau'
-              })
+          toast({
+            variant: 'destructive',
+            title: 'Không thể tải dữ liệu loại vé',
+            description: 'Vui lòng thử lại sau'
+          })
           // Handle error
         }
-      };
+
+        if (ticketTypes.length > 0) {
+            form.setFieldsValue({
+              ticketTypes: [
+                {
+                  ticketTypeID: ticketTypes[2].TicketTypeID
+                }
+              ]
+            })
+          }
+      }
       fetchRoutes()
       fetchStaff()
       fetchUtilities()
@@ -136,12 +151,22 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
   }, [isModalVisible, user?.CompanyID])
 
   console.log('route ơ tạo chuyen', routes)
-
+  // Custom validation rule to check for duplicate ticketTypeID
+  const uniqueTicketTypeIDRule = ({ getFieldValue }: any) => ({
+    validator(_, value: any) {
+      const ticketTypeIDs = getFieldValue('ticketTypes').map((ticket: any) => ticket.ticketTypeID)
+      const duplicates = ticketTypeIDs.filter((id: any) => id === value)
+      if (duplicates.length > 1) {
+        return Promise.reject(new Error('Mỗi loại vé phải là duy nhất!'))
+      }
+      return Promise.resolve()
+    }
+  })
   const onFinish = (values: any) => {
     // Format single date
     if (values.date) {
       const dates = Array.isArray(values.date) ? values.date : [values.date]
-      values.date = dates.map((date) => dayjs(date).format('YYYY-MM-DD')) // Format each date
+      values.date = dates.map((date: any) => dayjs(date).format('YYYY-MM-DD')) // Format each date
     }
 
     // Check if the dateRange field is provided
@@ -167,29 +192,10 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
         endTime: dayjs(time.endTime).format('HH:mm')
       }))
     }
-    const timeTrips = []
-
-    // Check if values.date is an array (for multiple dates)
-    // if (Array.isArray(values.date)) {
-    //   values.date.forEach((date) => {
-    //     values.times.forEach((time) => {
-    //       console.log('time', time)
-    //       // Combine date and time correctly
-    //       const startDateTime = `${date}T${time.startTime}`
-    //       const endDateTime = `${date}T${time.endTime}`
-
-    //       console.log('Combined Start Time:', startDateTime) // Log combined start time
-    //       console.log('Combined End Time:', endDateTime) // Log combined end time
-    //       timeTrips.push({
-    //         startTime: dayjs(`${date}T${time.startTime}`).format('YYYY-MM-DDTHH:mm:ss'),
-    //         endTime: dayjs(`${date}T${time.endTime}`).format('YYYY-MM-DDTHH:mm:ss')
-    //       })
-    //     })
-    //   })
-    // }
+    const timeTrips: TimeTrip[] = []
     if (Array.isArray(values.date)) {
-      values.date.forEach((date) => {
-        values.times.forEach((time) => {
+      values.date.forEach((date: any) => {
+        values.times.forEach((time: any) => {
           console.log('time', time) // Log the time object
 
           // Combine date and time correctly
@@ -209,8 +215,8 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
           }
 
           timeTrips.push({
-            startTime: startTimeParsed.format('YYYY-MM-DDTHH:mm'),
-            endTime: endTimeParsed.format('YYYY-MM-DDTHH:mm')
+            startTime: startTimeParsed.format('YYYY-MM-DDTHH:mm:ss'),
+            endTime: endTimeParsed.format('YYYY-MM-DDTHH:mm:ss')
           })
         })
       })
@@ -256,6 +262,18 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
     }
   }
   return (
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#F97316'
+        },
+        components: {
+          Button: {
+            colorTextLightSolid: '#fff'
+          }
+        }
+      }}
+    >
     <Modal title='Tạo chuyến đi' visible={isModalVisible} onCancel={onCancel} footer={null}>
       <Form form={form} onFinish={onFinish} className='h-[460px] overflow-y-auto'>
         <Form.Item label='Tuyến' name='route' rules={[{ required: true, message: 'Vui lòng chọn tuyến!' }]}>
@@ -269,20 +287,7 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
               ))}
           </Select>
         </Form.Item>
-        <Form.Item
-          label='Địa điểm bắt đầu'
-          name='startLocation'
-          rules={[{ required: true, message: 'Vui lòng nhập địa điểm bắt đầu!' }]}
-        >
-          <Input placeholder='Địa điểm bắt đầu' />
-        </Form.Item>
-        <Form.Item
-          label='Địa điểm kết thúc'
-          name='endLocation'
-          rules={[{ required: true, message: 'Vui lòng nhập địa điểm kết thúc!' }]}
-        >
-          <Input placeholder='Địa điểm kết thúc' />
-        </Form.Item>
+       
 
         <Form.Item label='Chọn loại ngày'>
           <Switch checked={isRange} onChange={setIsRange} />
@@ -302,103 +307,105 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
             <DatePicker multiple onChange={onChange} maxTagCount='responsive' format='YYYY/MM/DD' />
           </Form.Item>
         )}
+        <Form.Item label='Thời gian' rules={[{ required: true, message: 'Vui lòng chọn thời gian!' }]}>
+          <Form.List
+            name='times'
+            rules={[
+              {
+                validator: (_, times) =>
+                  times && times.length
+                    ? Promise.resolve()
+                    : Promise.reject(new Error('Vui lòng thêm ít nhất một khoảng thời gian!'))
+              }
+            ]}
+          >
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, fieldKey = key, ...restField }) => (
+                  <Space
+                    key={key}
+                    style={{ display: 'flex', justifyContent: 'start' ,alignItems:"start ", marginBottom: 0 }}
+                    // align='baseline'
+                  >
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'startTime']}
+                      fieldKey={[fieldKey, 'startTime']}
+                      rules={[{ required: true, message: 'Vui lòng chọn thời gian bắt đầu!' }]}
+                    >
+                      <TimePicker placeholder='Thời gian bắt đầu' format='HH:mm:ss' />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'endTime']}
+                      fieldKey={[fieldKey, 'endTime']}
+                      rules={[{ required: true, message: 'Vui lòng chọn thời gian kết thúc!' }]}
+                    >
+                      <TimePicker placeholder='Thời gian kết thúc' format='HH:mm:ss' />
+                    </Form.Item>
+                    <Minus className='w-4' onClick={() => remove(name)} style={{ cursor: 'pointer' }} />
+                  </Space>
+                ))}
 
-        <Form.List
-          name='times'
-          rules={[
-            {
-              validator: (_, times) =>
-                times && times.length
-                  ? Promise.resolve()
-                  : Promise.reject(new Error('Vui lòng thêm ít nhất một khoảng thời gian!'))
-            }
-          ]}
-        >
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name, fieldKey = key, ...restField }) => (
-                <Space
-                  key={key}
-                  style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}
-                  align='baseline'
-                >
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'startTime']}
-                    fieldKey={[fieldKey, 'startTime']}
-                    rules={[{ required: true, message: 'Vui lòng chọn thời gian bắt đầu!' }]}
-                  >
-                    <TimePicker placeholder='Thời gian bắt đầu' format='HH:mm' />
-                  </Form.Item>
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'endTime']}
-                    fieldKey={[fieldKey, 'endTime']}
-                    rules={[{ required: true, message: 'Vui lòng chọn thời gian kết thúc!' }]}
-                  >
-                    <TimePicker placeholder='Thời gian kết thúc' format='HH:mm' />
-                  </Form.Item>
-                  <Minus className='w-4' onClick={() => remove(name)} style={{ cursor: 'pointer' }} />
-                </Space>
-              ))}
-
-
-              <Form.Item>
-                <Button type='dashed' onClick={() => add()} icon={<Plus />}>
-                  Thêm thời gian
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
- <Form.List name="ticketTypes">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name, fieldKey=key, ...restField }) => (
-                <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'ticketTypeID']}
-                    fieldKey={[fieldKey, 'ticketTypeID']}
-                    rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }]}
-                  >
-                    <Select placeholder="Chọn loại vé" style={{ width: 200 }}>
-                      {ticketTypes.map(ticket => (
-                        <Select.Option key={ticket.TicketTypeID} value={ticket.TicketTypeID}>
-                          {ticket.Name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'price']}
-                    fieldKey={[fieldKey, 'price']}
-                    rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
-                  >
-                    <Input placeholder="Giá vé" type="number" />
-                  </Form.Item>
-                  <Form.Item
-                    {...restField}
-                    name={[name, 'quantity']}
-                    fieldKey={[fieldKey, 'quantity']}
-                    rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
-                  >
-                    <Input placeholder="Số lượng vé" type="number" />
-                  </Form.Item>
-                  <Button type="primary" onClick={() => remove(name)}>
-                    Xóa
+                <Form.Item>
+                  <Button type='dashed' className='mx-auto' onClick={() => add()} icon={<Plus />}>
+                    Thêm thời gian
                   </Button>
-                </Space>
-              ))}
-              <Form.Item>
-                <Button type="dashed" onClick={() => add()} block icon={<UploadOutlined />}>
-                  Thêm loại vé
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        </Form.Item>
+        <Form.Item label='Loại vé' rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }]}>
+          <Form.List name='ticketTypes'>
+            {(fields, { add, remove }) => (
+              <>
+                {fields.map(({ key, name, fieldKey = key, ...restField }) => (
+                  <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align='baseline'>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'ticketTypeID']}
+                      fieldKey={[fieldKey, 'ticketTypeID']}
+                      rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }, uniqueTicketTypeIDRule]}
+                    >
+                      <Select placeholder='Chọn loại vé' style={{ width: 200 }}>
+                        {ticketTypes.map((ticket) => (
+                          <Select.Option key={ticket.TicketTypeID} value={ticket.TicketTypeID}>
+                            {ticket.Name}
+                          </Select.Option>
+                        ))}
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'price']}
+                      fieldKey={[fieldKey, 'price']}
+                      rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
+                    >
+                      <Input placeholder='Giá vé' type='number' />
+                    </Form.Item>
+                    <Form.Item
+                      {...restField}
+                      name={[name, 'quantity']}
+                      fieldKey={[fieldKey, 'quantity']}
+                      rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
+                    >
+                      <Input placeholder='Số lượng vé' type='number' />
+                    </Form.Item>
+                    <Button type='primary' onClick={() => remove(name)}>
+                      Xóa
+                    </Button>
+                  </Space>
+                ))}
+                <Form.Item>
+                  <Button type='dashed' onClick={() => add()} block icon={<UploadOutlined />}>
+                    Thêm loại vé
+                  </Button>
+                </Form.Item>
+              </>
+            )}
+          </Form.List>
+        </Form.Item>
         <Form.Item label='Hình ảnh' name='images' rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}>
           <Upload
             multiple
@@ -420,9 +427,9 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
           <Select
             mode='multiple'
             placeholder='Chọn mô hình tiện ích'
-            options={utilities.map(utility => ({
+            options={utilities.map((utility) => ({
               label: utility.Name,
-              value: utility.UtilityID,
+              value: utility.UtilityID
             }))}
           />
         </Form.Item>
@@ -444,6 +451,7 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
         </Form.Item>
       </Form>
     </Modal>
+    </ConfigProvider>
   )
 }
 export default AddTripModal
