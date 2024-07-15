@@ -117,6 +117,16 @@ function ListTrip() {
       }
     }
   }
+  const handleAddTripSuccess = (newData:any) => {
+    setTrips((prevTrips) => {
+      if (Array.isArray(newData)) {
+        return [...prevTrips, ...newData]; // If it's an array, spread the new data
+      } else {
+        return [...prevTrips, newData]; // If it's a single object, add it to the array
+      }
+    });
+  };
+  
   const handleViewDetails = async (tripID: string) => {
     setIsLoadingDetailTrips(true)
     try {
@@ -242,7 +252,7 @@ function ListTrip() {
         </Dialog>
       )}
 
-      <AddTripModal isModalVisible={isModalAddOpen} handleOk={handleOk} handleCancel={handleCancel} />
+      <AddTripModal isModalVisible={isModalAddOpen} handleOk={handleOk} handleCancel={handleCancel}  onSuccess={handleAddTripSuccess}/>
       <EditTripModal
         visible={isModalEditOpen}
         onClose={() => setIsModalEditOpen(false)}

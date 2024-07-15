@@ -25,11 +25,13 @@ import { Minus, Plus } from 'lucide-react'
 import dayjs, { Dayjs } from 'dayjs'
 import TripDetailModal from './TripDetailModal'
 import TemplateCard from './TemplateCard'
+import axios from 'axios'
 
 interface AddTripModalProps {
   isModalVisible: boolean
   handleOk: () => void
   handleCancel: () => void
+  onSuccess: (trip: any) => void
 }
 
 type Route = {
@@ -66,7 +68,7 @@ interface TimeTrip {
   StartTime: string
   EndTime: string
 }
-const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
+const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel, onSuccess }) => {
   const { user } = useAuth()
 
   const [form] = Form.useForm()
@@ -188,7 +190,7 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
     const formData = new FormData()
 
     // formData.append('TimeTrips', requestData.TimeTrips)
-    formData.append('TimeTripsString', JSON.stringify(requestData.TimeTrips));
+    formData.append('TimeTripsString', JSON.stringify(requestData.TimeTrips))
     formData.append('IsTemplate', values.isTemplate || false)
     formData.append('StaffID', requestData.StaffID || '')
     formData.append('TemplateID', values.templateID || '')
@@ -202,7 +204,8 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
       .then((response) => {
         form.resetFields()
         handleOk()
-        console.log('Response:', response.data)
+        onSuccess(response.data.Result)
+        console.log('Response:', response.data.Result)
         form.resetFields()
         toast({
           variant: 'success',
@@ -211,6 +214,10 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
         })
       })
       .catch((error) => {
+        if (axios.isAxiosError(error) && error.response) {
+          const messagess = error.response.data.Result.message
+          message.error(messagess)
+        }
         message.error('Lỗi tạo chuyến xe')
         console.error('Error:', error)
       })

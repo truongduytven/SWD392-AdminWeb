@@ -299,6 +299,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
                     placeholder='Select Type ID'
                     onChange={(value) => handleTypeIDChange(value, name)}
                     style={{ width: '150px', marginLeft: '8px' }}
+                    onMouseDown={(e) => e.stopPropagation()}
                   >
                     {/* Example options, replace with your actual type ID options */}
                     <Select.Option value="type1">Type 1</Select.Option>
@@ -327,10 +328,11 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
                   {/* Render ServiceID input only for newly added items */}
                   {selectedTypeIDs[serviceID] && (
                     <Form.Item
-                      name={[serviceID, 'serviceId']} // Use 'serviceId' as the key for ServiceID
-                      label='Service ID'
-                      rules={[{ required: true, message: 'Please enter a Service ID' }]}
-                    >
+                    name={[serviceID, 'serviceId']} // Use 'serviceId' as the key for ServiceID
+                    label='Service ID'
+                    initialValue={selectedTypeIDs[serviceID]} // Pre-fill with the selected Type ID
+                    rules={[{ required: true, message: 'Please enter a Service ID' }]}
+                  >
                       <Input placeholder='Enter Service ID' />
                     </Form.Item>
                   )}
