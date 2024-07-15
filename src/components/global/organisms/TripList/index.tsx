@@ -13,26 +13,24 @@ import axios from 'axios'
 import TableSkeleton from '../TableSkeleton'
 import { Dialog, DialogContent, DialogOverlay } from '../../atoms/ui/dialog'
 import { Button } from '../../atoms/ui/button'
-import { Loader } from 'lucide-react'
+import { Loader, Plus } from 'lucide-react'
 import TripDetailModal from '../TripDetailModal'
+import AddTripModal from '../AddTripModal'
 
-
-
- 
 type Trip = {
   TripID: string
-    FromCity: string
-    ToCity:string
-    StartLocation: string
-    EndLocation: string
-    StartTime: string
-    EndTime: string
-    StartDate: string
-    EndDate: string
-    StaffName: string
-    MinPrice: number
-    MaxPrice: number
-    Status: string
+  FromCity: string
+  ToCity: string
+  StartLocation: string
+  EndLocation: string
+  StartTime: string
+  EndTime: string
+  StartDate: string
+  EndDate: string
+  StaffName: string
+  MinPrice: number
+  MaxPrice: number
+  Status: string
 }
 
 function ListTrip() {
@@ -43,6 +41,7 @@ function ListTrip() {
   const [isLoadingDetailTrips, setIsLoadingDetailTrips] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isModalAddOpen, setIsModalAddOpen] = useState(false)
   const [isModalDetailOpen, setIsModalDetailOpen] = useState(false)
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null)
   const [newStatus, setNewStatus] = useState<string>('')
@@ -87,12 +86,8 @@ function ListTrip() {
     if (selectedTrip) {
       try {
         const response = await busAPI.put(`status-management?entity=TRIP&id=${selectedTrip.TripID}`)
-        
-        setTrips(
-          trips.map((trip) =>
-            trip.TripID === selectedTrip.TripID ? { ...trip, Status: newStatus } : trip
-          )
-        )
+
+        setTrips(trips.map((trip) => (trip.TripID === selectedTrip.TripID ? { ...trip, Status: newStatus } : trip)))
         setTempStatus({ ...tempStatus, [selectedTrip.TripID]: newStatus })
         setIsModalOpen(false)
         toast({
@@ -124,7 +119,7 @@ function ListTrip() {
     setIsLoadingDetailTrips(true)
     try {
       const { data } = await busAPI.get<any>(`trip-management/manage-trips/${tripID}/details`)
-      console.log("chi tiey xe", data)
+      console.log('chi tiey xe', data)
 
       setSelectedTripDetails(data)
       setIsModalDetailOpen(true)
@@ -139,13 +134,34 @@ function ListTrip() {
       setIsLoadingDetailTrips(false)
     }
   }
+
+  const showAddTripModal = () => {
+    setIsModalAddOpen(true)
+  }
+
+  const handleOk = () => {
+    setIsModalAddOpen(false)
+  }
+
+  const handleCancel = () => {
+    setIsModalAddOpen(false)
+  }
   if (isLoadingTrips) {
     return <TableSkeleton />
   }
 
   return (
     <div className='flex h-full flex-1 flex-col '>
-      <h1 className='my-4 border-b pb-2  text-3xl font-semibold tracking-wider first:mt-0 '>Danh sách chuyến đi</h1>
+      <div className='flex justify-between'>
+        <h1 className='my-4 border-b pb-2 text-3xl font-semibold tracking-wider first:mt-0'>Danh sách chuyến đi</h1>
+        <Button
+          className='flex justify-center items-center bg-white border-primary border-[1px] text-primary hover:bg-primary hover:text-white'
+          onClick={showAddTripModal}
+        >
+          <Plus className='w-6 mr-1' />
+          Tạo chuyến đi
+        </Button>
+      </div>
       <DataTable
         data={trips}
         columns={columns(handleStatusChange, handleViewDetails)}
@@ -158,7 +174,10 @@ function ListTrip() {
           <DialogContent>
             <h3 className='text-lg font-medium leading-6 text-gray-900'>Xác nhận thay đổi trạng thái</h3>
             <div className='mt-2'>
-              <p>Bạn có chắc chắn muốn thay đổi trạng thái của chuyến xe này? Lưu ý: Chuyến xe sẽ không được hủy nếu đã có vé đặt!</p>
+              <p>
+                Bạn có chắc chắn muốn thay đổi trạng thái của chuyến xe này? Lưu ý: Chuyến xe sẽ không được hủy nếu đã
+                có vé đặt!
+              </p>
             </div>
             <div className='mt-4 flex justify-end space-x-2'>
               <Button variant='secondary' onClick={() => setIsModalOpen(false)}>
@@ -172,7 +191,7 @@ function ListTrip() {
         </Dialog>
       )}
 
-       {isModalDetailOpen && (
+      {isModalDetailOpen && (
         <Dialog open={isModalDetailOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className='bg-/60' />
           <DialogContent>
@@ -180,7 +199,7 @@ function ListTrip() {
               <>
                 <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết chuyến đi</h3>
                 <div className='mt-2'>
-                 <TripDetailModal trip={selectedTripDetails}/>
+                  <TripDetailModal trip={selectedTripDetails} />
                 </div>
                 <div className='mt-4 flex justify-end space-x-2'>
                   <Button className='bg-primary' onClick={() => setIsModalDetailOpen(false)}>
@@ -193,7 +212,9 @@ function ListTrip() {
             )}
           </DialogContent>
         </Dialog>
-      )} 
+      )}
+
+      <AddTripModal isModalVisible={isModalAddOpen} handleOk={handleOk} handleCancel={handleCancel} />
     </div>
   )
 }
