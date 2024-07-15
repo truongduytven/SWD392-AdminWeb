@@ -45,12 +45,25 @@ type Staff = {
   PhoneNumber: string
   Status: string
 }
+type Utility = {
+    UtilityID: string
+    Name: string
+    Status:string
+    Description: string
+}
+type TicketType = {
+    TicketTypeID: string
+    Name: string
+    Status: string
+}
 const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
   const { user } = useAuth()
 
   const [form] = Form.useForm()
   const [routes, setRoutes] = useState<any[]>([]) // Adjust type as necessary
   const [staff, setStaff] = useState<Staff[]>([])
+  const [utilities, setUtilities] = useState<Utility[]>([]);
+  const [ticketTypes, setTicketTypes] = useState<TicketType[]>([]); // State to store ticket types
   const [imageFiles, setImageFiles] = useState<any[]>([])
   const [isRange, setIsRange] = useState(false) // State to toggle between single and range date selection
   useEffect(() => {
@@ -87,9 +100,38 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
           console.error('Failed to fetch staff:', error)
         }
       }
+      const fetchUtilities = async () => {
+        try {
+          const { data } = await busAPI.get('utility-management/managed-utilities'); // Replace with the correct path
+          setUtilities(data); // Set the fetched utilities
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Không thể tải dữ liệu tiện ích',
+                description: 'Vui lòng thử lại sau'
+              })
+          // Handle error
+        }
+      };
 
+
+      const fetchTicketTypes = async () => {
+        try {
+          const { data } = await busAPI.get('trip-management/managed-trips/ticket-type'); // Replace with the correct path
+          setTicketTypes(data); // Set the fetched ticket types
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Không thể tải dữ liệu loại vé',
+                description: 'Vui lòng thử lại sau'
+              })
+          // Handle error
+        }
+      };
       fetchRoutes()
       fetchStaff()
+      fetchUtilities()
+      fetchTicketTypes()
     }
   }, [isModalVisible, user?.CompanyID])
 
@@ -299,6 +341,8 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
                   <Minus className='w-4' onClick={() => remove(name)} style={{ cursor: 'pointer' }} />
                 </Space>
               ))}
+
+
               <Form.Item>
                 <Button type='dashed' onClick={() => add()} icon={<Plus />}>
                   Thêm thời gian
@@ -307,7 +351,54 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
             </>
           )}
         </Form.List>
-
+ <Form.List name="ticketTypes">
+          {(fields, { add, remove }) => (
+            <>
+              {fields.map(({ key, name, fieldKey=key, ...restField }) => (
+                <Space key={key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'ticketTypeID']}
+                    fieldKey={[fieldKey, 'ticketTypeID']}
+                    rules={[{ required: true, message: 'Vui lòng chọn loại vé!' }]}
+                  >
+                    <Select placeholder="Chọn loại vé" style={{ width: 200 }}>
+                      {ticketTypes.map(ticket => (
+                        <Select.Option key={ticket.TicketTypeID} value={ticket.TicketTypeID}>
+                          {ticket.Name}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'price']}
+                    fieldKey={[fieldKey, 'price']}
+                    rules={[{ required: true, message: 'Vui lòng nhập giá vé!' }]}
+                  >
+                    <Input placeholder="Giá vé" type="number" />
+                  </Form.Item>
+                  <Form.Item
+                    {...restField}
+                    name={[name, 'quantity']}
+                    fieldKey={[fieldKey, 'quantity']}
+                    rules={[{ required: true, message: 'Vui lòng nhập số lượng vé!' }]}
+                  >
+                    <Input placeholder="Số lượng vé" type="number" />
+                  </Form.Item>
+                  <Button type="primary" onClick={() => remove(name)}>
+                    Xóa
+                  </Button>
+                </Space>
+              ))}
+              <Form.Item>
+                <Button type="dashed" onClick={() => add()} block icon={<UploadOutlined />}>
+                  Thêm loại vé
+                </Button>
+              </Form.Item>
+            </>
+          )}
+        </Form.List>
         <Form.Item label='Hình ảnh' name='images' rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}>
           <Upload
             multiple
@@ -320,6 +411,22 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
             <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
           </Upload>
         </Form.Item>
+
+        <Form.Item
+          label='Mô hình tiện ích'
+          name='utilityModels'
+          rules={[{ required: true, message: 'Vui lòng chọn ít nhất một mô hình tiện ích!' }]}
+        >
+          <Select
+            mode='multiple'
+            placeholder='Chọn mô hình tiện ích'
+            options={utilities.map(utility => ({
+              label: utility.Name,
+              value: utility.UtilityID,
+            }))}
+          />
+        </Form.Item>
+
         <Form.Item label='Nhân viên' name='staff' rules={[{ required: true, message: 'Vui lòng chọn nhân viên!' }]}>
           <Select placeholder='Chọn nhân viên'>
             {staff.map((member) => (
