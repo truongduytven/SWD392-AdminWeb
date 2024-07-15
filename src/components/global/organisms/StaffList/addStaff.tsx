@@ -15,11 +15,13 @@ import { AddStaffSchema } from '@/components/Schema/AddStaffSchema'
 import { PasswordInput } from '../../atoms/ui/password-input'
 import busAPI from '@/lib/busAPI'
 import Loading from '@/components/local/login/Loading'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function AddStaff() {
   const { user } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
+  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof AddStaffSchema>>({
     resolver: zodResolver(AddStaffSchema),
     defaultValues: {
@@ -38,12 +40,12 @@ export function AddStaff() {
     try {
       setLoading(true)
       data = { ...data, companyID: user?.CompanyID || '' }
-      const response = await busAPI.post(`/auth-management/managed-auths/sign-ups`, data)
-      console.log(response)
+      await busAPI.post(`/auth-management/managed-auths/sign-ups`, data)
       setLoading(false)
       setIsOpen(false)
       form.reset()
       toast.success('Tạo nhân viên thành công')
+      refetchData()
     } catch (error) {
       setLoading(false)
       toast.error('Lỗi trong quá trình tạo mới nhân viên')
@@ -54,6 +56,10 @@ export function AddStaff() {
     isOpen === true ? setIsOpen(false) : setIsOpen(true)
     form.reset()
   }
+
+  const refetchData = () => {
+    queryClient.invalidateQueries({ queryKey: ['staff'] });
+  };
 
   return (
     <div>

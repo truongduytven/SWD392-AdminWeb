@@ -9,6 +9,7 @@ import { Button } from '../../atoms/ui/button';
 import { Loader } from 'lucide-react';
 import { columns } from './columns';
 import TableSkeleton from '../TableSkeleton';
+import { fetchStaff } from '@/apis/staffAPI';
 
 type Staff = {
   StaffID: string;
@@ -27,33 +28,18 @@ function ListStaff() {
   const [isLoadingStaffs, setIsLoadingStaffs] = useState(true);
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newStatus, setNewStatus] = useState<string>('')
   const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
+  const { data, refetch } = fetchStaff(user?.CompanyID || '');
 
   useEffect(() => {
-    const fetchRoutes = async () => {
-      try {
-        const { data } = await busAPI.get<Staff[]>(`user-management/managed-users/staff/${user?.CompanyID}`);
-        setStaffs(data || []);
-        setIsLoadingStaffs(true);
-      } catch (error) {
-        toast({
-          variant: 'destructive',
-          title: 'Không thể tải dữ liệu nhân viên',
-          description: 'Vui lòng thử lại sau',
-        });
-        console.log(error);
-      } finally {
-        setIsLoadingStaffs(false);
-      }
-    };
-
-    fetchRoutes();
-  }, [user]);
+    if (data) {
+      setStaffs(data);
+      setIsLoadingStaffs(false);
+    }
+  }, [data]);
 
   const handleChangeStatus = (staff: Staff, status: string) => {
     setSelectedStaff(staffs.find((data) => data.StaffID === staff.StaffID) || null);
-    setNewStatus(status);
     setIsModalOpen(true);
   };
 
@@ -62,11 +48,7 @@ function ListStaff() {
     setIsLoadingUpdate(true);
     try {
       await busAPI.put(`status-management?entity=USER&id=${selectedStaff.StaffID}`);
-      setStaffs(
-        staffs.map((staff) =>
-          staff.StaffID === selectedStaff.StaffID ? { ...staff, Status: newStatus } : staff
-        )
-      )
+      refetch();
       toast({
         variant: 'success',
         title: 'Trạng thái đã được thay đổi',

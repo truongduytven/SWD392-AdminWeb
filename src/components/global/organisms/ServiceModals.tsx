@@ -161,6 +161,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
   const inputRef = useRef<InputRef>(null)
   const [fileLists, setFileLists] = useState<{ [key: string]: any[] }>({})
   const [imagePreviews, setImagePreviews] = useState<{ [key: string]: string[] }>({})
+  
   const fetchItems = async () => {
     try {
       const response = await busAPI.get('service-management/managed-services')
@@ -226,7 +227,6 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
 
   const handleFormFinish = async (values: any) => {
     console.log('Submitted values:', values)
-    // Handle the submission logic here (e.g., sending the data to the API)
     onOk() // Close the modal after handling the submission
   }
 
