@@ -1,0 +1,11 @@
+
+  .icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }

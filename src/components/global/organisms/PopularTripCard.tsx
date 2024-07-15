@@ -23,13 +23,13 @@ export type PopularTripProps = {
             <MapPinned />
           </div>
           <div className='text-sm'>
-            <p>{props.data?.FromCity} đến {props.data?.ToCity}</p>
+            <p>{props.data?.fromCity} đến {props.data?.toCity}</p>
             <div className='text-ellipsis overflow-hidden whitespace-nowrap w-[120px]  sm:w-auto  text-gray-400'>
-              {props.data?.StartLocation} đến {props.data?.EndLocation}
+              {props.data?.startLocation} đến {props.data?.endLocation}
             </div>
           </div>
         </section>
-        <p>{props.data?.TotalBooking} vé</p>
+        <p>{props.data?.totalBooking} vé</p>
       </div>
     )
   }

@@ -9,22 +9,10 @@ import { DataTableFacetedFilter } from '../table/faceted-filter'
 import { DataTableViewOptions } from '../table/view-options'
 import { Button } from '@/components/global/atoms/ui/button'
 import { Input } from '@/components/global/atoms/ui/input'
+import { AddStaff } from './addStaff'
 
 export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
   const isFiltered = table.getState().columnFilters.length > 0
-
-  const uniqueFromCity = Array.from(table.getColumn('FromCity')?.getFacetedUniqueValues()?.entries() || []).map(
-    ([key]) => key
-  )
-  const uniqueToCity = Array.from(table.getColumn('ToCity')?.getFacetedUniqueValues()?.entries() || []).map(
-    ([key]) => key
-  )
-  const uniqueStartLocation = Array.from(
-    table.getColumn('StartLocation')?.getFacetedUniqueValues()?.entries() || []
-  ).map(([key]) => key)
-  const uniqueEndLocation = Array.from(table.getColumn('EndLocation')?.getFacetedUniqueValues()?.entries() || []).map(
-    ([key]) => key
-  )
   const uniqueStatus = Array.from(table.getColumn('Status')?.getFacetedUniqueValues()?.entries() || []).map(
     ([key]) => key
   )
@@ -33,23 +21,10 @@ export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
     <div className='mb-2 flex justify-between'>
       <div className='flex space-x-2 '>
         <Input
-          placeholder='Tìm chuyến bắt đầu từ tp...'
+          placeholder='Tìm kiếm nhân viên...'
           value={(table.getColumn('FromCity')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('FromCity')?.setFilterValue(event.target.value)}
           className='h-8 w-[150px] lg:w-[250px]'
-        />
-
-       
-        <DataTableFacetedFilter column={table.getColumn('ToCity')} title='Đến thành phố' options={uniqueToCity} />
-        <DataTableFacetedFilter
-          column={table.getColumn('StartLocation')}
-          title='Địa điểm bắt đầu'
-          options={uniqueStartLocation}
-        />
-        <DataTableFacetedFilter
-          column={table.getColumn('EndLocation')}
-          title='Địa điểm kết thúc'
-          options={uniqueEndLocation}
         />
         <DataTableFacetedFilter column={table.getColumn('Status')} title='Trạng thái' options={uniqueStatus} />
 
@@ -60,7 +35,8 @@ export function DataTableToolbar<TData>({ table }: { table: Table<TData> }) {
           </Button>
         )}
       </div>
-      <div>
+      <div className='flex justify-center'>
+        <AddStaff />
         <DataTableViewOptions table={table} />
       </div>
     </div>
