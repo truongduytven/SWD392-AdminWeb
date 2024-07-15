@@ -62,7 +62,7 @@ interface TimeTrip {
   startTime: string
   endTime: string
 }
-const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
+const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
   const { user } = useAuth()
 
   const [form] = Form.useForm()
@@ -500,4 +500,4 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
     </ConfigProvider>
   )
 }
-export default AddTripModal
+export default AddTemplate
