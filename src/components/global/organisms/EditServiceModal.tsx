@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Modal, Input, Form, ConfigProvider, Upload, Button } from 'antd'
+import { Modal, Input, Form, ConfigProvider, Upload, Button, message } from 'antd'
 import { UploadOutlined } from '@ant-design/icons'
 import { ArrowRightLeft, Pen } from 'lucide-react'
 import busAPI from '@/lib/busAPI'
@@ -22,7 +22,7 @@ interface EditServiceModalProps {
 export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onOk, service, onUpdate }) => {
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<any[]>([]) // For the new image
-
+  const [isLoading, setIsLoading] = useState(false)
   useEffect(() => {
     if (service) {
       form.setFieldsValue({
@@ -37,6 +37,7 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
     form
       .validateFields()
       .then(async (values) => {
+        setIsLoading(true)
         try {
           // Prepare data for the API request
           const formData = new FormData()
@@ -46,24 +47,31 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
           }
 
           // API request to update the service
-          const response = await busAPI.put(`station-service-management/managed-station-services/${service?.Service_StationID}`, formData)
-          console.log('thanh cong', response)
+          const response = await busAPI.put(
+            `station-service-management/managed-station-services/${service?.Service_StationID}`,
+            formData
+          )
+          // console.log('thanh cong', response)
           const updateService: Service = {
-            Service_StationID: service?.Service_StationID || "",
-            Name: service?.Name || "",
-            ServiceID: service?.ServiceID || "",
+            Service_StationID: service?.Service_StationID || '',
+            Name: service?.Name || '',
+            ServiceID: service?.ServiceID || '',
             Price: values.Price, // Use values.Price
-            ImageUrl: fileList.length > 0 ? URL.createObjectURL(fileList[0].originFileObj) : service?.ImageUrl || "",
-          };
-          console.log("update service ne", updateService);
+            ImageUrl: fileList.length > 0 ? URL.createObjectURL(fileList[0].originFileObj) : service?.ImageUrl || ''
+          }
+          // console.log("update service ne", updateService);
           // if (response.status === 200) {
           //   message.success('Service updated successfully!');
+          message.success("Cập nhật dịch vụ thành công!")
           onUpdate(updateService) // Update parent state with the new service data
           onOk() // Close the modal
           // }
         } catch (error) {
+          message.error("Cập nhật thất bại vui lòng thử lại sau!")
           // message.error('Failed to update service. Please try again.');
           console.error(error)
+        }finally{
+          setIsLoading(false)
         }
       })
       .catch((info) => {
@@ -92,7 +100,14 @@ export const EditServiceModal: React.FC<EditServiceModalProps> = ({ visible, onO
         }
       }}
     >
-      <Modal title='Chỉnh sửa dịch vụ' visible={visible} onOk={handleOk} onCancel={onOk}>
+      <Modal title='Chỉnh sửa dịch vụ' visible={visible} onOk={handleOk} onCancel={onOk}  footer={[
+          <Button key="cancel" onClick={onOk}>
+            Hủy
+          </Button>,
+          <Button key="submit" type="primary" loading={isLoading} onClick={handleOk}>
+            {isLoading ? 'Đang cập nhật...' : 'Câp nhật'}
+          </Button>
+        ]}>
         <Form form={form} layout='vertical'>
           <Form.Item label='Tên dịch vụ:'>
             <Input value={service?.Name} readOnly />

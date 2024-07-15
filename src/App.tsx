@@ -10,6 +10,7 @@ import ManagerProtectedRoute from './auth/ManagerProtectedRoute'
 import { useAuth } from './auth/AuthProvider'
 import NotFoundPage from './components/global/templates/NotFoundPage'
 import ProfilePage from './components/global/templates/ProfilePage'
+import Template from './components/global/templates/Template'
 const RouteLayout = React.lazy(() => import('./components/global/Layout/RouteLayout'))
 const UsersPage = React.lazy(() => import('./components/global/templates/Users'))
 const CompaniesPage = React.lazy(() => import('./components/global/templates/Companies'))
@@ -137,11 +138,11 @@ function App() {
           }
         />
         <Route
-          path='/services'
+          path='/templates'
           element={
             <ManagerProtectedRoute>
               <Suspense fallback={<Loader />}>
-                <ServicePage />
+                <Template />
               </Suspense>
             </ManagerProtectedRoute>
           }

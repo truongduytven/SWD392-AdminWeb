@@ -51,7 +51,7 @@ export function DateRangeFilter<TData, TValue>({
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
-				<Button variant="outline" size="sm" className="h-8 border-dashed">
+				<Button variant="outline" size="sm" className="h-8 border-dashed " >
 					{date?.from ? (
 						date.to ? (
 							<>
@@ -65,7 +65,7 @@ export function DateRangeFilter<TData, TValue>({
 					)}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-full p-0" align="start">
+			<PopoverContent className="w-full p-0 " align="start">
 				<Calendar initialFocus mode="range" selected={date} onSelect={setDate} numberOfMonths={1} />
 			</PopoverContent>
 		</Popover>

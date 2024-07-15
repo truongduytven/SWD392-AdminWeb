@@ -7,23 +7,27 @@ import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
 import { Eye } from 'lucide-react'
-type Route = {
-  Route_CompanyID: string
-  RouteID: string
+type Trip = {
+  TripID: string
   FromCity: string
   ToCity: string
   StartLocation: string
   EndLocation: string
+  StartTime: string
+  EndTime: string
+  StartDate: string
+  EndDate: string
+  StaffName: string
+  MinPrice: number
+  MaxPrice: number
   Status: string
 }
-
 export const columns = (
-  handleStatusChange: (route: Route, status: string) => void,
-  handleViewDetails: (routeId: string) => void,
-  openEditRouteModal: (route: Route) => void // Add this parameter
-): ColumnDef<Route>[] => [
+  handleStatusChange: (trip: Trip, status: string) => void,
+  handleViewDetails: (routeId: string) => void
+): ColumnDef<Trip>[] => [
   {
-    accessorKey: 'Route_CompanyID',
+    accessorKey: 'TripID',
     header: ({ column }) => null,
     cell: ({ row }) => null
   },
@@ -57,6 +61,29 @@ export const columns = (
     cell: ({ row }) => <div className='font-medium'>{row.getValue('EndLocation')}</div>,
     filterFn: (row, id, value) => value.includes(row.getValue(id))
   },
+  {
+    accessorFn: (row) => `${row.StartTime} - ${row.EndTime}`,
+    id: 'StartEndTime',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Thời gian' />,
+    cell: ({ row }) => <div className='font-medium'>{row.getValue('StartEndTime')}</div>
+  },
+  {
+    accessorKey: 'StartDate',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Ngày bắt đầu' />,
+    cell: ({ row }) => <div>{row.getValue('StartDate')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id))
+  },
+  {
+    accessorKey: 'EndDate',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Ngày kết thúc' />,
+    cell: ({ row }) => <div>{row.getValue('EndDate')}</div>,
+    filterFn: (row, id, value) => value.includes(row.getValue(id))
+  },
+  {
+    accessorKey: 'StaffName',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Tên nhân viên' />,
+    cell: ({ row }) => <div>{row.getValue('StaffName')}</div>
+  },
 
   {
     accessorKey: 'Status',
@@ -68,19 +95,8 @@ export const columns = (
     id: 'view',
     header: 'Xem',
     cell: ({ row }) => (
-      <Tooltip title='Xem trạm dừng' className='mr-1'>
-        <Eye className='cursor-pointer w-4 text-primary' onClick={() => handleViewDetails(row.original.RouteID)} />
-      </Tooltip>
-    )
-  },
-  {
-    id: 'edit',
-    header: 'Chỉnh sửa',
-    cell: ({ row }) => (
-      <Tooltip title='Chỉnh sửa tuyến' className='mr-1'>
-        <span className='cursor-pointer text-primary' onClick={() => openEditRouteModal(row.original)}>
-          Chỉnh sửa
-        </span>
+      <Tooltip title='Xem chi tiết' className='mr-1'>
+        <Eye className='cursor-pointer w-4 text-primary' onClick={() => handleViewDetails(row.original.TripID)} />
       </Tooltip>
     )
   }
