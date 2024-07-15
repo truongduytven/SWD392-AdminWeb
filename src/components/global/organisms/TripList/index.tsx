@@ -14,6 +14,7 @@ import TableSkeleton from '../TableSkeleton'
 import { Dialog, DialogContent, DialogOverlay } from '../../atoms/ui/dialog'
 import { Button } from '../../atoms/ui/button'
 import { Loader } from 'lucide-react'
+import TripDetailModal from '../TripDetailModal'
 
 
 
@@ -39,6 +40,7 @@ function ListTrip() {
   console.log('user o route', user)
   const [trips, setTrips] = useState<Trip[]>([])
   const [isLoadingTrips, setIsLoadingTrips] = useState(true)
+  const [isLoadingDetailTrips, setIsLoadingDetailTrips] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isModalDetailOpen, setIsModalDetailOpen] = useState(false)
@@ -118,20 +120,23 @@ function ListTrip() {
       }
     }
   }
-  const handleViewDetails = async (routeId: string) => {
-    setIsLoadingTrips(true)
+  const handleViewDetails = async (tripID: string) => {
+    setIsLoadingDetailTrips(true)
     try {
-      const { data } = await busAPI.get<any>(`route-management/station-details/${routeId}`)
-      selectedTripDetails(data)
-      setIsModalOpen(true)
+      const { data } = await busAPI.get<any>(`trip-management/manage-trips/${tripID}/details`)
+      console.log("chi tiey xe", data)
+
+      setSelectedTripDetails(data)
+      setIsModalDetailOpen(true)
     } catch (error) {
+      console.log(error)
       toast({
         variant: 'destructive',
         title: 'Không thể tải chi tiết chuyến đi',
         description: 'Vui lòng thử lại sau'
       })
     } finally {
-      setIsLoadingTrips(false)
+      setIsLoadingDetailTrips(false)
     }
   }
   if (isLoadingTrips) {
@@ -168,19 +173,17 @@ function ListTrip() {
       )}
 
        {isModalDetailOpen && (
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <Dialog open={isModalDetailOpen} onOpenChange={setIsModalOpen}>
           <DialogOverlay className='bg-/60' />
           <DialogContent>
             {selectedTripDetails ? (
               <>
-                <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết trạm dừng</h3>
+                <h3 className='text-lg font-medium leading-6 text-gray-900'>Chi tiết chuyến đi</h3>
                 <div className='mt-2'>
-                  <p>ID: {selectedTripDetails.id}</p>
-                  <p>Tên: {selectedTripDetails.name}</p>
-                  <p>Địa chỉ: {selectedTripDetails.address}</p>
+                 <TripDetailModal trip={selectedTripDetails}/>
                 </div>
                 <div className='mt-4 flex justify-end space-x-2'>
-                  <Button variant='secondary' onClick={() => setIsModalOpen(false)}>
+                  <Button className='bg-primary' onClick={() => setIsModalDetailOpen(false)}>
                     Đóng
                   </Button>
                 </div>
