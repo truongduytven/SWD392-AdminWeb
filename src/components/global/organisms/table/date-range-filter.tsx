@@ -30,6 +30,7 @@ export function DateRangeFilter<TData, TValue>({
 	React.useEffect(() => {
 		if (column && date?.from && date?.to) {
 			const filteredOptions = options.filter((option: string) => {
+				if (!option) return false; // Skip null or undefined options
 				const itemDate = parseISO(option)
 				const startDate = subDays(date?.from ?? new Date(), 1)
 				const endDate = addDays(date?.to ?? new Date(), 1)

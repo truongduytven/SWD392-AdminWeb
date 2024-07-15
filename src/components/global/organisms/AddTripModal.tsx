@@ -26,6 +26,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import TripDetailModal from './TripDetailModal'
 import TemplateCard from './TemplateCard'
 import axios from 'axios'
+import moment from 'moment'
 
 interface AddTripModalProps {
   isModalVisible: boolean
@@ -78,6 +79,11 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
   const [templates, setTemplates] = useState<any[]>([]) // Adjust type as necessary
   const [isTemplateModalVisible, setIsTemplateModalVisible] = useState(false)
   const [loadingTemplates, setLoadingTemplates] = useState(false) // Loading state
+  const disabledDate = (current:any) => {
+    // Disable dates before today
+    return current && current < moment().endOf('day');
+  };
+
   useEffect(() => {
     if (isModalVisible) {
       form.setFieldsValue({
@@ -291,11 +297,11 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
               name='dateRange'
               rules={[{ required: true, message: 'Vui lòng chọn khoảng ngày!' }]}
             >
-              <DatePicker.RangePicker format='DD/MM/YYYY' />
+              <DatePicker.RangePicker format='DD/MM/YYYY' disabledDate={disabledDate} />
             </Form.Item>
           ) : (
             <Form.Item label='Ngày' name='date' rules={[{ required: true, message: 'Vui lòng chọn ngày!' }]}>
-              <DatePicker multiple onChange={onChange} maxTagCount='responsive' format='YYYY/MM/DD' />
+              <DatePicker multiple onChange={onChange} maxTagCount='responsive' format='YYYY/MM/DD' disabledDate={disabledDate}  />
             </Form.Item>
           )}
           <Form.Item label='Thời gian' rules={[{ required: true, message: 'Vui lòng chọn thời gian!' }]}>
