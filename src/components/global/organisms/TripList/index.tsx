@@ -16,6 +16,7 @@ import { Button } from '../../atoms/ui/button'
 import { Loader, Plus } from 'lucide-react'
 import TripDetailModal from '../TripDetailModal'
 import AddTripModal from '../AddTripModal'
+import EditTripModal from '../EditTripModal'
 
 type Trip = {
   TripID: string
@@ -47,6 +48,7 @@ function ListTrip() {
   const [newStatus, setNewStatus] = useState<string>('')
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
   const [selectedTripDetails, setSelectedTripDetails] = useState<any>(null)
+  const [isModalEditOpen, setIsModalEditOpen] = useState(false)
   useEffect(() => {
     const fetchTrips = async () => {
       setIsLoadingTrips(true)
@@ -146,6 +148,32 @@ function ListTrip() {
   const handleCancel = () => {
     setIsModalAddOpen(false)
   }
+  const handleEditTrip = (trip: Trip) => {
+    setSelectedTrip(trip)
+    setIsModalEditOpen(true)
+  }
+
+  const handleUpdateTrip = async (updatedTrip: Trip) => {
+    setIsLoadingUpdate(true)
+    try {
+      const response = await busAPI.put(`trip-management/manage-trips/${updatedTrip.TripID}`, updatedTrip)
+      setTrips(trips.map(trip => trip.TripID === updatedTrip.TripID ? updatedTrip : trip))
+      toast({
+        variant: 'success',
+        title: 'Cập nhật thành công',
+        description: 'Thông tin chuyến đi đã được cập nhật'
+      })
+      setIsModalEditOpen(false)
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Không thể cập nhật chuyến đi',
+        description: 'Vui lòng thử lại sau'
+      })
+    } finally {
+      setIsLoadingUpdate(false)
+    }
+  }
   if (isLoadingTrips) {
     return <TableSkeleton />
   }
@@ -164,7 +192,7 @@ function ListTrip() {
       </div>
       <DataTable
         data={trips}
-        columns={columns(handleStatusChange, handleViewDetails)}
+        columns={columns(handleStatusChange, handleViewDetails, handleEditTrip)}
         Toolbar={DataTableToolbar}
         rowString='Chuyến'
       />
@@ -215,6 +243,12 @@ function ListTrip() {
       )}
 
       <AddTripModal isModalVisible={isModalAddOpen} handleOk={handleOk} handleCancel={handleCancel} />
+      <EditTripModal
+        visible={isModalEditOpen}
+        onClose={() => setIsModalEditOpen(false)}
+        trip={selectedTrip}
+        onUpdate={handleUpdateTrip}
+      />
     </div>
   )
 }
