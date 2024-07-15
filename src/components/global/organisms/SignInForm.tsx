@@ -29,14 +29,14 @@ function SignInForm() {
   const [isLoggingGoogle, setIsLoggingGoogle] = useState(false)
 
   async function onSubmit(values: TSignInSchema) {
-    console.log('value loig', values)
+    // console.log('value loig', values)
     // setIsSubmitting(true)
     try {
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       await login(values.email, values.password)
 
       // navigate("/home")
-      console.log('vo ne')
+      // console.log('vo ne')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const messageError = error.response.data.message

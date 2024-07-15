@@ -124,8 +124,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             RoleName: response.data.Result.RoleName
           }
           setUser(userData)
-          console.log("User Data after login:", userData)
-          console.log("check",response.data.Result.RoleName)
+          // console.log("User Data after login:", userData)
+          // console.log("check",response.data.Result.RoleName)
           if (response.data.Result.RoleName === 'Manager' || response.data.Result.RoleName === 'Admin') {
             toast.success('Đăng nhập thành công')
             navigate(`/home/${response.data.Result.RoleName.toLowerCase()}`);

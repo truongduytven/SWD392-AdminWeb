@@ -15,7 +15,7 @@ import { useAuth } from '@/auth/AuthProvider'
 
 function RouteLayout() {
   const { user, loading, logout } = useAuth()
-  console.log('user ở layout', user)
+  // console.log('user ở layout', user)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   // const {userDetail} = useAuth();
   // console.log("user ở layout", userDetail);

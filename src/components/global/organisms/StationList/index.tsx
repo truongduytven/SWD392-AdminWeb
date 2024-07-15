@@ -18,11 +18,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { AddStationSchema } from '@/components/Schema/AddStationSchema'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../atoms/ui/select'
-import { ServiceModal, AddServiceModal } from '../ServiceModals'; 
+import { ServiceModal, AddServiceModal } from '../ServiceModals'
 
 // Define the interface for the Service
 interface Service {
-  Service_StationID:string
+  Service_StationID: string
   ServiceID: string
   Price: number
   Name: string
@@ -62,27 +62,38 @@ function ListStation() {
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
   const [isEditing, setIsEditing] = useState<Station | null>(null)
   const [isAdding, setIsAdding] = useState(false)
-  const [isServiceModalVisible, setServiceModalVisible] = useState(false);
-  const [isAddServiceModalVisible, setAddServiceModalVisible] = useState(false);
+  const [isServiceModalVisible, setServiceModalVisible] = useState(false)
+  const [isAddServiceModalVisible, setAddServiceModalVisible] = useState(false)
   // const [selectedStation, setSelectedStation] = useState<Station | null>(null);
-
+  const handleUpdateService = (updatedService: any) => {
+    console.log("update ơ bang", updatedService)
+    setStations((prevStations) =>
+      prevStations.map((station) =>
+        station.StationID === updatedService.StationID // Ensure you're matching with Service_StationID
+          ? {
+              ...updatedService
+            }
+          : station
+      )
+    )
+  }
   const handleShowServiceModal = (station: Station) => {
-    setSelectedStation(station);
-    setServiceModalVisible(true);
-  };
+    setSelectedStation(station)
+    setServiceModalVisible(true)
+  }
 
   const handleShowAddServiceModal = () => {
-    setAddServiceModalVisible(true);
-  };
+    setAddServiceModalVisible(true)
+  }
 
   const handleServiceModalOk = () => {
-    setServiceModalVisible(false);
-  };
+    setServiceModalVisible(false)
+  }
 
   const handleAddServiceModalOk = () => {
     // Handle the logic for adding a service
-    setAddServiceModalVisible(false);
-  };
+    setAddServiceModalVisible(false)
+  }
   const formStation = useForm<z.infer<typeof StationNameSchema>>({
     resolver: zodResolver(StationNameSchema),
     defaultValues: {
@@ -379,16 +390,14 @@ function ListStation() {
           </DialogContent>
         </Dialog>
       )}
-       <ServiceModal
+      <ServiceModal
         visible={isServiceModalVisible}
         onOk={handleServiceModalOk}
         station={selectedStation}
         onAddService={handleShowAddServiceModal}
+        onUpdateService={handleUpdateService} // Pass the update handler
       />
-      <AddServiceModal
-        visible={isAddServiceModalVisible}
-        onOk={handleAddServiceModalOk}
-      />
+      <AddServiceModal visible={isAddServiceModalVisible} onOk={handleAddServiceModalOk} />
     </div>
   )
 }
