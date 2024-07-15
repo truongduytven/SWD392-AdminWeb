@@ -28,7 +28,7 @@ type Staff = {
 
 function ListStaff() {
   const { user } = useAuth()
-  console.log('user o route', user)
+  // console.log('user o route', user)
   const [staffs, setStaffs] = useState<Staff[]>([])
   const [isLoadingStaffs, setIsLoadingStaffs] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)

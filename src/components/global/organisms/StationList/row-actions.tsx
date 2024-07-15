@@ -44,7 +44,7 @@ interface Service {
   }
 export function DataTableRowActions<TData extends Station>({ row,handleStatusChange }: DataTableRowActionsProps<TData>) {
   const { user } = useAuth()
-  console.log('user o route', user)
+  // console.log('user o route', user)
   // const [routes, setRoutes] = useState<Station[]>([])
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)

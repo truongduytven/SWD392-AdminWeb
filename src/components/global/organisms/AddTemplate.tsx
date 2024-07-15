@@ -163,8 +163,6 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
   //   }
   // })
   const onFinish = (values: any) => {
-   
-
     const requestData = {
       Route_CompanyID: values.route,
       IsTemplate: values.isTemplate || true,
@@ -174,20 +172,36 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
       Trip_UtilityModels: values.utilityModels || []
     }
     console.log('Request Data:', requestData)
-    const formData = new FormData();
-    formData.append('Route_CompanyID', values.route);
-    formData.append('IsTemplate', values.isTemplate || true);
-    formData.append('TemplateID', values.templateID || '');
-  
-    // Append all image files as an array
-  imageFiles.forEach(file => {
-    formData.append('ImageUrls[]', file.originFileObj); // Use "ImageUrls[]" for array format
-  });
-  
-    formData.append('TicketType_TripModels', JSON.stringify(values.ticketTypes || []));
-    formData.append('Trip_UtilityModels', JSON.stringify(values.utilityModels || []));
-  
+    const formData = new FormData()
+    formData.append('Route_CompanyID', values.route)
+    formData.append('IsTemplate', values.isTemplate || true)
+    // formData.append('TemplateID', values.templateID || '');
 
+    // Append all image files as an array
+    // imageFiles.forEach(file => {
+    //   formData.append('ImageUrls[]', file.originFileObj); // Use "ImageUrls[]" for array format
+    // });
+    // imageFiles.forEach((file, index) => {
+    //   formData.append(`ImageUrls[${index}]`, file.originFileObj);
+    // });
+    const imageUrls = []
+    imageFiles.forEach((file) => {
+      imageUrls.push(file.originFileObj)
+    })
+    formData.append('ImageUrls', imageUrls)
+    formData.append('TicketType_TripModelsString', JSON.stringify(values.ticketTypes || []))
+    // formData.append('Trip_UtilityModelsString', JSON.stringify(values.utilityModels || []));
+    formData.append(
+      'Trip_UtilityModelsString',
+      JSON.stringify(
+        values.utilityModels.map((utilityID: string) => ({
+          utilityID
+        }))
+      )
+    )
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
     busAPI
       .post('trip-management/managed-trips', formData)
       .then((response) => {

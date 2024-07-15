@@ -38,7 +38,7 @@ interface Station {
 
 function ListRoute() {
   const { user } = useAuth()
-  console.log('user o route', user)
+  // console.log('user o route', user)
   const [routes, setRoutes] = useState<Route[]>([])
   const [cities, setCities] = useState<City[]>([])
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)

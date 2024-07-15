@@ -37,7 +37,7 @@ type Trip = {
 
 function ListTrip() {
   const { user } = useAuth()
-  console.log('user o route', user)
+  // console.log('user o route', user)
   const [trips, setTrips] = useState<Trip[]>([])
   const [isLoadingTrips, setIsLoadingTrips] = useState(true)
   const [isLoadingDetailTrips, setIsLoadingDetailTrips] = useState(true)
