@@ -64,7 +64,7 @@ function RouteLayout() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <img
-                className='h-12 w-12 cursor-pointer'
+                className='h-12 w-12 cursor-pointer rounded-full object-cover'
                 src={user?.Avatar || 'https://api.dicebear.com/8.x/adventurer/svg?seed=Oliver'}
                 alt='avatar'
               />

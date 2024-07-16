@@ -31,7 +31,7 @@ export default function DashboardManager() {
 
           <BarChartManager data={data?.MonthlyRevenue}/>
         </CardContent>
-        <CardContent className='flex justify-between gap-4'>
+        <CardContent className='flex justify-start gap-4'>
           <section>
             <p className='text-lg font-semibold text-primary'>Những tuyến đường phổ biến</p>
             {/* <p className='text-sm text-gray-400'>Những tuyến đường được sử dụng nhiều nhất trong tháng.</p> */}
