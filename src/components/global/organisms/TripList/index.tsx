@@ -16,6 +16,7 @@ import { Button } from '../../atoms/ui/button'
 import { Loader, Plus } from 'lucide-react'
 import TripDetailModal from '../TripDetailModal'
 import AddTripModal from '../AddTripModal'
+import EditTripModal from '../EditTripModal'
 
 type Trip = {
   TripID: string
@@ -28,6 +29,7 @@ type Trip = {
   StartDate: string
   EndDate: string
   StaffName: string
+  StaffID: string
   MinPrice: number
   MaxPrice: number
   Status: string
@@ -35,7 +37,7 @@ type Trip = {
 
 function ListTrip() {
   const { user } = useAuth()
-  console.log('user o route', user)
+  // console.log('user o route', user)
   const [trips, setTrips] = useState<Trip[]>([])
   const [isLoadingTrips, setIsLoadingTrips] = useState(true)
   const [isLoadingDetailTrips, setIsLoadingDetailTrips] = useState(true)
@@ -47,6 +49,7 @@ function ListTrip() {
   const [newStatus, setNewStatus] = useState<string>('')
   const [tempStatus, setTempStatus] = useState<{ [key: string]: string }>({})
   const [selectedTripDetails, setSelectedTripDetails] = useState<any>(null)
+  const [isModalEditOpen, setIsModalEditOpen] = useState(false)
   useEffect(() => {
     const fetchTrips = async () => {
       setIsLoadingTrips(true)
@@ -115,6 +118,16 @@ function ListTrip() {
       }
     }
   }
+  const handleAddTripSuccess = (newData: any) => {
+    setTrips((prevTrips) => {
+      if (Array.isArray(newData)) {
+        return [...prevTrips, ...newData] // If it's an array, spread the new data
+      } else {
+        return [...prevTrips, newData] // If it's a single object, add it to the array
+      }
+    })
+  }
+
   const handleViewDetails = async (tripID: string) => {
     setIsLoadingDetailTrips(true)
     try {
@@ -146,6 +159,14 @@ function ListTrip() {
   const handleCancel = () => {
     setIsModalAddOpen(false)
   }
+  const handleEditTrip = (trip: Trip) => {
+    setSelectedTrip(trip)
+    setIsModalEditOpen(true)
+  }
+
+  const handleUpdateTrip = (updatedTrip: Trip) => {
+    setTrips(trips.map((trip) => (trip.TripID === updatedTrip.TripID ? updatedTrip : trip)))
+  }
   if (isLoadingTrips) {
     return <TableSkeleton />
   }
@@ -164,7 +185,7 @@ function ListTrip() {
       </div>
       <DataTable
         data={trips}
-        columns={columns(handleStatusChange, handleViewDetails)}
+        columns={columns(handleStatusChange, handleViewDetails, handleEditTrip)}
         Toolbar={DataTableToolbar}
         rowString='Chuyến'
       />
@@ -214,7 +235,18 @@ function ListTrip() {
         </Dialog>
       )}
 
-      <AddTripModal isModalVisible={isModalAddOpen} handleOk={handleOk} handleCancel={handleCancel} />
+      <AddTripModal
+        isModalVisible={isModalAddOpen}
+        handleOk={handleOk}
+        handleCancel={handleCancel}
+        onSuccess={handleAddTripSuccess}
+      />
+      <EditTripModal
+        visible={isModalEditOpen}
+        onClose={() => setIsModalEditOpen(false)}
+        trip={selectedTrip}
+        onUpdate={handleUpdateTrip}
+      />
     </div>
   )
 }

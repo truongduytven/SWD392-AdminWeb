@@ -6,7 +6,7 @@ import { DataTableColumnHeader } from '../table/col-header'
 import { Task } from './data/schema'
 import { DataTableRowActions } from './row-actions'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/global/atoms/ui/avatar'
-import { Eye } from 'lucide-react'
+import { Edit2, Eye } from 'lucide-react'
 type Trip = {
   TripID: string
   FromCity: string
@@ -18,13 +18,15 @@ type Trip = {
   StartDate: string
   EndDate: string
   StaffName: string
+  StaffID:string
   MinPrice: number
   MaxPrice: number
   Status: string
 }
 export const columns = (
   handleStatusChange: (trip: Trip, status: string) => void,
-  handleViewDetails: (routeId: string) => void
+  handleViewDetails: (routeId: string) => void,
+  handleEditTrip: (trip: Trip) => void
 ): ColumnDef<Trip>[] => [
   {
     accessorKey: 'TripID',
@@ -97,6 +99,15 @@ export const columns = (
     cell: ({ row }) => (
       <Tooltip title='Xem chi tiết' className='mr-1'>
         <Eye className='cursor-pointer w-4 text-primary' onClick={() => handleViewDetails(row.original.TripID)} />
+      </Tooltip>
+    )
+  },
+  {
+    id: 'edit',
+    header: 'Chỉnh sửa',
+    cell: ({ row }) => (
+      <Tooltip title='Chỉnh sửa chuyến đi' className='mr-1'>
+        <Edit2 className='cursor-pointer w-4 text-primary' onClick={() => handleEditTrip(row.original)} />
       </Tooltip>
     )
   }

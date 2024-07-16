@@ -28,7 +28,7 @@ const headers = [
 ];
 function Routes() {
   const { user } = useAuth()
-  console.log('user o route', user)
+  // console.log('user o route', user)
   const [routes, setRoutes] = useState<Route[]>([])
   const [isLoadingRoutes, setIsLoadingRoutes] = useState(true)
   const [isLoadingUpdate, setIsLoadingUpdate] = useState(false)

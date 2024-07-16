@@ -12,6 +12,7 @@ type Trip = {
     StartDate: string
     EndDate: string
     StaffName: string
+    StaffID:string
     MinPrice: number
     MaxPrice: number
     Status: string

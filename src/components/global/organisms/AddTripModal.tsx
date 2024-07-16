@@ -19,17 +19,20 @@ import {
 import { toast } from '../atoms/ui/use-toast'
 import busAPI from '@/lib/busAPI'
 import { useAuth } from '@/auth/AuthProvider'
-import { DownOutlined } from '@ant-design/icons'; // Import an icon of your choice
+import { DownOutlined } from '@ant-design/icons' // Import an icon of your choice
 import { UploadOutlined } from '@ant-design/icons'
 import { Minus, Plus } from 'lucide-react'
 import dayjs, { Dayjs } from 'dayjs'
 import TripDetailModal from './TripDetailModal'
 import TemplateCard from './TemplateCard'
+import axios from 'axios'
+import moment from 'moment'
 
 interface AddTripModalProps {
   isModalVisible: boolean
   handleOk: () => void
   handleCancel: () => void
+  onSuccess: (trip: any) => void
 }
 
 type Route = {
@@ -63,10 +66,10 @@ type TicketType = {
   Status: string
 }
 interface TimeTrip {
-  startTime: string
-  endTime: string
+  StartTime: string
+  EndTime: string
 }
-const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
+const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel, onSuccess }) => {
   const { user } = useAuth()
 
   const [form] = Form.useForm()
@@ -76,6 +79,11 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
   const [templates, setTemplates] = useState<any[]>([]) // Adjust type as necessary
   const [isTemplateModalVisible, setIsTemplateModalVisible] = useState(false)
   const [loadingTemplates, setLoadingTemplates] = useState(false) // Loading state
+  const disabledDate = (current:any) => {
+    // Disable dates before today
+    return current && current < moment().endOf('day');
+  };
+
   useEffect(() => {
     if (isModalVisible) {
       form.setFieldsValue({
@@ -114,7 +122,6 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
     }
   }, [isModalVisible, user?.CompanyID])
 
-  
   const onFinish = (values: any) => {
     // Format single date
     if (values.date) {
@@ -168,8 +175,8 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
           }
 
           timeTrips.push({
-            startTime: startTimeParsed.format('YYYY-MM-DDTHH:mm:ss'),
-            endTime: endTimeParsed.format('YYYY-MM-DDTHH:mm:ss')
+            StartTime: startTimeParsed.format('YYYY-MM-DDTHH:mm:ss'),
+            EndTime: endTimeParsed.format('YYYY-MM-DDTHH:mm:ss')
           })
         })
       })
@@ -185,33 +192,38 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
       TimeTrips: timeTrips || []
     }
     console.log('Request Data:', requestData)
+    console.log('Request Data tripjhfjkghkh:', requestData.TimeTrips)
     const formData = new FormData()
 
-    // Append each field to the FormData object
+    // formData.append('TimeTrips', requestData.TimeTrips)
+    formData.append('TimeTripsString', JSON.stringify(requestData.TimeTrips))
     formData.append('IsTemplate', values.isTemplate || false)
-    formData.append('StaffID', requestData.StaffID || "")
-    //   formData.append('StaffID', JSON.stringify([values.staff])); // Ensure it's an array
-    // requestData.StaffID.forEach((id) => formData.append('StaffID[]', id))
+    formData.append('StaffID', requestData.StaffID || '')
     formData.append('TemplateID', values.templateID || '')
-    formData.append('TimeTrips', requestData.TimeTrips)
-    // timeTrips.forEach((trip) => {
-    //   formData.append('TimeTrips[]', JSON.stringify(trip)) // Append each time trip as JSON
-    // })
 
+    // Log the values in FormData
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`)
+    }
     busAPI
       .post('trip-management/managed-trips', formData)
       .then((response) => {
         form.resetFields()
         handleOk()
-        console.log('Response:', response.data)
+        onSuccess(response.data.Result)
+        console.log('Response:', response.data.Result)
         form.resetFields()
         toast({
-            variant: 'success',
-            title: 'Đã tạo chuyến đi thành công',
-            description: 'Chuyến đi đã được tạo'
-          })
+          variant: 'success',
+          title: 'Đã tạo chuyến đi thành công',
+          description: 'Chuyến đi đã được tạo'
+        })
       })
       .catch((error) => {
+        if (axios.isAxiosError(error) && error.response) {
+          const messagess = error.response.data.Result.message
+          message.error(messagess)
+        }
         message.error('Lỗi tạo chuyến xe')
         console.error('Error:', error)
       })
@@ -265,7 +277,14 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
       <Modal title='Tạo chuyến đi' visible={isModalVisible} onCancel={onCancel} footer={null}>
         <Form form={form} onFinish={onFinish} className='h-[460px] overflow-y-auto'>
           <Form.Item label='Chọn mẫu chuyến đi' name='templateID'>
-            <Input onClick={() => setIsTemplateModalVisible(true)} placeholder='Chọn mẫu chuyến đi' readOnly  addonAfter={<DownOutlined onClick={() => setIsTemplateModalVisible(true)} style={{ cursor: 'pointer' }} />} />
+            <Input
+              onClick={() => setIsTemplateModalVisible(true)}
+              placeholder='Chọn mẫu chuyến đi'
+              readOnly
+              addonAfter={
+                <DownOutlined onClick={() => setIsTemplateModalVisible(true)} style={{ cursor: 'pointer' }} />
+              }
+            />
           </Form.Item>
           <Form.Item label='Chọn loại ngày'>
             <Switch checked={isRange} onChange={setIsRange} />
@@ -278,11 +297,11 @@ const AddTripModal: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, h
               name='dateRange'
               rules={[{ required: true, message: 'Vui lòng chọn khoảng ngày!' }]}
             >
-              <DatePicker.RangePicker format='DD/MM/YYYY' />
+              <DatePicker.RangePicker format='DD/MM/YYYY' disabledDate={disabledDate} />
             </Form.Item>
           ) : (
             <Form.Item label='Ngày' name='date' rules={[{ required: true, message: 'Vui lòng chọn ngày!' }]}>
-              <DatePicker multiple onChange={onChange} maxTagCount='responsive' format='YYYY/MM/DD' />
+              <DatePicker multiple onChange={onChange} maxTagCount='responsive' format='YYYY/MM/DD' disabledDate={disabledDate}  />
             </Form.Item>
           )}
           <Form.Item label='Thời gian' rules={[{ required: true, message: 'Vui lòng chọn thời gian!' }]}>
