@@ -1,21 +1,14 @@
 import { Row } from '@tanstack/react-table';
 import { Badge } from '../../atoms/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../atoms/ui/select';
-type Route = {
-  Route_CompanyID: string
-  FromCity: string
-  ToCity: string
-  StartLocation: string
-  EndLocation: string
-  Status: string
-}
+import { Staff } from './columns';
 
-interface DataTableRowActionsProps<TData extends Route> {
+interface DataTableRowActionsProps<TData extends Staff> {
   row: Row<TData>;
-  handleStatusChange: (route: Route, status: string) => void;
+  handleStatusChange: (staff: Staff, status: string) => void;
 }
 
-export function DataTableRowActions<TData extends Route>({ row, handleStatusChange }: DataTableRowActionsProps<TData>) {
+export function DataTableRowActions<TData extends Staff>({ row, handleStatusChange }: DataTableRowActionsProps<TData>) {
   return (
     <div>
       <Select

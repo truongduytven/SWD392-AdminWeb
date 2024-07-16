@@ -259,7 +259,6 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({ visible, onOk 
   }
   const handleFormFinish = async (values: any) => {
     console.log('Submitted values:', values)
-    // Handle the submission logic here (e.g., sending the data to the API)
     onOk() // Close the modal after handling the submission
   }
 

@@ -13,14 +13,14 @@ export type MothRevenue = {
 }
 
 export type PopularRoutes = {
-  RouteID: string
-  FromCityID: string
-  FromCity: string
-  ToCityID: string
-  ToCity: string
-  StartLocation: string
-  EndLocation: string
-  TotalBooking: number
+  routeID: string
+  fromCityID: string
+  fromCity: string
+  toCityID: string
+  toCity: string
+  startLocation: string
+  endLocation: string
+  totalBooking: number
 }
 
 export type DashboardAdminProps = {
