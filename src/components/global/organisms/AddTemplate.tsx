@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import {
   Button,
   Modal,
@@ -19,13 +19,15 @@ import { toast } from '../atoms/ui/use-toast'
 import busAPI from '@/lib/busAPI'
 import { useAuth } from '@/auth/AuthProvider'
 import { UploadOutlined } from '@ant-design/icons'
-import { Minus, Plus } from 'lucide-react'
+import { Loader, Minus, Plus } from 'lucide-react'
 import dayjs, { Dayjs } from 'dayjs'
+import axios from 'axios'
 
 interface AddTripModalProps {
   isModalVisible: boolean
   handleOk: () => void
   handleCancel: () => void
+  onAddTemplateSuccess: (newData: any) => void // Add this prop
 }
 
 type Route = {
@@ -62,10 +64,12 @@ interface TimeTrip {
   startTime: string
   endTime: string
 }
-const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel }) => {
+const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, handleCancel, onAddTemplateSuccess }) => {
   const { user } = useAuth()
 
   const [form] = Form.useForm()
+  const [files, setFiles] = useState<File[]>([])
+  const [loading, setLoading] = useState(false)
   const [routes, setRoutes] = useState<any[]>([]) // Adjust type as necessary
   const [staff, setStaff] = useState<Staff[]>([])
   const [utilities, setUtilities] = useState<Utility[]>([])
@@ -162,7 +166,20 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
   //     return Promise.resolve()
   //   }
   // })
-  const onFinish = (values: any) => {
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = Array.from(e.target.files || [])
+    const newFiles = [...files, ...selectedFiles]
+    setFiles(newFiles)
+    // setValue('imageUrls', newFiles)
+  }
+  const removeFile = (index: number) => {
+    const newFiles = [...files.slice(0, index), ...files.slice(index + 1)]
+    setFiles(newFiles)
+    // setValue('imageUrls', newFiles)
+  }
+
+  const onFinish =async (values: any) => {
     const requestData = {
       Route_CompanyID: values.route,
       IsTemplate: values.isTemplate || true,
@@ -184,11 +201,20 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
     // imageFiles.forEach((file, index) => {
     //   formData.append(`ImageUrls[${index}]`, file.originFileObj);
     // });
-    const imageUrls = []
-    imageFiles.forEach((file) => {
-      imageUrls.push(file.originFileObj)
-    })
-    formData.append('ImageUrls', imageUrls)
+    // const imageUrls = []
+    // imageFiles.forEach((file) => {
+    //   imageUrls.push(file.originFileObj)
+    // })
+    // console.log("anh template", imageUrls)
+    // formData.append('ImageUrls', imageUrls)
+    if (files.length > 0) {
+      files.forEach((file) => {
+        formData.append('ImageUrls', file) // Append file as binary data
+      })
+    } else {
+      // Append an empty array if no files are selected
+      formData.append('ImageUrls', '')
+    }
     formData.append('TicketType_TripModelsString', JSON.stringify(values.ticketTypes || []))
     // formData.append('Trip_UtilityModelsString', JSON.stringify(values.utilityModels || []));
     formData.append(
@@ -200,21 +226,33 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
       )
     )
     for (const [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
+      console.log(`${key}: ${value}`)
     }
-    busAPI
+    setLoading(true)
+    const response =await busAPI
       .post('trip-management/managed-trips', formData)
       .then((response) => {
         setImageFiles([]) // Reset the uploaded images
 
         form.resetFields()
         handleOk()
+        onAddTemplateSuccess(response.data.Result)
+        message.success('Tạo chuyến đi mẫu thành công')
         console.log('Response:', response.data)
+        setLoading(false)
         form.resetFields()
       })
       .catch((error) => {
-        message.error('Lỗi tạo chuyến xe')
+        if (axios.isAxiosError(error) && error.response) {
+          const messagess = error.response.data.Result.message
+          message.error(messagess)
+        setLoading(false)
+
+        }
+        message.error('Lỗi tạo chuyến xe mẫu')
         console.error('Error:', error)
+        setLoading(false)
+
       })
   }
 
@@ -315,7 +353,7 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
               )}
             </Form.List>
           </Form.Item>
-          <Form.Item label='Hình ảnh' name='images' rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}>
+          {/* <Form.Item label='Hình ảnh' name='images' rules={[{ required: true, message: 'Vui lòng tải lên hình ảnh!' }]}>
             <Upload
               multiple
               accept='image/*'
@@ -326,7 +364,39 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
             >
               <Button icon={<UploadOutlined />}>Chọn hình ảnh</Button>
             </Upload>
-          </Form.Item>
+          </Form.Item> */}
+          <div className='flex flex-wrap gap-2'>
+            {files.map((file, index) => (
+              <div key={index} className='m-2 relative'>
+                <img className='w-32 h-32 object-cover rounded-2xl' src={URL.createObjectURL(file)} alt='...' />
+                <button
+                  type='button'
+                  className='absolute -top-3 -right-3 font-medium text-white bg-primary rounded-full px-2 py-1 text-xs'
+                  onClick={() => removeFile(index)}
+                >
+                  X
+                </button>
+              </div>
+            ))}
+          {files.length < 3 && (
+            <div className='m-2'>
+              <label htmlFor='fileUpload' className='block w-32 h-32 border border-gray-300 rounded-xl cursor-pointer'>
+                <div className='flex justify-center items-center w-full h-full'>
+                  <span className='text-4xl'>+</span>
+                </div>
+                <input
+                  id='fileUpload'
+                  type='file'
+                  name='myfile'
+                  className='hidden'
+                  onChange={handleFileChange}
+                  accept='image/*'
+                />
+              </label>
+            </div>
+          )}
+          </div>
+
 
           <Form.Item
             label='Mô hình tiện ích'
@@ -346,7 +416,7 @@ const AddTemplate: React.FC<AddTripModalProps> = ({ isModalVisible, handleOk, ha
           {/* Add more fields as necessary */}
           <Form.Item>
             <Button type='primary' htmlType='submit'>
-              Tạo chuyến đi mẫu
+             {loading && <Loader className='w-4 animate-spin'/>} Tạo chuyến đi mẫu
             </Button>
           </Form.Item>
         </Form>

@@ -49,6 +49,10 @@ function Template() {
   const handleCancel = () => {
     setIsModalVisible(false)
   }
+
+  const handleAddTemplateSuccess = (newData: any) => {
+    setTemplates((prevTemplates) => [...prevTemplates, newData])
+  }
   if (loading) {
     return <Spin size='large' />
   }
@@ -74,7 +78,7 @@ function Template() {
           }
         }}
       >
-          <AddTemplate isModalVisible={isModalVisible} handleCancel={handleCancel} handleOk={handleOk}/>
+          <AddTemplate isModalVisible={isModalVisible} handleCancel={handleCancel} handleOk={handleOk}  onAddTemplateSuccess={handleAddTemplateSuccess}/>
       </ConfigProvider>
     </div>
   )
